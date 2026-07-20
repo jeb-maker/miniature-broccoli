@@ -1,8 +1,3 @@
-export type ValidityTarget = {
-  setCustomValidity?: (message: string) => void;
-};
-
-/** Shared helpers for form-associated custom elements. */
 export function setFormValue(
   internals: ElementInternals,
   value: string | File | FormData | null,
@@ -22,4 +17,19 @@ export function setValidity(
 
 export function clearValidity(internals: ElementInternals): void {
   internals.setValidity({});
+}
+
+/** Build validity flags without marking customError for plain required misses. */
+export function constraintFlags(
+  error: string,
+  missing: boolean,
+  missingMessage = 'Please fill out this field.',
+): { flags: ValidityStateFlags; message: string } {
+  if (error) {
+    return { flags: { customError: true }, message: error };
+  }
+  if (missing) {
+    return { flags: { valueMissing: true }, message: missingMessage };
+  }
+  return { flags: {}, message: '' };
 }

@@ -1,3 +1,4 @@
+/** Type-only barrel — no customElements.define side effects. */
 export type { MbButton, ButtonVariant, ButtonSize, ButtonType } from './components/button.js';
 export type { MbInput, InputType } from './components/input.js';
 export type { MbTextarea } from './components/textarea.js';

@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import { clearValidity, setFormValue, setValidity } from '../lib/form.js';
+import { setFormValue } from '../lib/form.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { sharedStyles } from '../lib/styles.js';
 
@@ -9,7 +9,9 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 export type ButtonType = 'button' | 'submit' | 'reset';
 
 /**
- * Form-associated button. Use the internal label via default slot.
+ * Form-associated button. Use the default slot for the label.
+ * Submit/reset participate via requestSubmit/reset — their name/value
+ * is only applied when this control is the submitter (click).
  */
 export class MbButton extends LitElement {
   static formAssociated = true;
@@ -125,37 +127,9 @@ export class MbButton extends LitElement {
     return this.disabled || this.loading || this.#formDisabled;
   }
 
-  override connectedCallback(): void {
-    super.connectedCallback();
-    this.#syncFormValue();
-  }
-
-  override updated(changed: Map<string, unknown>): void {
-    if (changed.has('value') || changed.has('name')) {
-      this.#syncFormValue();
-    }
-    if (changed.has('disabled') || changed.has('loading')) {
-      this.#syncValidity();
-    }
-  }
-
   formDisabledCallback(disabled: boolean): void {
     this.#formDisabled = disabled;
     this.requestUpdate();
-  }
-
-  #syncFormValue(): void {
-    if (this.type === 'submit' || this.type === 'reset') {
-      setFormValue(this.#internals, this.value || null);
-      return;
-    }
-    setFormValue(this.#internals, this.name ? this.value : null);
-  }
-
-  #syncValidity(): void {
-    if (this.#isDisabled) {
-      clearValidity(this.#internals);
-    }
   }
 
   #onClick(event: MouseEvent): void {
@@ -164,10 +138,18 @@ export class MbButton extends LitElement {
       event.stopImmediatePropagation();
       return;
     }
+
     const form = this.#internals.form;
     if (!form) return;
+
     if (this.type === 'submit') {
+      // Apply name/value only for this submission, then clear so other submits
+      // do not keep including this button's entry (native submitter semantics).
+      if (this.name) {
+        setFormValue(this.#internals, this.value);
+      }
       form.requestSubmit();
+      queueMicrotask(() => setFormValue(this.#internals, null));
     } else if (this.type === 'reset') {
       form.reset();
     }

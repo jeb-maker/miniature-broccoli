@@ -57,7 +57,15 @@
   }
 }
 
-/* Anti-FOUC for undefined custom elements */
-:not(:defined) {
+/* Anti-FOUC for this design system's custom elements only */
+mb-button:not(:defined),
+mb-input:not(:defined),
+mb-textarea:not(:defined),
+mb-select:not(:defined),
+mb-checkbox:not(:defined),
+mb-badge:not(:defined),
+mb-alert:not(:defined),
+mb-card:not(:defined),
+mb-modal:not(:defined) {
   visibility: hidden;
 }

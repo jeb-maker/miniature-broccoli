@@ -46,13 +46,12 @@
       "types": "./dist/components/modal.d.ts",
       "import": "./dist/components/modal.js"
     },
+    "./types": "./dist/types.d.ts",
     "./jsx": "./jsx.d.ts"
   },
   "sideEffects": [
     "./dist/components/*.js",
-    "./dist/tokens/**/*.css",
-    "./src/components/*.ts",
-    "./src/tokens/**/*.css"
+    "./dist/tokens/**/*.css"
   ],
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json && node scripts/copy-tokens.mjs",

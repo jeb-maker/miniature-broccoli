@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import './input.js';
-import './button.js';
 import type { MbInput } from './input.js';
 
 describe('mb-input', () => {
-  it('updates value and emits mb-change', async () => {
+  it('updates value and emits mb-input', async () => {
     const el = document.createElement('mb-input') as MbInput;
     el.label = 'Name';
     el.name = 'name';
@@ -12,7 +11,7 @@ describe('mb-input', () => {
     await el.updateComplete;
 
     const events: CustomEvent[] = [];
-    el.addEventListener('mb-change', (e: Event) => events.push(e as CustomEvent));
+    el.addEventListener('mb-input', (e: Event) => events.push(e as CustomEvent));
 
     const input = el.shadowRoot!.querySelector('input')!;
     input.value = 'Ada';
@@ -35,8 +34,9 @@ describe('mb-input', () => {
     document.body.appendChild(form);
     await el.updateComplete;
 
+    expect(typeof el.formDisabledCallback).toBe('function');
     fieldset.disabled = true;
-    el.formDisabledCallback?.(true);
+    el.formDisabledCallback(true);
     await el.updateComplete;
 
     const input = el.shadowRoot!.querySelector('input')!;

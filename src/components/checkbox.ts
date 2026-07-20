@@ -75,9 +75,20 @@ export class MbCheckbox extends LitElement {
   #internals = this.attachInternals();
   #formDisabled = false;
   #control?: HTMLInputElement;
+  #defaultChecked = false;
+  #defaultCaptured = false;
+  #touched = false;
 
   get #isDisabled(): boolean {
     return this.disabled || this.#formDisabled;
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.#defaultCaptured) {
+      this.#defaultChecked = this.checked;
+      this.#defaultCaptured = true;
+    }
   }
 
   override firstUpdated(): void {
@@ -95,7 +106,8 @@ export class MbCheckbox extends LitElement {
       changed.has('value') ||
       changed.has('required') ||
       changed.has('error') ||
-      changed.has('disabled')
+      changed.has('disabled') ||
+      changed.has('name')
     ) {
       this.#sync();
     }
@@ -107,7 +119,8 @@ export class MbCheckbox extends LitElement {
   }
 
   formResetCallback(): void {
-    this.checked = false;
+    this.#touched = false;
+    this.checked = this.#defaultChecked;
     this.indeterminate = false;
     this.error = '';
     this.invalid = false;
@@ -120,25 +133,24 @@ export class MbCheckbox extends LitElement {
   }
 
   #sync(): void {
-    setFormValue(this.#internals, this.checked ? this.value : null);
+    setFormValue(this.#internals, this.name && this.checked ? this.value : null);
     const missing = this.required && !this.checked;
     const message = this.error || (missing ? 'Please check this box.' : '');
     if (message) {
-      this.invalid = true;
-      setValidity(
-        this.#internals,
-        { customError: true, valueMissing: missing },
-        message,
-        this.#control,
-      );
+      const flags: ValidityStateFlags = this.error
+        ? { customError: true }
+        : { valueMissing: true };
+      setValidity(this.#internals, flags, message, this.#control);
+      this.invalid = Boolean(this.error) || this.#touched;
     } else {
-      this.invalid = false;
       clearValidity(this.#internals);
+      this.invalid = false;
     }
   }
 
   #onChange(event: Event): void {
     const target = event.target as HTMLInputElement;
+    this.#touched = true;
     this.checked = target.checked;
     this.indeterminate = false;
     this.dispatchEvent(
@@ -151,6 +163,8 @@ export class MbCheckbox extends LitElement {
   }
 
   override render() {
+    const describedBy = this.error ? 'error' : '';
+
     return html`
       <label part="label">
         <input
@@ -162,11 +176,14 @@ export class MbCheckbox extends LitElement {
           ?disabled=${this.#isDisabled}
           ?required=${this.required}
           aria-invalid=${this.invalid ? 'true' : 'false'}
+          aria-describedby=${describedBy || nothing}
           @change=${this.#onChange}
         />
         <span>${this.label}<slot></slot></span>
       </label>
-      ${this.error ? html`<p class="error" role="alert">${this.error}</p>` : nothing}
+      ${this.error
+        ? html`<p id="error" class="error" role="alert">${this.error}</p>`
+        : nothing}
     `;
   }
 }

@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import { clearValidity, setFormValue, setValidity } from '../lib/form.js';
+import { clearValidity, constraintFlags, setFormValue, setValidity } from '../lib/form.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { fieldStyles, sharedStyles } from '../lib/styles.js';
 
@@ -27,9 +27,6 @@ export class MbInput extends LitElement {
   @property()
   error = '';
 
-  @property({ reflect: true })
-  type: InputType = 'text';
-
   @property()
   value = '';
 
@@ -38,6 +35,9 @@ export class MbInput extends LitElement {
 
   @property()
   placeholder = '';
+
+  @property({ reflect: true })
+  type: InputType = 'text';
 
   @property({ type: Boolean, reflect: true })
   disabled = false;
@@ -51,9 +51,20 @@ export class MbInput extends LitElement {
   #internals = this.attachInternals();
   #formDisabled = false;
   #input?: HTMLInputElement;
+  #defaultValue = '';
+  #defaultCaptured = false;
+  #touched = false;
 
   get #isDisabled(): boolean {
     return this.disabled || this.#formDisabled;
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.#defaultCaptured) {
+      this.#defaultValue = this.value;
+      this.#defaultCaptured = true;
+    }
   }
 
   override firstUpdated(): void {
@@ -66,7 +77,8 @@ export class MbInput extends LitElement {
       changed.has('value') ||
       changed.has('required') ||
       changed.has('error') ||
-      changed.has('disabled')
+      changed.has('disabled') ||
+      changed.has('name')
     ) {
       this.#sync();
     }
@@ -78,26 +90,28 @@ export class MbInput extends LitElement {
   }
 
   formResetCallback(): void {
-    this.value = '';
+    this.#touched = false;
+    this.value = this.#defaultValue;
     this.error = '';
     this.invalid = false;
   }
 
   #sync(): void {
-    setFormValue(this.#internals, this.name ? this.value : this.value);
+    setFormValue(this.#internals, this.name ? this.value : null);
     const missing = this.required && !this.value;
-    const message = this.error || (missing ? 'Please fill out this field.' : '');
+    const { flags, message } = constraintFlags(this.error, missing);
     if (message) {
-      this.invalid = true;
-      setValidity(this.#internals, { customError: true, valueMissing: missing }, message, this.#input);
+      setValidity(this.#internals, flags, message, this.#input);
+      this.invalid = Boolean(this.error) || this.#touched;
     } else {
-      this.invalid = false;
       clearValidity(this.#internals);
+      this.invalid = false;
     }
   }
 
   #onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
+    this.#touched = true;
     this.value = target.value;
     this.dispatchEvent(
       new CustomEvent('mb-input', {
@@ -106,6 +120,12 @@ export class MbInput extends LitElement {
         composed: true,
       }),
     );
+  }
+
+  #onChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.#touched = true;
+    this.value = target.value;
     this.dispatchEvent(
       new CustomEvent('mb-change', {
         detail: { value: this.value },
@@ -115,8 +135,17 @@ export class MbInput extends LitElement {
     );
   }
 
+  #onKeyDown(event: KeyboardEvent): void {
+    if (event.key !== 'Enter' || event.defaultPrevented) return;
+    const form = this.#internals.form;
+    if (form) {
+      event.preventDefault();
+      form.requestSubmit();
+    }
+  }
+
   override render() {
-    const describedBy = [this.hint ? 'hint' : '', this.error ? 'error' : '']
+    const describedBy = [this.hint && !this.error ? 'hint' : '', this.error ? 'error' : '']
       .filter(Boolean)
       .join(' ');
 
@@ -138,6 +167,8 @@ export class MbInput extends LitElement {
           aria-invalid=${this.invalid ? 'true' : 'false'}
           aria-describedby=${describedBy || nothing}
           @input=${this.#onInput}
+          @change=${this.#onChange}
+          @keydown=${this.#onKeyDown}
         />
         ${this.hint && !this.error
           ? html`<p id="hint" class="hint">${this.hint}</p>`

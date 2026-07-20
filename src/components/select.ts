@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { clearValidity, setFormValue, setValidity } from '../lib/form.js';
+import { clearValidity, constraintFlags, setFormValue, setValidity } from '../lib/form.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { fieldStyles, sharedStyles } from '../lib/styles.js';
 
@@ -49,9 +49,20 @@ export class MbSelect extends LitElement {
   #internals = this.attachInternals();
   #formDisabled = false;
   #control?: HTMLSelectElement;
+  #defaultValue = '';
+  #defaultCaptured = false;
+  #touched = false;
 
   get #isDisabled(): boolean {
     return this.disabled || this.#formDisabled;
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.#defaultCaptured) {
+      this.#defaultValue = this.value;
+      this.#defaultCaptured = true;
+    }
   }
 
   override firstUpdated(): void {
@@ -65,7 +76,8 @@ export class MbSelect extends LitElement {
       changed.has('required') ||
       changed.has('error') ||
       changed.has('options') ||
-      changed.has('disabled')
+      changed.has('disabled') ||
+      changed.has('name')
     ) {
       this.#sync();
     }
@@ -77,7 +89,8 @@ export class MbSelect extends LitElement {
   }
 
   formResetCallback(): void {
-    this.value = '';
+    this.#touched = false;
+    this.value = this.#defaultValue;
     this.error = '';
     this.invalid = false;
   }
@@ -86,25 +99,25 @@ export class MbSelect extends LitElement {
     if (this.#control && this.#control.value !== this.value) {
       this.#control.value = this.value;
     }
-    setFormValue(this.#internals, this.value);
+    setFormValue(this.#internals, this.name ? this.value : null);
     const missing = this.required && !this.value;
-    const message = this.error || (missing ? 'Please select an option.' : '');
+    const { flags, message } = constraintFlags(
+      this.error,
+      missing,
+      'Please select an option.',
+    );
     if (message) {
-      this.invalid = true;
-      setValidity(
-        this.#internals,
-        { customError: true, valueMissing: missing },
-        message,
-        this.#control,
-      );
+      setValidity(this.#internals, flags, message, this.#control);
+      this.invalid = Boolean(this.error) || this.#touched;
     } else {
-      this.invalid = false;
       clearValidity(this.#internals);
+      this.invalid = false;
     }
   }
 
   #onChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
+    this.#touched = true;
     this.value = target.value;
     this.dispatchEvent(
       new CustomEvent('mb-change', {
@@ -116,7 +129,7 @@ export class MbSelect extends LitElement {
   }
 
   override render() {
-    const describedBy = [this.hint ? 'hint' : '', this.error ? 'error' : '']
+    const describedBy = [this.hint && !this.error ? 'hint' : '', this.error ? 'error' : '']
       .filter(Boolean)
       .join(' ');
 
