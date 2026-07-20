@@ -5,9 +5,9 @@ export default defineConfig({
   root: resolve(__dirname),
   resolve: {
     alias: {
-      '@miniature-broccoli/mb/tokens.css': resolve(__dirname, '../../dist/tokens/tokens.css'),
-      '@miniature-broccoli/mb/button': resolve(__dirname, '../../dist/components/button.js'),
-      '@miniature-broccoli/mb/input': resolve(__dirname, '../../dist/components/input.js'),
+      '@jeb-maker/mb/tokens.css': resolve(__dirname, '../../dist/tokens/tokens.css'),
+      '@jeb-maker/mb/button': resolve(__dirname, '../../dist/components/button.js'),
+      '@jeb-maker/mb/input': resolve(__dirname, '../../dist/components/input.js'),
     },
   },
   server: {

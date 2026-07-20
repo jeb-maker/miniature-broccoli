@@ -1,40 +1,37 @@
-# @miniature-broccoli/mb
+# @jeb-maker/mb
 
 Lit design system — rich components, light to consume (atomic ESM entries, Lit as peerDependency).
 
-## Quick start
+## Install (GitHub Packages)
 
 ```bash
-npm install
-npm run build
-npm run storybook
+# .npmrc
+@jeb-maker:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
 ```
-
-## Storybook (GitHub Pages)
-
-After merge to `main`, enable once: **Settings → Pages → Source: GitHub Actions**.
-
-Then Storybook is at: https://jeb-maker.github.io/miniature-broccoli/
-
-Locally: `npm run storybook`.
-
-Consumer smoke (against `dist/`):
 
 ```bash
-npm run consumer
+npm install @jeb-maker/mb lit
 ```
-
-## Consume
 
 ```js
-import '@miniature-broccoli/mb/tokens.css';
-import '@miniature-broccoli/mb/button';
-import '@miniature-broccoli/mb/input';
+import '@jeb-maker/mb/tokens.css';
+import '@jeb-maker/mb/button';
+import '@jeb-maker/mb/input';
 ```
 
 There is **no root barrel** that registers every component — import only what you use.
 
-### Components
+## Storybook
+
+https://jeb-maker.github.io/miniature-broccoli/
+
+```bash
+npm install
+npm run storybook
+```
+
+## Components
 
 | Import | Tag |
 |--------|-----|
@@ -48,31 +45,27 @@ There is **no root barrel** that registers every component — import only what 
 | `./card` | `mb-card` |
 | `./modal` | `mb-modal` |
 
-Typography: CSS classes `.mb-title`, `.mb-body`, `.mb-body-sm` (no `mb-text` element).
+Typography: CSS classes `.mb-title`, `.mb-body`, `.mb-body-sm`.
 
-Types: `import '@miniature-broccoli/mb/types'` for `HTMLElementTagNameMap`, and `import '@miniature-broccoli/mb/jsx'` for React JSX tags.
+Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'`
 
 ## Contracts
 
 - **Client-only** custom elements; tokens CSS are SSR-safe.
 - **Internal labels** only — `label[for]` from outside does not pierce Shadow DOM.
-- **Form-associated** controls (`ElementInternals`) honor `fieldset[disabled]` and participate in `FormData`.
-- **`mb-select`**: pass `options={[{ value, label }]}` — do not slot `<option>`.
+- **Form-associated** controls honor `fieldset[disabled]` and `FormData`.
+- **`mb-select`**: `options={[{ value, label }]}` — do not slot `<option>`.
 - **`mb-modal`**: native `<dialog>`.
-- **Theming**: semantic CSS variables + `::part(...)`.
-- **React**: React 19+ preferred (`./jsx` types). React ≤18: string attributes only.
-- **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4 (FACI).
+- **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4.
 
 ## Scripts
 
 | Script | Purpose |
 |--------|---------|
-| `npm run build` | ESM `preserveModules` lib + types + tokens |
+| `npm run build` | ESM lib + types + tokens |
 | `npm run storybook` | Component docs |
-| `npm test` | Vitest browser (Playwright) |
-| `npm run consumer` | Smoke app importing from `dist/` |
+| `npm test` | Vitest browser |
+| `npm run consumer` | Smoke app via package exports |
 | `npm run typecheck` | `tsc --noEmit` |
 
-## Package
-
-`@miniature-broccoli/mb` is `private` for now. Peer dependency: `lit@^3.2.0`.
+Peer dependency: `lit@^3.2.0`.
