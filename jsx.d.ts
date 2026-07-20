@@ -3,9 +3,9 @@
  * React ≤18: prefer string attributes; property binding is not first-class.
  *
  * Reference via:
- *   import '@miniature-broccoli/mb/jsx'
+ *   import '@jeb-maker/mb/jsx'
  * or:
- *   /// <reference types="@miniature-broccoli/mb/jsx" />
+ *   /// <reference types="@jeb-maker/mb/jsx" />
  *
  * Avoids a hard React dependency — props are typed without importing React.
  */

@@ -1,6 +1,6 @@
-import '@miniature-broccoli/mb/tokens.css';
-import '@miniature-broccoli/mb/button';
-import '@miniature-broccoli/mb/input';
+import '@jeb-maker/mb/tokens.css';
+import '@jeb-maker/mb/button';
+import '@jeb-maker/mb/input';
 
 const app = document.querySelector('#app')!;
 

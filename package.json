@@ -1,7 +1,6 @@
 {
-  "name": "@miniature-broccoli/mb",
+  "name": "@jeb-maker/mb",
   "version": "0.1.0",
-  "private": true,
   "description": "Lightweight Lit design system with atomic ESM entries",
   "type": "module",
   "files": [
@@ -89,5 +88,17 @@
     "chrome >= 105",
     "firefox >= 120",
     "safari >= 16.4"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeb-maker/miniature-broccoli.git"
+  },
+  "homepage": "https://jeb-maker.github.io/miniature-broccoli/",
+  "bugs": {
+    "url": "https://github.com/jeb-maker/miniature-broccoli/issues"
+  },
+  "license": "MIT"
 }
