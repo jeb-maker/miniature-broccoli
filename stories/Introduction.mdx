@@ -1,0 +1,30 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Introduction" />
+
+# @miniature-broccoli/mb
+
+Lightweight Lit design system. Custom elements are **client-only**. Tokens CSS work with SSR.
+
+## Consume
+
+```js
+import '@miniature-broccoli/mb/tokens.css';
+import '@miniature-broccoli/mb/button';
+import '@miniature-broccoli/mb/input';
+```
+
+Atomic imports only — there is no root barrel that registers every component.
+
+## Contracts
+
+- **Labels** are internal (`label` prop). External `label[for]` does not pierce Shadow DOM.
+- **Forms** use Form-Associated Custom Elements, including `fieldset[disabled]`.
+- **Select** options via `options={[{ value, label }]}` — do not slot `<option>`.
+- **Modal** uses native `<dialog>`.
+- **React**: React 19+ preferred; React ≤18 use string attributes.
+- **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4.
+
+## Theming
+
+Override semantic CSS variables and/or style via `::part(...)`.

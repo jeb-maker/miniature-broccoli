@@ -1,0 +1,11 @@
+@import "./reference.css";
+@import "./semantic.css";
+@import "./typography.css";
+
+html,
+body {
+  background: var(--mb-color-bg);
+  color: var(--mb-color-fg);
+  font-family: var(--mb-font-body);
+  line-height: var(--mb-line-height);
+}

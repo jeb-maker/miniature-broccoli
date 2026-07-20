@@ -1,0 +1,92 @@
+{
+  "name": "@miniature-broccoli/mb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lightweight Lit design system with atomic ESM entries",
+  "type": "module",
+  "files": [
+    "dist",
+    "jsx.d.ts"
+  ],
+  "exports": {
+    "./tokens.css": "./dist/tokens/tokens.css",
+    "./button": {
+      "types": "./dist/components/button.d.ts",
+      "import": "./dist/components/button.js"
+    },
+    "./input": {
+      "types": "./dist/components/input.d.ts",
+      "import": "./dist/components/input.js"
+    },
+    "./textarea": {
+      "types": "./dist/components/textarea.d.ts",
+      "import": "./dist/components/textarea.js"
+    },
+    "./select": {
+      "types": "./dist/components/select.d.ts",
+      "import": "./dist/components/select.js"
+    },
+    "./checkbox": {
+      "types": "./dist/components/checkbox.d.ts",
+      "import": "./dist/components/checkbox.js"
+    },
+    "./badge": {
+      "types": "./dist/components/badge.d.ts",
+      "import": "./dist/components/badge.js"
+    },
+    "./alert": {
+      "types": "./dist/components/alert.d.ts",
+      "import": "./dist/components/alert.js"
+    },
+    "./card": {
+      "types": "./dist/components/card.d.ts",
+      "import": "./dist/components/card.js"
+    },
+    "./modal": {
+      "types": "./dist/components/modal.d.ts",
+      "import": "./dist/components/modal.js"
+    },
+    "./jsx": "./jsx.d.ts"
+  },
+  "sideEffects": [
+    "./dist/components/*.js",
+    "./dist/tokens/**/*.css",
+    "./src/components/*.ts",
+    "./src/tokens/**/*.css"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json && node scripts/copy-tokens.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "consumer": "npm run build && vite --config apps/consumer/vite.config.ts",
+    "consumer:build": "npm run build && vite build --config apps/consumer/vite.config.ts"
+  },
+  "peerDependencies": {
+    "lit": "^3.2.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/blocks": "^8.6.14",
+    "@storybook/web-components": "^8.6.14",
+    "@storybook/web-components-vite": "^8.6.14",
+    "@types/node": "^26.1.1",
+    "@vitest/browser": "^3.2.4",
+    "lit": "^3.3.1",
+    "playwright": "^1.54.1",
+    "storybook": "^8.6.14",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "browserslist": [
+    "chrome >= 105",
+    "firefox >= 120",
+    "safari >= 16.4"
+  ]
+}
