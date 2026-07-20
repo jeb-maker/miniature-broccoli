@@ -8,6 +8,7 @@ export class MbCard extends LitElement {
     css`
       :host {
         display: block;
+        inline-size: 100%;
       }
 
       .card {
@@ -15,6 +16,7 @@ export class MbCard extends LitElement {
         border: 1px solid var(--mb-color-border);
         border-radius: var(--mb-radius-lg);
         overflow: clip;
+        max-inline-size: 100%;
       }
 
       .header,
@@ -22,6 +24,8 @@ export class MbCard extends LitElement {
       .footer {
         padding-block: var(--mb-space-4);
         padding-inline: var(--mb-space-5);
+        min-inline-size: 0;
+        overflow-wrap: anywhere;
       }
 
       .header {

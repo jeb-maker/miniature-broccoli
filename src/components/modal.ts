@@ -18,8 +18,10 @@ export class MbModal extends LitElement {
         background: var(--mb-color-surface);
         color: var(--mb-color-fg);
         box-shadow: var(--mb-shadow);
-        max-inline-size: min(32rem, calc(100vw - 2rem));
-        inline-size: 100%;
+        /* Avoid 100vw — it includes scrollbar gutters and overflows on mobile */
+        inline-size: min(32rem, calc(100% - 2rem));
+        max-inline-size: calc(100% - 2rem);
+        margin: auto;
       }
 
       dialog::backdrop {
@@ -31,6 +33,8 @@ export class MbModal extends LitElement {
         flex-direction: column;
         gap: var(--mb-space-4);
         padding: var(--mb-space-5);
+        min-inline-size: 0;
+        max-inline-size: 100%;
       }
 
       .header {
@@ -38,6 +42,7 @@ export class MbModal extends LitElement {
         align-items: flex-start;
         justify-content: space-between;
         gap: var(--mb-space-3);
+        min-inline-size: 0;
       }
 
       .title {
@@ -45,6 +50,9 @@ export class MbModal extends LitElement {
         font-size: var(--mb-font-size-xl);
         font-weight: 650;
         margin: 0;
+        min-inline-size: 0;
+        flex: 1;
+        overflow-wrap: anywhere;
       }
 
       .close {

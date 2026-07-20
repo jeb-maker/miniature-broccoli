@@ -6,6 +6,8 @@ export const sharedStyles = css`
     box-sizing: border-box;
     font-family: var(--mb-font-body);
     color: var(--mb-color-fg);
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
   }
 
   :host *,
@@ -66,7 +68,9 @@ export const fieldStyles = css`
 
   .control {
     inline-size: 100%;
+    max-inline-size: 100%;
     min-block-size: 2.5rem;
+    min-inline-size: 0;
     padding-block: var(--mb-space-2);
     padding-inline: var(--mb-space-3);
     border: 1px solid var(--mb-color-border);
