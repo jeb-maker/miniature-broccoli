@@ -67,5 +67,6 @@ Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'`
 | `npm test` | Vitest browser |
 | `npm run consumer` | Smoke app via package exports |
 | `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | ESLint (typescript-eslint + lit + wc) |
 
 Peer dependency: `lit@^3.2.0`.
