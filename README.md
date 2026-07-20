@@ -10,7 +10,13 @@ npm run build
 npm run storybook
 ```
 
-**Storybook (GitHub Pages):** https://jeb-maker.github.io/miniature-broccoli/
+## Storybook (GitHub Pages)
+
+After merge to `main`, enable once: **Settings → Pages → Source: GitHub Actions**.
+
+Then Storybook is at: https://jeb-maker.github.io/miniature-broccoli/
+
+Locally: `npm run storybook`.
 
 Consumer smoke (against `dist/`):
 

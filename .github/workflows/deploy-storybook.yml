@@ -1,8 +1,10 @@
 name: Deploy Storybook to GitHub Pages
 
+# Deploy only from main. GitHub Pages must be enabled once:
+# Settings → Pages → Build and deployment → Source: GitHub Actions
 on:
   push:
-    branches: [main, cursor/lit-design-system-9443]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
