@@ -1,0 +1,63 @@
+:root {
+  /* Semantic — WCAG AA pairs on paper surfaces */
+  --ds-color-bg: var(--ds-ref-paper-50);
+  --ds-color-surface: var(--ds-ref-paper-0);
+  --ds-color-fg: var(--ds-ref-ink-950);
+  --ds-color-muted: var(--ds-ref-ink-600);
+  --ds-color-border: var(--ds-ref-paper-100);
+
+  --ds-color-accent: var(--ds-ref-moss-700);
+  --ds-color-on-accent: #ffffff;
+  --ds-color-accent-soft: var(--ds-ref-moss-100);
+
+  --ds-color-danger: var(--ds-ref-coral-700);
+  --ds-color-on-danger: #ffffff;
+  --ds-color-danger-soft: var(--ds-ref-coral-100);
+
+  --ds-color-warning: var(--ds-ref-amber-700);
+  --ds-color-warning-soft: var(--ds-ref-amber-100);
+
+  --ds-color-info: var(--ds-ref-sky-700);
+  --ds-color-info-soft: var(--ds-ref-sky-100);
+
+  --ds-color-success: var(--ds-ref-moss-600);
+  --ds-color-success-soft: var(--ds-ref-moss-100);
+
+  --ds-space-1: var(--ds-ref-space-1);
+  --ds-space-2: var(--ds-ref-space-2);
+  --ds-space-3: var(--ds-ref-space-3);
+  --ds-space-4: var(--ds-ref-space-4);
+  --ds-space-5: var(--ds-ref-space-5);
+  --ds-space-6: var(--ds-ref-space-6);
+  --ds-space-8: var(--ds-ref-space-8);
+
+  --ds-radius-sm: var(--ds-ref-radius-sm);
+  --ds-radius-md: var(--ds-ref-radius-md);
+  --ds-radius-lg: var(--ds-ref-radius-lg);
+
+  --ds-font-display: var(--ds-ref-font-display);
+  --ds-font-body: var(--ds-ref-font-body);
+  --ds-font-size-sm: 0.875rem;
+  --ds-font-size-md: 1rem;
+  --ds-font-size-lg: 1.25rem;
+  --ds-font-size-xl: 1.75rem;
+  --ds-font-size-2xl: 2.25rem;
+  --ds-line-height: 1.5;
+  --ds-line-height-tight: 1.2;
+
+  --ds-focus-ring: 2px solid var(--ds-color-accent);
+  --ds-focus-offset: 2px;
+  --ds-transition: 160ms ease;
+  --ds-shadow: 0 12px 40px rgb(20 32 27 / 12%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-transition: 0ms;
+  }
+}
+
+/* Anti-FOUC for undefined custom elements */
+:not(:defined) {
+  visibility: hidden;
+}
