@@ -1,0 +1,32 @@
+/* Storybook docs / canvas: prevent intermittent horizontal overflow on mobile */
+html,
+body {
+  max-inline-size: 100%;
+  overflow-x: clip;
+}
+
+.sbdocs-wrapper,
+.sbdocs-content,
+.docs-story,
+.innerZoomElementWrapper,
+#storybook-root,
+#storybook-docs {
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.sbdocs-content {
+  overflow-wrap: anywhere;
+}
+
+.sbdocs pre,
+.sbdocs code,
+.docs-story pre {
+  max-inline-size: 100%;
+  overflow-x: auto;
+}
+
+.docs-story > div {
+  max-inline-size: 100%;
+  overflow-x: auto;
+}

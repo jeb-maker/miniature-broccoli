@@ -14,7 +14,7 @@ type Story = StoryObj;
 
 export const Default: Story = {
   render: () => html`
-    <mb-card style="inline-size: min(24rem, 90vw);">
+    <mb-card style="inline-size: min(24rem, 100%); max-inline-size: 100%;">
       <div slot="header">Workspace</div>
       <p class="mb-body">Compose sections with header, body, and footer slots.</p>
       <div slot="footer">

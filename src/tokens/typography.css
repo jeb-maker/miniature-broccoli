@@ -21,12 +21,13 @@
 
 .mb-title {
   font-family: var(--mb-font-display);
-  font-size: var(--mb-font-size-2xl);
+  font-size: clamp(1.5rem, 4vw + 1rem, var(--mb-font-size-2xl));
   font-weight: 650;
   line-height: var(--mb-line-height-tight);
   letter-spacing: -0.02em;
   color: var(--mb-color-fg);
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .mb-body {
@@ -36,6 +37,7 @@
   line-height: var(--mb-line-height);
   color: var(--mb-color-fg);
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .mb-body-sm {
@@ -44,4 +46,5 @@
   line-height: var(--mb-line-height);
   color: var(--mb-color-muted);
   margin: 0;
+  overflow-wrap: anywhere;
 }

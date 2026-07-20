@@ -11,6 +11,7 @@ export class MbAlert extends LitElement {
     css`
       :host {
         display: block;
+        inline-size: 100%;
       }
 
       .alert {
@@ -20,6 +21,8 @@ export class MbAlert extends LitElement {
         border-inline-start: 4px solid currentColor;
         background: var(--mb-color-info-soft);
         color: var(--mb-color-info);
+        overflow-wrap: anywhere;
+        max-inline-size: 100%;
       }
 
       :host([variant='success']) .alert {

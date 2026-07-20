@@ -25,11 +25,15 @@ export class MbButton extends LitElement {
         align-items: center;
         justify-content: center;
         gap: var(--mb-space-2);
+        max-inline-size: 100%;
         border: 1px solid transparent;
         border-radius: var(--mb-radius-md);
         font: inherit;
         font-weight: 600;
         cursor: pointer;
+        white-space: normal;
+        text-align: center;
+        overflow-wrap: anywhere;
         transition:
           background-color var(--mb-transition),
           color var(--mb-transition),
