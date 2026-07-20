@@ -96,4 +96,70 @@ describe('mb-select', () => {
     expect(el.shadowRoot!.querySelector('select')!.value).toBe('fr');
     form.remove();
   });
+
+  it('accepts JSON options attribute for non-JS hosts', async () => {
+    const form = document.createElement('form');
+    const el = document.createElement('mb-select') as MbSelect;
+    el.setAttribute(
+      'options',
+      JSON.stringify([
+        { value: 'ok', label: 'OK' },
+        { value: 'ko', label: 'KO' },
+      ]),
+    );
+    el.name = 'status';
+    el.value = 'ok';
+    form.appendChild(el);
+    document.body.appendChild(form);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const rendered = [...el.shadowRoot!.querySelectorAll('option')].map((o) => o.value);
+    expect(rendered).toContain('ok');
+    expect(rendered).toContain('ko');
+    expect(new FormData(form).get('status')).toBe('ok');
+    form.remove();
+  });
+
+  it('prefers slotted option elements over the options property', async () => {
+    const form = document.createElement('form');
+    const el = document.createElement('mb-select') as MbSelect;
+    el.options = OPTIONS;
+    el.name = 'status';
+    el.value = 'done';
+    const a = document.createElement('option');
+    a.value = 'todo';
+    a.textContent = 'Todo';
+    const b = document.createElement('option');
+    b.value = 'done';
+    b.textContent = 'Done';
+    el.append(a, b);
+    form.appendChild(el);
+    document.body.appendChild(form);
+    await el.updateComplete;
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const values = [...el.shadowRoot!.querySelectorAll('option')].map((o) => o.value);
+    expect(values).toContain('todo');
+    expect(values).toContain('done');
+    expect(values).not.toContain('fr');
+    expect(new FormData(form).get('status')).toBe('done');
+    form.remove();
+  });
+
+  it('supports compact density and aria-label-only mode', async () => {
+    const el = document.createElement('mb-select') as MbSelect;
+    el.density = 'compact';
+    el.setAttribute('aria-label', 'Status');
+    el.options = OPTIONS;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.getAttribute('density')).toBe('compact');
+    const control = el.shadowRoot!.querySelector('select')!;
+    expect(control.getAttribute('aria-label')).toBe('Status');
+    expect(el.shadowRoot!.querySelector('label')).toBeNull();
+    el.remove();
+  });
 });

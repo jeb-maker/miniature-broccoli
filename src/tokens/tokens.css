@@ -1,5 +1,7 @@
-@import "./reference.css";
-@import "./semantic.css";
+/* Full token bundle: variables + display fonts + optional document baseline.
+   Hosts that already style html/body should import tokens-core.css instead
+   (and optionally typography.css for .mb-* utility classes / fonts). */
+@import "./tokens-core.css";
 @import "./typography.css";
 
 *,

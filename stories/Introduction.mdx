@@ -14,15 +14,22 @@ import '@jeb-maker/mb/button';
 import '@jeb-maker/mb/input';
 ```
 
+MPA hosts that own document styles:
+
+```js
+import '@jeb-maker/mb/tokens-core.css';
+```
+
 Atomic imports only — there is no root barrel that registers every component.
 
 Install from GitHub Packages (`@jeb-maker` scope → `https://npm.pkg.github.com`).
 
 ## Contracts
 
-- **Labels** are internal (`label` prop). External `label[for]` does not pierce Shadow DOM.
-- **Forms** use Form-Associated Custom Elements, including `fieldset[disabled]`.
-- **Select** options via `options={[{ value, label }]}` — do not slot `<option>`.
+- **Labels** are internal (`label` prop). External `label[for]` does not pierce Shadow DOM. Use `aria-label` / `hide-label` for compact cells.
+- **Forms** use Form-Associated Custom Elements, including `fieldset[disabled]` and `form="…"`.
+- **Select** options via JS property, JSON `options` attribute, or slotted `<option>` (slotted wins).
+- **Button** supports `variant="danger"` and `href` (anchor rendering).
 - **Modal** uses native `<dialog>`.
 - **React**: React 19+ preferred; React ≤18 use string attributes.
 - **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4.
@@ -30,3 +37,9 @@ Install from GitHub Packages (`@jeb-maker` scope → `https://npm.pkg.github.com
 ## Theming
 
 Override semantic CSS variables and/or style via `::part(...)`.
+
+Dark scheme follows `prefers-color-scheme: dark`, or set `data-mb-color-scheme="dark"|"light"` on `:root` / `.mb-theme`.
+
+## Go + HTMX
+
+See the repository guide: [`docs/go-htmx.md`](https://github.com/jeb-maker/miniature-broccoli/blob/main/docs/go-htmx.md).

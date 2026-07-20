@@ -4,7 +4,7 @@ import { setFormValue } from '../lib/form.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { sharedStyles } from '../lib/styles.js';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type ButtonType = 'button' | 'submit' | 'reset';
 
@@ -12,6 +12,7 @@ export type ButtonType = 'button' | 'submit' | 'reset';
  * Form-associated button. Use the default slot for the label.
  * Submit/reset participate via requestSubmit/reset — their name/value
  * is only applied when this control is the submitter (click).
+ * When `href` is set, renders a styled anchor (no form association on click).
  */
 export class MbButton extends LitElement {
   static formAssociated = true;
@@ -22,7 +23,7 @@ export class MbButton extends LitElement {
         display: inline-block;
       }
 
-      button {
+      .base {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -35,6 +36,7 @@ export class MbButton extends LitElement {
         cursor: pointer;
         white-space: normal;
         text-align: center;
+        text-decoration: none;
         overflow-wrap: anywhere;
         transition:
           background-color var(--mb-transition),
@@ -43,43 +45,66 @@ export class MbButton extends LitElement {
           opacity var(--mb-transition);
       }
 
-      button:disabled {
+      .base:disabled,
+      .base[aria-disabled='true'] {
         cursor: not-allowed;
         opacity: 0.55;
+        pointer-events: none;
       }
 
-      :host([size='sm']) button {
+      :host([size='sm']) .base {
         min-block-size: 2rem;
         padding-inline: var(--mb-space-3);
         font-size: var(--mb-font-size-sm);
       }
 
-      :host([size='md']) button {
+      :host([size='md']) .base {
         min-block-size: 2.5rem;
         padding-inline: var(--mb-space-4);
         font-size: var(--mb-font-size-md);
       }
 
-      :host([size='lg']) button {
+      :host([size='lg']) .base {
         min-block-size: 3rem;
         padding-inline: var(--mb-space-5);
         font-size: var(--mb-font-size-lg);
       }
 
-      :host([variant='primary']) button {
+      :host([icon-only][size='sm']) .base {
+        min-inline-size: 2rem;
+        padding-inline: 0;
+      }
+
+      :host([icon-only][size='md']) .base,
+      :host([icon-only]:not([size])) .base {
+        min-inline-size: 2.5rem;
+        padding-inline: 0;
+      }
+
+      :host([icon-only][size='lg']) .base {
+        min-inline-size: 3rem;
+        padding-inline: 0;
+      }
+
+      :host([variant='primary']) .base {
         background: var(--mb-color-accent);
         color: var(--mb-color-on-accent);
       }
 
-      :host([variant='secondary']) button {
+      :host([variant='secondary']) .base {
         background: var(--mb-color-surface);
         color: var(--mb-color-fg);
         border-color: var(--mb-color-border);
       }
 
-      :host([variant='ghost']) button {
+      :host([variant='ghost']) .base {
         background: transparent;
         color: var(--mb-color-accent);
+      }
+
+      :host([variant='danger']) .base {
+        background: var(--mb-color-danger);
+        color: var(--mb-color-on-danger);
       }
 
       .spinner {
@@ -120,11 +145,32 @@ export class MbButton extends LitElement {
   @property()
   value = '';
 
+  /** When set, render an `<a>` with button styles (progressive-enhancement CTAs). */
+  @property({ reflect: true })
+  href = '';
+
+  @property({ reflect: true })
+  target = '';
+
+  @property({ reflect: true })
+  rel = '';
+
+  @property({ type: Boolean, reflect: true, attribute: 'icon-only' })
+  iconOnly = false;
+
   #internals = this.attachInternals();
   #formDisabled = false;
 
   get #isDisabled(): boolean {
     return this.disabled || this.loading || this.#formDisabled;
+  }
+
+  get #isLink(): boolean {
+    return Boolean(this.href);
+  }
+
+  get #accessibleName(): string {
+    return this.getAttribute('aria-label') ?? '';
   }
 
   formDisabledCallback(disabled: boolean): void {
@@ -138,6 +184,8 @@ export class MbButton extends LitElement {
       event.stopImmediatePropagation();
       return;
     }
+
+    if (this.#isLink) return;
 
     const form = this.#internals.form;
     if (!form) return;
@@ -156,16 +204,41 @@ export class MbButton extends LitElement {
   }
 
   override render() {
+    const content = html`
+      ${this.loading ? html`<span class="spinner" aria-hidden="true"></span>` : nothing}
+      <slot></slot>
+    `;
+    const named = this.#accessibleName || nothing;
+
+    if (this.#isLink) {
+      return html`
+        <a
+          part="base"
+          class="base"
+          href=${this.#isDisabled ? nothing : this.href}
+          target=${this.target || nothing}
+          rel=${this.rel || (this.target === '_blank' ? 'noopener noreferrer' : nothing)}
+          aria-disabled=${this.#isDisabled ? 'true' : 'false'}
+          aria-busy=${this.loading ? 'true' : 'false'}
+          aria-label=${named}
+          @click=${this.#onClick}
+        >
+          ${content}
+        </a>
+      `;
+    }
+
     return html`
       <button
         part="base"
+        class="base"
         type="button"
         ?disabled=${this.#isDisabled}
         aria-busy=${this.loading ? 'true' : 'false'}
+        aria-label=${named}
         @click=${this.#onClick}
       >
-        ${this.loading ? html`<span class="spinner" aria-hidden="true"></span>` : nothing}
-        <slot></slot>
+        ${content}
       </button>
     `;
   }

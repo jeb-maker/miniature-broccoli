@@ -57,6 +57,34 @@ describe('mb-button', () => {
     expect(submitted!.get('action')).toBe('save');
     form.remove();
   });
+
+  it('renders danger variant and link when href is set', async () => {
+    const el = document.createElement('mb-button') as MbButton;
+    el.variant = 'danger';
+    el.href = '/archive';
+    el.textContent = 'Archive';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(el.getAttribute('variant')).toBe('danger');
+    const anchor = el.shadowRoot!.querySelector('a')!;
+    expect(anchor).toBeTruthy();
+    expect(anchor.getAttribute('href')).toBe('/archive');
+    expect(el.shadowRoot!.querySelector('button')).toBeNull();
+    el.remove();
+  });
+
+  it('disabled link is not navigable', async () => {
+    const el = document.createElement('mb-button') as MbButton;
+    el.href = '/x';
+    el.disabled = true;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const anchor = el.shadowRoot!.querySelector('a')!;
+    expect(anchor.getAttribute('href')).toBeNull();
+    expect(anchor.getAttribute('aria-disabled')).toBe('true');
+    el.remove();
+  });
 });
 
 describe('mb-input form semantics', () => {
@@ -86,6 +114,38 @@ describe('mb-input form semantics', () => {
 
     expect(new FormData(form).get('email')).toBe('a@b.c');
     form.remove();
+  });
+
+  it('associates with form attribute outside the form element', async () => {
+    const form = document.createElement('form');
+    form.id = 'outer-form';
+    const el = document.createElement('mb-input') as MbInput;
+    el.setAttribute('form', 'outer-form');
+    el.name = 'note';
+    el.value = 'hello';
+    document.body.append(form, el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    expect(new FormData(form).get('note')).toBe('hello');
+    el.remove();
+    form.remove();
+  });
+
+  it('supports number type attributes', async () => {
+    const el = document.createElement('mb-input') as MbInput;
+    el.type = 'number';
+    el.min = '1';
+    el.max = '10';
+    el.step = '1';
+    el.value = '5';
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const input = el.shadowRoot!.querySelector('input')!;
+    expect(input.type).toBe('number');
+    expect(input.min).toBe('1');
+    expect(input.max).toBe('10');
+    el.remove();
   });
 
   it('fires mb-input on keystroke and mb-change on commit', async () => {

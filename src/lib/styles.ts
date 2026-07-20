@@ -22,6 +22,7 @@ export const sharedStyles = css`
 
   .control:focus-visible,
   button:focus-visible,
+  a:focus-visible,
   select:focus-visible,
   textarea:focus-visible,
   input:focus-visible {
@@ -52,6 +53,18 @@ export const fieldStyles = css`
     color: var(--mb-color-fg);
   }
 
+  .label.visually-hidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   .hint,
   .error {
     font-size: var(--mb-font-size-sm);
@@ -78,7 +91,9 @@ export const fieldStyles = css`
     background: var(--mb-color-surface);
     color: var(--mb-color-fg);
     font: inherit;
-    transition: border-color var(--mb-transition), box-shadow var(--mb-transition);
+    transition:
+      border-color var(--mb-transition),
+      box-shadow var(--mb-transition);
   }
 
   .control:disabled {
@@ -89,4 +104,31 @@ export const fieldStyles = css`
   :host([invalid]) .control {
     border-color: var(--mb-color-danger);
   }
+
+  :host([density='compact']) .field {
+    gap: 0;
+  }
+
+  :host([density='compact']) .control {
+    min-block-size: 2.1rem;
+    padding-block: 0.2rem;
+    padding-inline: var(--mb-space-2);
+    font-size: var(--mb-font-size-sm);
+  }
+
+  :host([density='compact']) textarea.control {
+    min-block-size: 2.1rem;
+  }
 `;
+
+/** Resolve label rendering for field controls (visible, visually-hidden, or aria-only). */
+export function fieldLabelState(
+  label: string,
+  hideLabel: boolean,
+  ariaLabel: string,
+): { labelText: string; hideVisually: boolean; controlAriaLabel: string } {
+  if (label) {
+    return { labelText: label, hideVisually: hideLabel, controlAriaLabel: '' };
+  }
+  return { labelText: '', hideVisually: false, controlAriaLabel: ariaLabel };
+}
