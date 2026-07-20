@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../src/components/card';
-import '../src/components/button';
+import { MbCard } from '../src/components/card.js';
+import { MbButton } from '../src/components/button.js';
+
+void MbCard;
+void MbButton;
 
 const meta: Meta = {
   title: 'Components/Card',

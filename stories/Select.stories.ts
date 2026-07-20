@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../src/components/select';
+import { MbSelect } from '../src/components/select.js';
+
+void MbSelect;
 
 const meta: Meta = {
   title: 'Components/Select',

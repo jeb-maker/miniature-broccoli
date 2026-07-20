@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../src/components/textarea';
+import { MbTextarea } from '../src/components/textarea.js';
+
+void MbTextarea;
 
 const meta: Meta = {
   title: 'Components/Textarea',

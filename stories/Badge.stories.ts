@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../src/components/badge';
+import { MbBadge } from '../src/components/badge.js';
+
+void MbBadge;
 
 const meta: Meta = {
   title: 'Components/Badge',
