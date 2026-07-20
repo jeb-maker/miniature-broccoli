@@ -4,7 +4,7 @@ import { clearValidity, setFormValue, setValidity } from '../lib/form.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { sharedStyles } from '../lib/styles.js';
 
-export class DsCheckbox extends LitElement {
+export class MbCheckbox extends LitElement {
   static formAssociated = true;
   static override styles = [
     sharedStyles,
@@ -16,14 +16,14 @@ export class DsCheckbox extends LitElement {
       label {
         display: inline-flex;
         align-items: flex-start;
-        gap: var(--ds-space-2);
+        gap: var(--mb-space-2);
         cursor: pointer;
-        font-size: var(--ds-font-size-md);
+        font-size: var(--mb-font-size-md);
       }
 
       input {
         margin-block-start: 0.2rem;
-        accent-color: var(--ds-color-accent);
+        accent-color: var(--mb-color-accent);
         inline-size: 1.1rem;
         block-size: 1.1rem;
       }
@@ -38,9 +38,9 @@ export class DsCheckbox extends LitElement {
       }
 
       .error {
-        margin: var(--ds-space-1) 0 0;
-        color: var(--ds-color-danger);
-        font-size: var(--ds-font-size-sm);
+        margin: var(--mb-space-1) 0 0;
+        color: var(--mb-color-danger);
+        font-size: var(--mb-font-size-sm);
       }
     `,
   ];
@@ -142,7 +142,7 @@ export class DsCheckbox extends LitElement {
     this.checked = target.checked;
     this.indeterminate = false;
     this.dispatchEvent(
-      new CustomEvent('ds-change', {
+      new CustomEvent('mb-change', {
         detail: { checked: this.checked, value: this.value },
         bubbles: true,
         composed: true,
@@ -173,8 +173,8 @@ export class DsCheckbox extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ds-checkbox': DsCheckbox;
+    'mb-checkbox': MbCheckbox;
   }
 }
 
-safeDefine('ds-checkbox', DsCheckbox);
+safeDefine('mb-checkbox', MbCheckbox);

@@ -7,7 +7,7 @@ import { fieldStyles, sharedStyles } from '../lib/styles.js';
 
 export type SelectOption = { value: string; label: string; disabled?: boolean };
 
-export class DsSelect extends LitElement {
+export class MbSelect extends LitElement {
   static formAssociated = true;
   static override styles = [
     sharedStyles,
@@ -107,7 +107,7 @@ export class DsSelect extends LitElement {
     const target = event.target as HTMLSelectElement;
     this.value = target.value;
     this.dispatchEvent(
-      new CustomEvent('ds-change', {
+      new CustomEvent('mb-change', {
         detail: { value: this.value },
         bubbles: true,
         composed: true,
@@ -159,8 +159,8 @@ export class DsSelect extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ds-select': DsSelect;
+    'mb-select': MbSelect;
   }
 }
 
-safeDefine('ds-select', DsSelect);
+safeDefine('mb-select', MbSelect);

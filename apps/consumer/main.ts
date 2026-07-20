@@ -6,15 +6,15 @@ const app = document.querySelector('#app')!;
 
 app.innerHTML = `
   <main style="max-inline-size: 28rem; margin: 2rem auto; display: grid; gap: 1rem;">
-    <h1 class="ds-title">Consumer smoke</h1>
-    <p class="ds-body">Imports only button + input from dist/.</p>
+    <h1 class="mb-title">Consumer smoke</h1>
+    <p class="mb-body">Imports only button + input from dist/.</p>
     <form id="demo">
-      <ds-input id="email" name="email" label="Email" type="email" required></ds-input>
+      <mb-input id="email" name="email" label="Email" type="email" required></mb-input>
       <div style="margin-block-start: 1rem;">
-        <ds-button type="submit">Submit</ds-button>
+        <mb-button type="submit">Submit</mb-button>
       </div>
     </form>
-    <pre id="out" class="ds-body-sm"></pre>
+    <pre id="out" class="mb-body-sm"></pre>
   </main>
 `;
 

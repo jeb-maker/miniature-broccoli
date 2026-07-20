@@ -1,21 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import './button.js';
-import type { DsButton } from './button.js';
+import type { MbButton } from './button.js';
 
-describe('ds-button', () => {
+describe('mb-button', () => {
   it('registers and renders slot content', async () => {
-    const el = document.createElement('ds-button') as DsButton;
+    const el = document.createElement('mb-button') as MbButton;
     el.textContent = 'Save';
     document.body.appendChild(el);
     await el.updateComplete;
-    expect(customElements.get('ds-button')).toBeDefined();
+    expect(customElements.get('mb-button')).toBeDefined();
     const slot = el.shadowRoot!.querySelector('slot')!;
     expect(slot.assignedNodes().some((n) => n.textContent?.includes('Save'))).toBe(true);
     el.remove();
   });
 
   it('sets aria-busy when loading', async () => {
-    const el = document.createElement('ds-button') as DsButton;
+    const el = document.createElement('mb-button') as MbButton;
     el.loading = true;
     document.body.appendChild(el);
     await el.updateComplete;
@@ -27,6 +27,6 @@ describe('ds-button', () => {
 
   it('safeDefine is idempotent', async () => {
     await import('./button.js');
-    expect(customElements.get('ds-button')).toBeDefined();
+    expect(customElements.get('mb-button')).toBeDefined();
   });
 });

@@ -4,8 +4,8 @@
 
 html,
 body {
-  background: var(--ds-color-bg);
-  color: var(--ds-color-fg);
-  font-family: var(--ds-font-body);
-  line-height: var(--ds-line-height);
+  background: var(--mb-color-bg);
+  color: var(--mb-color-fg);
+  font-family: var(--mb-font-body);
+  line-height: var(--mb-line-height);
 }

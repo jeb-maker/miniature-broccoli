@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { sharedStyles } from '../lib/styles.js';
 
-export class DsModal extends LitElement {
+export class MbModal extends LitElement {
   static override styles = [
     sharedStyles,
     css`
@@ -12,12 +12,12 @@ export class DsModal extends LitElement {
       }
 
       dialog {
-        border: 1px solid var(--ds-color-border);
-        border-radius: var(--ds-radius-lg);
+        border: 1px solid var(--mb-color-border);
+        border-radius: var(--mb-radius-lg);
         padding: 0;
-        background: var(--ds-color-surface);
-        color: var(--ds-color-fg);
-        box-shadow: var(--ds-shadow);
+        background: var(--mb-color-surface);
+        color: var(--mb-color-fg);
+        box-shadow: var(--mb-shadow);
         max-inline-size: min(32rem, calc(100vw - 2rem));
         inline-size: 100%;
       }
@@ -29,20 +29,20 @@ export class DsModal extends LitElement {
       .panel {
         display: flex;
         flex-direction: column;
-        gap: var(--ds-space-4);
-        padding: var(--ds-space-5);
+        gap: var(--mb-space-4);
+        padding: var(--mb-space-5);
       }
 
       .header {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: var(--ds-space-3);
+        gap: var(--mb-space-3);
       }
 
       .title {
-        font-family: var(--ds-font-display);
-        font-size: var(--ds-font-size-xl);
+        font-family: var(--mb-font-display);
+        font-size: var(--mb-font-size-xl);
         font-weight: 650;
         margin: 0;
       }
@@ -50,12 +50,12 @@ export class DsModal extends LitElement {
       .close {
         border: 0;
         background: transparent;
-        color: var(--ds-color-muted);
+        color: var(--mb-color-muted);
         font-size: 1.25rem;
         line-height: 1;
         cursor: pointer;
-        padding: var(--ds-space-1);
-        border-radius: var(--ds-radius-sm);
+        padding: var(--mb-space-1);
+        border-radius: var(--mb-radius-sm);
       }
     `,
   ];
@@ -97,7 +97,7 @@ export class DsModal extends LitElement {
 
   #emitClose(): void {
     this.dispatchEvent(
-      new CustomEvent('ds-close', {
+      new CustomEvent('mb-close', {
         bubbles: true,
         composed: true,
       }),
@@ -137,8 +137,8 @@ export class DsModal extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ds-modal': DsModal;
+    'mb-modal': MbModal;
   }
 }
 
-safeDefine('ds-modal', DsModal);
+safeDefine('mb-modal', MbModal);

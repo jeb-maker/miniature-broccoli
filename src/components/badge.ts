@@ -5,7 +5,7 @@ import { sharedStyles } from '../lib/styles.js';
 
 export type BadgeVariant = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
 
-export class DsBadge extends LitElement {
+export class MbBadge extends LitElement {
   static override styles = [
     sharedStyles,
     css`
@@ -16,35 +16,35 @@ export class DsBadge extends LitElement {
       span {
         display: inline-flex;
         align-items: center;
-        gap: var(--ds-space-1);
+        gap: var(--mb-space-1);
         padding-block: 0.15rem;
-        padding-inline: var(--ds-space-2);
-        border-radius: var(--ds-radius-sm);
-        font-size: var(--ds-font-size-sm);
+        padding-inline: var(--mb-space-2);
+        border-radius: var(--mb-radius-sm);
+        font-size: var(--mb-font-size-sm);
         font-weight: 600;
         line-height: 1.3;
-        background: var(--ds-color-border);
-        color: var(--ds-color-fg);
+        background: var(--mb-color-border);
+        color: var(--mb-color-fg);
       }
 
       :host([variant='success']) span {
-        background: var(--ds-color-success-soft);
-        color: var(--ds-color-success);
+        background: var(--mb-color-success-soft);
+        color: var(--mb-color-success);
       }
 
       :host([variant='warning']) span {
-        background: var(--ds-color-warning-soft);
-        color: var(--ds-color-warning);
+        background: var(--mb-color-warning-soft);
+        color: var(--mb-color-warning);
       }
 
       :host([variant='danger']) span {
-        background: var(--ds-color-danger-soft);
-        color: var(--ds-color-danger);
+        background: var(--mb-color-danger-soft);
+        color: var(--mb-color-danger);
       }
 
       :host([variant='info']) span {
-        background: var(--ds-color-info-soft);
-        color: var(--ds-color-info);
+        background: var(--mb-color-info-soft);
+        color: var(--mb-color-info);
       }
     `,
   ];
@@ -59,8 +59,8 @@ export class DsBadge extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ds-badge': DsBadge;
+    'mb-badge': MbBadge;
   }
 }
 
-safeDefine('ds-badge', DsBadge);
+safeDefine('mb-badge', MbBadge);

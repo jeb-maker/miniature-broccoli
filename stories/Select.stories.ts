@@ -4,7 +4,7 @@ import '../src/components/select';
 
 const meta: Meta = {
   title: 'Components/Select',
-  component: 'ds-select',
+  component: 'mb-select',
   tags: ['autodocs'],
 };
 export default meta;
@@ -13,13 +13,13 @@ type Story = StoryObj;
 
 export const Default: Story = {
   render: () => html`
-    <ds-select
+    <mb-select
       label="Country"
       .options=${[
         { value: 'fr', label: 'France' },
         { value: 'ca', label: 'Canada' },
         { value: 'be', label: 'Belgium' },
       ]}
-    ></ds-select>
+    ></mb-select>
   `,
 };

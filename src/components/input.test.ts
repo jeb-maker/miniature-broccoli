@@ -1,18 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import './input.js';
 import './button.js';
-import type { DsInput } from './input.js';
+import type { MbInput } from './input.js';
 
-describe('ds-input', () => {
-  it('updates value and emits ds-change', async () => {
-    const el = document.createElement('ds-input') as DsInput;
+describe('mb-input', () => {
+  it('updates value and emits mb-change', async () => {
+    const el = document.createElement('mb-input') as MbInput;
     el.label = 'Name';
     el.name = 'name';
     document.body.appendChild(el);
     await el.updateComplete;
 
     const events: CustomEvent[] = [];
-    el.addEventListener('ds-change', (e: Event) => events.push(e as CustomEvent));
+    el.addEventListener('mb-change', (e: Event) => events.push(e as CustomEvent));
 
     const input = el.shadowRoot!.querySelector('input')!;
     input.value = 'Ada';
@@ -27,7 +27,7 @@ describe('ds-input', () => {
   it('respects fieldset disabled via formDisabledCallback', async () => {
     const form = document.createElement('form');
     const fieldset = document.createElement('fieldset');
-    const el = document.createElement('ds-input') as DsInput;
+    const el = document.createElement('mb-input') as MbInput;
     el.label = 'City';
     el.name = 'city';
     fieldset.appendChild(el);

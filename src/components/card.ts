@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { safeDefine } from '../lib/safe-define.js';
 import { sharedStyles } from '../lib/styles.js';
 
-export class DsCard extends LitElement {
+export class MbCard extends LitElement {
   static override styles = [
     sharedStyles,
     css`
@@ -11,27 +11,27 @@ export class DsCard extends LitElement {
       }
 
       .card {
-        background: var(--ds-color-surface);
-        border: 1px solid var(--ds-color-border);
-        border-radius: var(--ds-radius-lg);
+        background: var(--mb-color-surface);
+        border: 1px solid var(--mb-color-border);
+        border-radius: var(--mb-radius-lg);
         overflow: clip;
       }
 
       .header,
       .body,
       .footer {
-        padding-block: var(--ds-space-4);
-        padding-inline: var(--ds-space-5);
+        padding-block: var(--mb-space-4);
+        padding-inline: var(--mb-space-5);
       }
 
       .header {
-        border-block-end: 1px solid var(--ds-color-border);
-        font-family: var(--ds-font-display);
+        border-block-end: 1px solid var(--mb-color-border);
+        font-family: var(--mb-font-display);
         font-weight: 650;
       }
 
       .footer {
-        border-block-start: 1px solid var(--ds-color-border);
+        border-block-start: 1px solid var(--mb-color-border);
       }
 
       ::slotted([slot='header']),
@@ -60,8 +60,8 @@ export class DsCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ds-card': DsCard;
+    'mb-card': MbCard;
   }
 }
 
-safeDefine('ds-card', DsCard);
+safeDefine('mb-card', MbCard);

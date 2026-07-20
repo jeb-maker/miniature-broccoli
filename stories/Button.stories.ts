@@ -4,7 +4,7 @@ import '../src/components/button';
 
 const meta: Meta = {
   title: 'Components/Button',
-  component: 'ds-button',
+  component: 'mb-button',
   tags: ['autodocs'],
   argTypes: {
     variant: { control: 'select', options: ['primary', 'secondary', 'ghost'] },
@@ -20,17 +20,17 @@ type Story = StoryObj;
 export const Primary: Story = {
   args: { variant: 'primary', size: 'md', disabled: false, loading: false },
   render: (args) => html`
-    <ds-button
+    <mb-button
       variant=${args.variant}
       size=${args.size}
       ?disabled=${args.disabled}
       ?loading=${args.loading}
     >
       Continue
-    </ds-button>
+    </mb-button>
   `,
 };
 
 export const Ghost: Story = {
-  render: () => html`<ds-button variant="ghost">Cancel</ds-button>`,
+  render: () => html`<mb-button variant="ghost">Cancel</mb-button>`,
 };

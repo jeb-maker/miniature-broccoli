@@ -5,7 +5,7 @@ import '../src/components/button';
 
 const meta: Meta = {
   title: 'Components/Card',
-  component: 'ds-card',
+  component: 'mb-card',
   tags: ['autodocs'],
 };
 export default meta;
@@ -14,12 +14,12 @@ type Story = StoryObj;
 
 export const Default: Story = {
   render: () => html`
-    <ds-card style="inline-size: min(24rem, 90vw);">
+    <mb-card style="inline-size: min(24rem, 90vw);">
       <div slot="header">Workspace</div>
-      <p class="ds-body">Compose sections with header, body, and footer slots.</p>
+      <p class="mb-body">Compose sections with header, body, and footer slots.</p>
       <div slot="footer">
-        <ds-button size="sm">Open</ds-button>
+        <mb-button size="sm">Open</mb-button>
       </div>
-    </ds-card>
+    </mb-card>
   `,
 };

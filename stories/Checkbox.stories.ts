@@ -4,7 +4,7 @@ import '../src/components/checkbox';
 
 const meta: Meta = {
   title: 'Components/Checkbox',
-  component: 'ds-checkbox',
+  component: 'mb-checkbox',
   tags: ['autodocs'],
 };
 export default meta;
@@ -12,9 +12,9 @@ export default meta;
 type Story = StoryObj;
 
 export const Default: Story = {
-  render: () => html`<ds-checkbox label="Subscribe to updates"></ds-checkbox>`,
+  render: () => html`<mb-checkbox label="Subscribe to updates"></mb-checkbox>`,
 };
 
 export const Indeterminate: Story = {
-  render: () => html`<ds-checkbox label="Partial" indeterminate></ds-checkbox>`,
+  render: () => html`<mb-checkbox label="Partial" indeterminate></mb-checkbox>`,
 };

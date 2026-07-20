@@ -4,7 +4,7 @@ import '../src/components/input';
 
 const meta: Meta = {
   title: 'Components/Input',
-  component: 'ds-input',
+  component: 'mb-input',
   tags: ['autodocs'],
 };
 export default meta;
@@ -13,9 +13,9 @@ type Story = StoryObj;
 
 export const Default: Story = {
   render: () =>
-    html`<ds-input label="Email" type="email" hint="We never share your email."></ds-input>`,
+    html`<mb-input label="Email" type="email" hint="We never share your email."></mb-input>`,
 };
 
 export const Invalid: Story = {
-  render: () => html`<ds-input label="Name" error="Name is required." invalid></ds-input>`,
+  render: () => html`<mb-input label="Name" error="Name is required." invalid></mb-input>`,
 };

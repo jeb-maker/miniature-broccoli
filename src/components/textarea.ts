@@ -4,7 +4,7 @@ import { clearValidity, setFormValue, setValidity } from '../lib/form.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { fieldStyles, sharedStyles } from '../lib/styles.js';
 
-export class DsTextarea extends LitElement {
+export class MbTextarea extends LitElement {
   static formAssociated = true;
   static override styles = [
     sharedStyles,
@@ -108,14 +108,14 @@ export class DsTextarea extends LitElement {
     const target = event.target as HTMLTextAreaElement;
     this.value = target.value;
     this.dispatchEvent(
-      new CustomEvent('ds-input', {
+      new CustomEvent('mb-input', {
         detail: { value: this.value },
         bubbles: true,
         composed: true,
       }),
     );
     this.dispatchEvent(
-      new CustomEvent('ds-change', {
+      new CustomEvent('mb-change', {
         detail: { value: this.value },
         bubbles: true,
         composed: true,
@@ -158,8 +158,8 @@ export class DsTextarea extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ds-textarea': DsTextarea;
+    'mb-textarea': MbTextarea;
   }
 }
 
-safeDefine('ds-textarea', DsTextarea);
+safeDefine('mb-textarea', MbTextarea);

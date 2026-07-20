@@ -4,7 +4,7 @@ import '../src/components/textarea';
 
 const meta: Meta = {
   title: 'Components/Textarea',
-  component: 'ds-textarea',
+  component: 'mb-textarea',
   tags: ['autodocs'],
 };
 export default meta;
@@ -12,5 +12,5 @@ export default meta;
 type Story = StoryObj;
 
 export const Default: Story = {
-  render: () => html`<ds-textarea label="Message" rows="5" hint="Max 500 characters."></ds-textarea>`,
+  render: () => html`<mb-textarea label="Message" rows="5" hint="Max 500 characters."></mb-textarea>`,
 };

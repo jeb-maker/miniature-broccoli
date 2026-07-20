@@ -5,7 +5,7 @@ import { sharedStyles } from '../lib/styles.js';
 
 export type AlertVariant = 'info' | 'success' | 'warning' | 'danger';
 
-export class DsAlert extends LitElement {
+export class MbAlert extends LitElement {
   static override styles = [
     sharedStyles,
     css`
@@ -14,27 +14,27 @@ export class DsAlert extends LitElement {
       }
 
       .alert {
-        padding-block: var(--ds-space-3);
-        padding-inline: var(--ds-space-4);
-        border-radius: var(--ds-radius-md);
+        padding-block: var(--mb-space-3);
+        padding-inline: var(--mb-space-4);
+        border-radius: var(--mb-radius-md);
         border-inline-start: 4px solid currentColor;
-        background: var(--ds-color-info-soft);
-        color: var(--ds-color-info);
+        background: var(--mb-color-info-soft);
+        color: var(--mb-color-info);
       }
 
       :host([variant='success']) .alert {
-        background: var(--ds-color-success-soft);
-        color: var(--ds-color-success);
+        background: var(--mb-color-success-soft);
+        color: var(--mb-color-success);
       }
 
       :host([variant='warning']) .alert {
-        background: var(--ds-color-warning-soft);
-        color: var(--ds-color-warning);
+        background: var(--mb-color-warning-soft);
+        color: var(--mb-color-warning);
       }
 
       :host([variant='danger']) .alert {
-        background: var(--ds-color-danger-soft);
-        color: var(--ds-color-danger);
+        background: var(--mb-color-danger-soft);
+        color: var(--mb-color-danger);
       }
     `,
   ];
@@ -57,8 +57,8 @@ export class DsAlert extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ds-alert': DsAlert;
+    'mb-alert': MbAlert;
   }
 }
 
-safeDefine('ds-alert', DsAlert);
+safeDefine('mb-alert', MbAlert);

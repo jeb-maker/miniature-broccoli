@@ -11,7 +11,7 @@ export type ButtonType = 'button' | 'submit' | 'reset';
 /**
  * Form-associated button. Use the internal label via default slot.
  */
-export class DsButton extends LitElement {
+export class MbButton extends LitElement {
   static formAssociated = true;
   static override styles = [
     sharedStyles,
@@ -24,17 +24,17 @@ export class DsButton extends LitElement {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: var(--ds-space-2);
+        gap: var(--mb-space-2);
         border: 1px solid transparent;
-        border-radius: var(--ds-radius-md);
+        border-radius: var(--mb-radius-md);
         font: inherit;
         font-weight: 600;
         cursor: pointer;
         transition:
-          background-color var(--ds-transition),
-          color var(--ds-transition),
-          border-color var(--ds-transition),
-          opacity var(--ds-transition);
+          background-color var(--mb-transition),
+          color var(--mb-transition),
+          border-color var(--mb-transition),
+          opacity var(--mb-transition);
       }
 
       button:disabled {
@@ -44,36 +44,36 @@ export class DsButton extends LitElement {
 
       :host([size='sm']) button {
         min-block-size: 2rem;
-        padding-inline: var(--ds-space-3);
-        font-size: var(--ds-font-size-sm);
+        padding-inline: var(--mb-space-3);
+        font-size: var(--mb-font-size-sm);
       }
 
       :host([size='md']) button {
         min-block-size: 2.5rem;
-        padding-inline: var(--ds-space-4);
-        font-size: var(--ds-font-size-md);
+        padding-inline: var(--mb-space-4);
+        font-size: var(--mb-font-size-md);
       }
 
       :host([size='lg']) button {
         min-block-size: 3rem;
-        padding-inline: var(--ds-space-5);
-        font-size: var(--ds-font-size-lg);
+        padding-inline: var(--mb-space-5);
+        font-size: var(--mb-font-size-lg);
       }
 
       :host([variant='primary']) button {
-        background: var(--ds-color-accent);
-        color: var(--ds-color-on-accent);
+        background: var(--mb-color-accent);
+        color: var(--mb-color-on-accent);
       }
 
       :host([variant='secondary']) button {
-        background: var(--ds-color-surface);
-        color: var(--ds-color-fg);
-        border-color: var(--ds-color-border);
+        background: var(--mb-color-surface);
+        color: var(--mb-color-fg);
+        border-color: var(--mb-color-border);
       }
 
       :host([variant='ghost']) button {
         background: transparent;
-        color: var(--ds-color-accent);
+        color: var(--mb-color-accent);
       }
 
       .spinner {
@@ -187,8 +187,8 @@ export class DsButton extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ds-button': DsButton;
+    'mb-button': MbButton;
   }
 }
 
-safeDefine('ds-button', DsButton);
+safeDefine('mb-button', MbButton);

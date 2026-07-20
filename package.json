@@ -1,5 +1,5 @@
 {
-  "name": "@miniature-broccoli/ds",
+  "name": "@miniature-broccoli/mb",
   "version": "0.1.0",
   "private": true,
   "description": "Lightweight Lit design system with atomic ESM entries",
