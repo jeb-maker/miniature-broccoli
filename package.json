@@ -9,6 +9,8 @@
   ],
   "exports": {
     "./tokens.css": "./dist/tokens/tokens.css",
+    "./tokens-core.css": "./dist/tokens/tokens-core.css",
+    "./typography.css": "./dist/tokens/typography.css",
     "./button": {
       "types": "./dist/components/button.d.ts",
       "import": "./dist/components/button.js"
@@ -29,6 +31,14 @@
       "types": "./dist/components/checkbox.d.ts",
       "import": "./dist/components/checkbox.js"
     },
+    "./radio": {
+      "types": "./dist/components/radio.d.ts",
+      "import": "./dist/components/radio.js"
+    },
+    "./radio-group": {
+      "types": "./dist/components/radio-group.d.ts",
+      "import": "./dist/components/radio-group.js"
+    },
     "./badge": {
       "types": "./dist/components/badge.d.ts",
       "import": "./dist/components/badge.js"
@@ -44,6 +54,26 @@
     "./modal": {
       "types": "./dist/components/modal.d.ts",
       "import": "./dist/components/modal.js"
+    },
+    "./progress": {
+      "types": "./dist/components/progress.d.ts",
+      "import": "./dist/components/progress.js"
+    },
+    "./segmented-control": {
+      "types": "./dist/components/segmented-control.d.ts",
+      "import": "./dist/components/segmented-control.js"
+    },
+    "./empty-state": {
+      "types": "./dist/components/empty-state.d.ts",
+      "import": "./dist/components/empty-state.js"
+    },
+    "./pagination": {
+      "types": "./dist/components/pagination.d.ts",
+      "import": "./dist/components/pagination.js"
+    },
+    "./toast": {
+      "types": "./dist/components/toast.d.ts",
+      "import": "./dist/components/toast.js"
     },
     "./types": "./dist/types.d.ts",
     "./jsx": "./jsx.d.ts"

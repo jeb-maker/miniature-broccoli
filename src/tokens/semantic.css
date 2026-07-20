@@ -1,4 +1,7 @@
-:root {
+:root,
+.mb-theme {
+  color-scheme: light;
+
   /* Semantic — WCAG AA pairs on paper surfaces */
   --mb-color-bg: var(--mb-ref-paper-50);
   --mb-color-surface: var(--mb-ref-paper-0);
@@ -51,8 +54,71 @@
   --mb-shadow: 0 12px 40px rgb(20 32 27 / 12%);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mb-color-scheme='light']),
+  .mb-theme:not([data-mb-color-scheme='light']) {
+    color-scheme: dark;
+
+    --mb-color-bg: #0f1613;
+    --mb-color-surface: #1a2420;
+    --mb-color-fg: #f3f6f2;
+    --mb-color-muted: #9aada3;
+    --mb-color-border: #2d3d35;
+
+    --mb-color-accent: #3d9e6f;
+    --mb-color-on-accent: #0f1613;
+    --mb-color-accent-soft: #1a3d2c;
+
+    --mb-color-danger: #e07a6a;
+    --mb-color-on-danger: #1a1210;
+    --mb-color-danger-soft: #3d221e;
+
+    --mb-color-warning: #e0b15a;
+    --mb-color-warning-soft: #3a2e16;
+
+    --mb-color-info: #6eb8d4;
+    --mb-color-info-soft: #1a3340;
+
+    --mb-color-success: #5cbc8a;
+    --mb-color-success-soft: #1a3d2c;
+
+    --mb-shadow: 0 12px 40px rgb(0 0 0 / 40%);
+  }
+}
+
+:root[data-mb-color-scheme='dark'],
+.mb-theme[data-mb-color-scheme='dark'] {
+  color-scheme: dark;
+
+  --mb-color-bg: #0f1613;
+  --mb-color-surface: #1a2420;
+  --mb-color-fg: #f3f6f2;
+  --mb-color-muted: #9aada3;
+  --mb-color-border: #2d3d35;
+
+  --mb-color-accent: #3d9e6f;
+  --mb-color-on-accent: #0f1613;
+  --mb-color-accent-soft: #1a3d2c;
+
+  --mb-color-danger: #e07a6a;
+  --mb-color-on-danger: #1a1210;
+  --mb-color-danger-soft: #3d221e;
+
+  --mb-color-warning: #e0b15a;
+  --mb-color-warning-soft: #3a2e16;
+
+  --mb-color-info: #6eb8d4;
+  --mb-color-info-soft: #1a3340;
+
+  --mb-color-success: #5cbc8a;
+  --mb-color-success-soft: #1a3d2c;
+
+  --mb-shadow: 0 12px 40px rgb(0 0 0 / 40%);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  :root {
+  :root,
+  .mb-theme {
     --mb-transition: 0ms;
   }
 }
@@ -63,9 +129,16 @@ mb-input:not(:defined),
 mb-textarea:not(:defined),
 mb-select:not(:defined),
 mb-checkbox:not(:defined),
+mb-radio:not(:defined),
+mb-radio-group:not(:defined),
 mb-badge:not(:defined),
 mb-alert:not(:defined),
 mb-card:not(:defined),
-mb-modal:not(:defined) {
+mb-modal:not(:defined),
+mb-progress:not(:defined),
+mb-segmented-control:not(:defined),
+mb-empty-state:not(:defined),
+mb-pagination:not(:defined),
+mb-toast:not(:defined) {
   visibility: hidden;
 }

@@ -2,7 +2,7 @@ import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { clearValidity, constraintFlags, setFormValue, setValidity } from '../lib/form.js';
 import { safeDefine } from '../lib/safe-define.js';
-import { fieldStyles, sharedStyles } from '../lib/styles.js';
+import { fieldLabelState, fieldStyles, sharedStyles } from '../lib/styles.js';
 
 export class MbTextarea extends LitElement {
   static formAssociated = true;
@@ -51,6 +51,12 @@ export class MbTextarea extends LitElement {
   @property({ type: Number })
   rows = 4;
 
+  @property({ reflect: true })
+  density: 'default' | 'compact' = 'default';
+
+  @property({ type: Boolean, reflect: true, attribute: 'hide-label' })
+  hideLabel = false;
+
   #internals = this.attachInternals();
   #formDisabled = false;
   #control?: HTMLTextAreaElement;
@@ -60,6 +66,10 @@ export class MbTextarea extends LitElement {
 
   get #isDisabled(): boolean {
     return this.disabled || this.#formDisabled;
+  }
+
+  get #ariaLabel(): string {
+    return this.getAttribute('aria-label') ?? '';
   }
 
   override connectedCallback(): void {
@@ -142,11 +152,21 @@ export class MbTextarea extends LitElement {
     const describedBy = [this.hint && !this.error ? 'hint' : '', this.error ? 'error' : '']
       .filter(Boolean)
       .join(' ');
+    const { labelText, hideVisually, controlAriaLabel } = fieldLabelState(
+      this.label,
+      this.hideLabel,
+      this.#ariaLabel,
+    );
 
     return html`
       <div class="field">
-        ${this.label
-          ? html`<label part="label" class="label" for="control">${this.label}</label>`
+        ${labelText
+          ? html`<label
+              part="label"
+              class="label${hideVisually ? ' visually-hidden' : ''}"
+              for="control"
+              >${labelText}</label
+            >`
           : nothing}
         <textarea
           id="control"
@@ -159,6 +179,7 @@ export class MbTextarea extends LitElement {
           ?disabled=${this.#isDisabled}
           ?required=${this.required}
           aria-invalid=${this.invalid ? 'true' : 'false'}
+          aria-label=${controlAriaLabel || nothing}
           aria-describedby=${describedBy || nothing}
           @input=${this.#onInput}
           @change=${this.#onChange}

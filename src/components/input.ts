@@ -2,9 +2,17 @@ import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { clearValidity, constraintFlags, setFormValue, setValidity } from '../lib/form.js';
 import { safeDefine } from '../lib/safe-define.js';
-import { fieldStyles, sharedStyles } from '../lib/styles.js';
+import { fieldLabelState, fieldStyles, sharedStyles } from '../lib/styles.js';
 
-export type InputType = 'text' | 'email' | 'password' | 'search' | 'url' | 'tel';
+export type InputType =
+  | 'text'
+  | 'email'
+  | 'password'
+  | 'search'
+  | 'url'
+  | 'tel'
+  | 'number'
+  | 'file';
 
 export class MbInput extends LitElement {
   static formAssociated = true;
@@ -14,6 +22,10 @@ export class MbInput extends LitElement {
     css`
       :host {
         display: block;
+      }
+
+      input[type='file'].control {
+        padding-block: var(--mb-space-2);
       }
     `,
   ];
@@ -48,6 +60,27 @@ export class MbInput extends LitElement {
   @property({ type: Boolean, reflect: true })
   invalid = false;
 
+  @property({ reflect: true })
+  density: 'default' | 'compact' = 'default';
+
+  @property({ type: Boolean, reflect: true, attribute: 'hide-label' })
+  hideLabel = false;
+
+  @property()
+  min = '';
+
+  @property()
+  max = '';
+
+  @property()
+  step = '';
+
+  @property()
+  accept = '';
+
+  @property({ type: Boolean })
+  multiple = false;
+
   #internals = this.attachInternals();
   #formDisabled = false;
   #input?: HTMLInputElement;
@@ -57,6 +90,14 @@ export class MbInput extends LitElement {
 
   get #isDisabled(): boolean {
     return this.disabled || this.#formDisabled;
+  }
+
+  get #isFile(): boolean {
+    return this.type === 'file';
+  }
+
+  get #ariaLabel(): string {
+    return this.getAttribute('aria-label') ?? '';
   }
 
   override connectedCallback(): void {
@@ -78,7 +119,8 @@ export class MbInput extends LitElement {
       changed.has('required') ||
       changed.has('error') ||
       changed.has('disabled') ||
-      changed.has('name')
+      changed.has('name') ||
+      changed.has('type')
     ) {
       this.#sync();
     }
@@ -94,11 +136,37 @@ export class MbInput extends LitElement {
     this.value = this.#defaultValue;
     this.error = '';
     this.invalid = false;
+    if (this.#isFile && this.#input) {
+      this.#input.value = '';
+    }
+  }
+
+  #syncFileValue(): void {
+    const files = this.#input?.files;
+    if (!this.name || !files?.length) {
+      setFormValue(this.#internals, null);
+      return;
+    }
+    if (files.length === 1) {
+      setFormValue(this.#internals, files[0]);
+      return;
+    }
+    const data = new FormData();
+    for (const file of files) {
+      data.append(this.name, file);
+    }
+    setFormValue(this.#internals, data);
   }
 
   #sync(): void {
-    setFormValue(this.#internals, this.name ? this.value : null);
-    const missing = this.required && !this.value;
+    if (this.#isFile) {
+      this.#syncFileValue();
+    } else {
+      setFormValue(this.#internals, this.name ? this.value : null);
+    }
+    const missing =
+      this.required &&
+      (this.#isFile ? !this.#input?.files?.length : !this.value);
     const { flags, message } = constraintFlags(this.error, missing);
     if (message) {
       setValidity(this.#internals, flags, message, this.#input);
@@ -112,10 +180,13 @@ export class MbInput extends LitElement {
   #onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.#touched = true;
-    this.value = target.value;
+    if (!this.#isFile) {
+      this.value = target.value;
+    }
+    this.#sync();
     this.dispatchEvent(
       new CustomEvent('mb-input', {
-        detail: { value: this.value },
+        detail: { value: this.value, files: target.files },
         bubbles: true,
         composed: true,
       }),
@@ -125,10 +196,13 @@ export class MbInput extends LitElement {
   #onChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.#touched = true;
-    this.value = target.value;
+    if (!this.#isFile) {
+      this.value = target.value;
+    }
+    this.#sync();
     this.dispatchEvent(
       new CustomEvent('mb-change', {
-        detail: { value: this.value },
+        detail: { value: this.value, files: target.files },
         bubbles: true,
         composed: true,
       }),
@@ -136,7 +210,7 @@ export class MbInput extends LitElement {
   }
 
   #onKeyDown(event: KeyboardEvent): void {
-    if (event.key !== 'Enter' || event.defaultPrevented) return;
+    if (event.key !== 'Enter' || event.defaultPrevented || this.#isFile) return;
     const form = this.#internals.form;
     if (form) {
       event.preventDefault();
@@ -148,23 +222,39 @@ export class MbInput extends LitElement {
     const describedBy = [this.hint && !this.error ? 'hint' : '', this.error ? 'error' : '']
       .filter(Boolean)
       .join(' ');
+    const { labelText, hideVisually, controlAriaLabel } = fieldLabelState(
+      this.label,
+      this.hideLabel,
+      this.#ariaLabel,
+    );
 
     return html`
       <div class="field">
-        ${this.label
-          ? html`<label part="label" class="label" for="control">${this.label}</label>`
+        ${labelText
+          ? html`<label
+              part="label"
+              class="label${hideVisually ? ' visually-hidden' : ''}"
+              for="control"
+              >${labelText}</label
+            >`
           : nothing}
         <input
           id="control"
           part="control"
           class="control"
           .type=${this.type}
-          .value=${this.value}
+          .value=${this.#isFile ? '' : this.value}
           name=${this.name || nothing}
           placeholder=${this.placeholder || nothing}
+          min=${this.type === 'number' && this.min !== '' ? this.min : nothing}
+          max=${this.type === 'number' && this.max !== '' ? this.max : nothing}
+          step=${this.type === 'number' && this.step !== '' ? this.step : nothing}
+          accept=${this.#isFile && this.accept ? this.accept : nothing}
+          ?multiple=${this.#isFile && this.multiple}
           ?disabled=${this.#isDisabled}
           ?required=${this.required}
           aria-invalid=${this.invalid ? 'true' : 'false'}
+          aria-label=${controlAriaLabel || nothing}
           aria-describedby=${describedBy || nothing}
           @input=${this.#onInput}
           @change=${this.#onChange}
