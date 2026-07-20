@@ -120,11 +120,12 @@ export class MbSelect extends LitElement {
       this.#defaultValue = this.value;
       this.#defaultCaptured = true;
     }
+    // Prefer light-DOM options before first render (SSR / Go templates).
+    this.#ingestLightDomOptions();
   }
 
   override firstUpdated(): void {
     this.#control = this.renderRoot.querySelector('select') ?? undefined;
-    this.#readSlottedOptions();
     this.#sync();
   }
 
@@ -154,6 +155,24 @@ export class MbSelect extends LitElement {
     this.invalid = false;
   }
 
+  #optionFromElement(node: Element): SelectOption | null {
+    if (!(node instanceof HTMLOptionElement)) return null;
+    return {
+      value: node.value,
+      label: node.label || node.textContent?.trim() || node.value,
+      disabled: node.disabled,
+    };
+  }
+
+  #ingestLightDomOptions(): void {
+    const options = [...this.querySelectorAll(':scope > option')]
+      .map((node) => this.#optionFromElement(node))
+      .filter((opt): opt is SelectOption => opt != null);
+    if (options.length) {
+      this._slottedOptions = options;
+    }
+  }
+
   #readSlottedOptions(): void {
     const slot = this.renderRoot.querySelector('slot[name="options"]') as HTMLSlotElement | null;
     // Also accept unnamed slotted <option> for ergonomic SSR:
@@ -163,17 +182,14 @@ export class MbSelect extends LitElement {
       ...(slot?.assignedElements({ flatten: true }) ?? []),
       ...(defaultSlot?.assignedElements({ flatten: true }) ?? []),
     ];
-    const options: SelectOption[] = [];
-    for (const node of nodes) {
-      if (node instanceof HTMLOptionElement) {
-        options.push({
-          value: node.value,
-          label: node.label || node.textContent?.trim() || node.value,
-          disabled: node.disabled,
-        });
-      }
+    const options = nodes
+      .map((node) => this.#optionFromElement(node))
+      .filter((opt): opt is SelectOption => opt != null);
+    const prev = JSON.stringify(this._slottedOptions);
+    const next = JSON.stringify(options);
+    if (prev !== next) {
+      this._slottedOptions = options;
     }
-    this._slottedOptions = options;
   }
 
   #onSlotChange(): void {
