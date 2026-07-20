@@ -50,6 +50,8 @@ There is **no root barrel** that registers every component — import only what 
 
 Typography: CSS classes `.mb-title`, `.mb-body`, `.mb-body-sm` (no `mb-text` element).
 
+Types: `import '@miniature-broccoli/mb/types'` for `HTMLElementTagNameMap`, and `import '@miniature-broccoli/mb/jsx'` for React JSX tags.
+
 ## Contracts
 
 - **Client-only** custom elements; tokens CSS are SSR-safe.

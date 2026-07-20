@@ -64,6 +64,7 @@ export class MbModal extends LitElement {
         cursor: pointer;
         padding: var(--mb-space-1);
         border-radius: var(--mb-radius-sm);
+        flex-shrink: 0;
       }
     `,
   ];
@@ -75,14 +76,20 @@ export class MbModal extends LitElement {
   heading = '';
 
   #dialog?: HTMLDialogElement;
+  /** True while we are closing from the `open` property path (avoid double emit). */
+  #closingFromProp = false;
 
   override firstUpdated(): void {
     this.#dialog = this.renderRoot.querySelector('dialog') ?? undefined;
     this.#dialog?.addEventListener('close', () => {
+      if (this.#closingFromProp) {
+        return;
+      }
+      // Escape / backdrop — native close. Sync property + notify.
       if (this.open) {
         this.open = false;
-        this.#emitClose();
       }
+      this.#emitClose();
     });
     this.#syncOpen();
   }
@@ -99,7 +106,10 @@ export class MbModal extends LitElement {
     if (this.open && !dialog.open) {
       dialog.showModal();
     } else if (!this.open && dialog.open) {
+      this.#closingFromProp = true;
       dialog.close();
+      this.#closingFromProp = false;
+      this.#emitClose();
     }
   }
 
@@ -112,9 +122,12 @@ export class MbModal extends LitElement {
     );
   }
 
+  /** Close the modal (idempotent). Always emits `mb-close` when a close occurs. */
   close(): void {
+    if (!this.open && !this.#dialog?.open) {
+      return;
+    }
     this.open = false;
-    this.#emitClose();
   }
 
   #onCloseClick(): void {
@@ -123,7 +136,7 @@ export class MbModal extends LitElement {
 
   override render() {
     return html`
-      <dialog part="dialog">
+      <dialog part="dialog" aria-labelledby="title" aria-modal="true">
         <div class="panel">
           <div class="header">
             <h2 class="title" id="title">${this.heading}<slot name="heading"></slot></h2>
