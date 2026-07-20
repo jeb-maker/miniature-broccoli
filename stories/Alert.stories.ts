@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../src/components/alert';
+import { MbAlert } from '../src/components/alert.js';
+
+void MbAlert;
 
 const meta: Meta = {
   title: 'Components/Alert',

@@ -13,7 +13,18 @@ const config: StorybookConfig = {
   },
   async viteFinal(config) {
     const base = process.env.STORYBOOK_BASE_PATH || '/';
-    return mergeConfig(config, { base });
+    return mergeConfig(config, {
+      base,
+      // Component modules call customElements.define — must not be tree-shaken.
+      build: {
+        rollupOptions: {
+          treeshake: {
+            moduleSideEffects: (id: string) =>
+              /\/src\/components\//.test(id) || /\/src\/tokens\//.test(id) || null,
+          },
+        },
+      },
+    });
   },
 };
 

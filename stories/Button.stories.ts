@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../src/components/button';
+import { MbButton } from '../src/components/button.js';
+
+void MbButton;
 
 const meta: Meta = {
   title: 'Components/Button',

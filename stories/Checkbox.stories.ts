@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../src/components/checkbox';
+import { MbCheckbox } from '../src/components/checkbox.js';
+
+// Keep registration (customElements.define) reachable for Storybook's production build.
+void MbCheckbox;
 
 const meta: Meta = {
   title: 'Components/Checkbox',

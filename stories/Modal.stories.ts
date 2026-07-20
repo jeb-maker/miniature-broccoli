@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../src/components/modal';
-import '../src/components/button';
+import { MbModal } from '../src/components/modal.js';
+import { MbButton } from '../src/components/button.js';
+
+void MbModal;
+void MbButton;
 
 const meta: Meta = {
   title: 'Components/Modal',

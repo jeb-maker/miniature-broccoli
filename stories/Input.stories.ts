@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
-import '../src/components/input';
+import { MbInput } from '../src/components/input.js';
+
+void MbInput;
 
 const meta: Meta = {
   title: 'Components/Input',

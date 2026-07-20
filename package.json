@@ -51,7 +51,9 @@
   },
   "sideEffects": [
     "./dist/components/*.js",
-    "./dist/tokens/**/*.css"
+    "./dist/tokens/**/*.css",
+    "./src/components/*.ts",
+    "./src/tokens/**/*.css"
   ],
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json && node scripts/copy-tokens.mjs",
