@@ -58,6 +58,13 @@ npm run storybook
 | `./empty-state` | `mb-empty-state` |
 | `./pagination` | `mb-pagination` |
 | `./toast` | `mb-toast` |
+| `./tag` | `mb-tag` |
+| `./breadcrumbs` | `mb-breadcrumbs` |
+| `./nav` | `mb-nav` |
+| `./nav-toggle` | `mb-nav-toggle` |
+| `./avatar` | `mb-avatar` |
+| `./spinner` | `mb-spinner` |
+| `./toolbar` | `mb-toolbar` |
 
 Typography: CSS classes `.mb-title`, `.mb-body`, `.mb-body-sm` (from `tokens.css` or `typography.css`).
 
@@ -68,9 +75,10 @@ Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'`
 - **Client-only** custom elements; tokens CSS are SSR-safe.
 - **Internal labels** only — `label[for]` from outside does not pierce Shadow DOM. Use `aria-label` / `hide-label` for compact cells.
 - **Form-associated** controls honor `fieldset[disabled]`, the HTML `form="…"` attribute, and `FormData`.
-- **`mb-select`**: JS `.options`, JSON `options='[…]'` attribute, or slotted `<option>` (slotted wins).
+- **`mb-select`**: JS `.options`, JSON `options='[…]'` attribute, or slotted `<option>` (slotted wins). Use `placeholder` (or a slotted empty option) to label `value=""`.
 - **`mb-button`**: `variant="danger"`; with `href`, renders a styled `<a>` (no accidental form submit).
 - **`mb-modal`**: native `<dialog>`.
+- **Anti-FOUC**: interactive controls/overlays are hidden until defined. Layout primitives (`mb-card`, toolbar, nav, …) stay visible; opt in with class `mb-fouc`.
 - **Dark tokens**: `prefers-color-scheme: dark`, or force with `data-mb-color-scheme="dark"|"light"` on `:root` / `.mb-theme`.
 - **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4.
 

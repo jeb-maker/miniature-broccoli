@@ -15,23 +15,37 @@ export type { MbSegmentedControl } from './components/segmented-control.js';
 export type { MbEmptyState } from './components/empty-state.js';
 export type { MbPagination } from './components/pagination.js';
 export type { MbToast, ToastVariant } from './components/toast.js';
+export type { MbTag } from './components/tag.js';
+export type { MbBreadcrumbs, BreadcrumbItem } from './components/breadcrumbs.js';
+export type { MbNav } from './components/nav.js';
+export type { MbNavToggle } from './components/nav-toggle.js';
+export type { MbAvatar, AvatarSize } from './components/avatar.js';
+export type { MbSpinner, SpinnerSize } from './components/spinner.js';
+export type { MbToolbar } from './components/toolbar.js';
 
 import type { MbAlert } from './components/alert.js';
+import type { MbAvatar } from './components/avatar.js';
 import type { MbBadge } from './components/badge.js';
+import type { MbBreadcrumbs } from './components/breadcrumbs.js';
 import type { MbButton } from './components/button.js';
 import type { MbCard } from './components/card.js';
 import type { MbCheckbox } from './components/checkbox.js';
 import type { MbEmptyState } from './components/empty-state.js';
 import type { MbInput } from './components/input.js';
 import type { MbModal } from './components/modal.js';
+import type { MbNav } from './components/nav.js';
+import type { MbNavToggle } from './components/nav-toggle.js';
 import type { MbPagination } from './components/pagination.js';
 import type { MbProgress } from './components/progress.js';
 import type { MbRadio } from './components/radio.js';
 import type { MbRadioGroup } from './components/radio-group.js';
 import type { MbSegmentedControl } from './components/segmented-control.js';
 import type { MbSelect } from './components/select.js';
+import type { MbSpinner } from './components/spinner.js';
+import type { MbTag } from './components/tag.js';
 import type { MbTextarea } from './components/textarea.js';
 import type { MbToast } from './components/toast.js';
+import type { MbToolbar } from './components/toolbar.js';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -51,6 +65,13 @@ declare global {
     'mb-empty-state': MbEmptyState;
     'mb-pagination': MbPagination;
     'mb-toast': MbToast;
+    'mb-tag': MbTag;
+    'mb-breadcrumbs': MbBreadcrumbs;
+    'mb-nav': MbNav;
+    'mb-nav-toggle': MbNavToggle;
+    'mb-avatar': MbAvatar;
+    'mb-spinner': MbSpinner;
+    'mb-toolbar': MbToolbar;
   }
 }
 

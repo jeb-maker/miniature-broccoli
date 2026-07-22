@@ -28,8 +28,9 @@ Install from GitHub Packages (`@jeb-maker` scope → `https://npm.pkg.github.com
 
 - **Labels** are internal (`label` prop). External `label[for]` does not pierce Shadow DOM. Use `aria-label` / `hide-label` for compact cells.
 - **Forms** use Form-Associated Custom Elements, including `fieldset[disabled]` and `form="…"`.
-- **Select** options via JS property, JSON `options` attribute, or slotted `<option>` (slotted wins).
+- **Select** options via JS property, JSON `options` attribute, or slotted `<option>` (slotted wins). Label the empty option with `placeholder` or a slotted `value=""`.
 - **Button** supports `variant="danger"` and `href` (anchor rendering).
+- **Anti-FOUC** hides interactive controls until defined; layout primitives (`mb-card`, …) stay visible (opt in with `mb-fouc`).
 - **Modal** uses native `<dialog>`.
 - **React**: React 19+ preferred; React ≤18 use string attributes.
 - **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4.

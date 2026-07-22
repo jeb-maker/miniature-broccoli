@@ -76,6 +76,10 @@ export class MbSelect extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: 'hide-label' })
   hideLabel = false;
 
+  /** Visible label for the empty `value=""` option (filters: « Tous », « Aller à… »). */
+  @property()
+  placeholder = '';
+
   /**
    * Options as a JS property or JSON attribute:
    * `options='[{"value":"ok","label":"OK"}]'`
@@ -108,6 +112,17 @@ export class MbSelect extends LitElement {
 
   get #effectiveOptions(): SelectOption[] {
     return this._slottedOptions.length ? this._slottedOptions : this.options;
+  }
+
+  /** Non-empty options rendered after the placeholder option. */
+  get #choiceOptions(): SelectOption[] {
+    return this.#effectiveOptions.filter((opt) => opt.value !== '');
+  }
+
+  get #emptyLabel(): string {
+    const slottedEmpty = this.#effectiveOptions.find((opt) => opt.value === '');
+    if (slottedEmpty?.label) return slottedEmpty.label;
+    return this.placeholder;
   }
 
   get #ariaLabel(): string {
@@ -262,9 +277,9 @@ export class MbSelect extends LitElement {
           .value=${this.value}
           @change=${this.#onChange}
         >
-          <option value="" ?disabled=${this.required}></option>
+          <option value="" ?disabled=${this.required}>${this.#emptyLabel}</option>
           ${repeat(
-            this.#effectiveOptions,
+            this.#choiceOptions,
             (opt) => opt.value,
             (opt) => html`
               <option value=${opt.value} ?disabled=${Boolean(opt.disabled)}>

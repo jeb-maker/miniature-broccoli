@@ -66,3 +66,29 @@ export const CompactTableCell: Story = {
     </div>
   `,
 };
+
+export const PlaceholderEmpty: Story = {
+  name: 'Placeholder empty option',
+  render: () => html`
+    <mb-select
+      label="Status"
+      placeholder="Tous"
+      density="compact"
+      .options=${[
+        { value: 'todo', label: 'Todo' },
+        { value: 'done', label: 'Done' },
+      ]}
+    ></mb-select>
+  `,
+};
+
+export const SlottedEmptyLabel: Story = {
+  name: 'Slotted empty label',
+  render: () => html`
+    <mb-select label="Section" name="section" density="compact">
+      <option value="">Toutes</option>
+      <option value="ops">Ops</option>
+      <option value="qa">QA</option>
+    </mb-select>
+  `,
+};
