@@ -75,6 +75,34 @@
       "types": "./dist/components/toast.d.ts",
       "import": "./dist/components/toast.js"
     },
+    "./tag": {
+      "types": "./dist/components/tag.d.ts",
+      "import": "./dist/components/tag.js"
+    },
+    "./breadcrumbs": {
+      "types": "./dist/components/breadcrumbs.d.ts",
+      "import": "./dist/components/breadcrumbs.js"
+    },
+    "./nav": {
+      "types": "./dist/components/nav.d.ts",
+      "import": "./dist/components/nav.js"
+    },
+    "./nav-toggle": {
+      "types": "./dist/components/nav-toggle.d.ts",
+      "import": "./dist/components/nav-toggle.js"
+    },
+    "./avatar": {
+      "types": "./dist/components/avatar.d.ts",
+      "import": "./dist/components/avatar.js"
+    },
+    "./spinner": {
+      "types": "./dist/components/spinner.d.ts",
+      "import": "./dist/components/spinner.js"
+    },
+    "./toolbar": {
+      "types": "./dist/components/toolbar.d.ts",
+      "import": "./dist/components/toolbar.js"
+    },
     "./types": "./dist/types.d.ts",
     "./jsx": "./jsx.d.ts"
   },

@@ -162,4 +162,40 @@ describe('mb-select', () => {
     expect(el.shadowRoot!.querySelector('label')).toBeNull();
     el.remove();
   });
+
+  it('labels the empty option via placeholder', async () => {
+    const { el, form } = await mount((s) => {
+      s.placeholder = 'Tous';
+      s.name = 'status';
+      s.required = true;
+    });
+    const empty = el.shadowRoot!.querySelector('option[value=""]')!;
+    expect(empty.textContent).toBe('Tous');
+    expect(form.checkValidity()).toBe(false);
+    form.remove();
+  });
+
+  it('uses slotted empty option label without inventing a fake value', async () => {
+    const form = document.createElement('form');
+    const el = document.createElement('mb-select') as MbSelect;
+    el.name = 'section';
+    const empty = document.createElement('option');
+    empty.value = '';
+    empty.textContent = 'Toutes';
+    const a = document.createElement('option');
+    a.value = 'ops';
+    a.textContent = 'Ops';
+    el.append(empty, a);
+    form.appendChild(el);
+    document.body.appendChild(form);
+    await el.updateComplete;
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const options = [...el.shadowRoot!.querySelectorAll('option')];
+    expect(options.filter((o) => o.value === '')).toHaveLength(1);
+    expect(options[0].textContent).toBe('Toutes');
+    expect(options.map((o) => o.value)).toEqual(['', 'ops']);
+    form.remove();
+  });
 });

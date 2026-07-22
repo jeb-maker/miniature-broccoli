@@ -19,7 +19,7 @@ Primary target: MPA hosts (no SPA), tight JS budget, CSRF-protected classic form
 </script>
 ```
 
-Anti-FOUC: undefined `mb-*` tags stay `visibility: hidden` until upgraded (see `semantic.css`).
+Anti-FOUC: **interactive** undefined tags (`mb-button`, inputs, `mb-select`, `mb-modal`, `mb-toast`, …) stay `visibility: hidden` until upgraded. **Layout** primitives (`mb-card`, `mb-toolbar`, `mb-nav`, `mb-breadcrumbs`, `mb-empty-state`, …) stay visible so structural chrome can progressively render. Opt a layout tag into the old hide behavior with class `mb-fouc`.
 
 ## Custom elements in templates
 
@@ -36,10 +36,19 @@ Anti-FOUC: undefined `mb-*` tags stay `visibility: hidden` until upgraded (see `
 Slotted native options (recommended for Go templates):
 
 ```html
-<mb-select name="status" value="{{ .Status }}" label="Status" required>
+<mb-select name="status" value="{{ .Status }}" label="Status" required placeholder="Tous">
   {{ range .Statuses }}
     <option value="{{ .Value }}" {{ if eq $.Status .Value }}selected{{ end }}>{{ .Label }}</option>
   {{ end }}
+</mb-select>
+```
+
+Or label the empty option by slotting it:
+
+```html
+<mb-select name="section" value="">
+  <option value="">Toutes</option>
+  <option value="ops">Ops</option>
 </mb-select>
 ```
 

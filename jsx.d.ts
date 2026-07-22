@@ -79,6 +79,7 @@ declare namespace JSX {
       invalid?: boolean;
       density?: 'default' | 'compact';
       'hide-label'?: boolean;
+      placeholder?: string;
       options?: Array<{ value: string; label: string; disabled?: boolean }> | string;
     };
     'mb-checkbox': MbBaseAttrs & {
@@ -148,6 +149,35 @@ declare namespace JSX {
       'auto-dismiss'?: number;
       message?: string;
     };
+    'mb-tag': MbBaseAttrs & {
+      href?: string;
+      size?: 'sm' | 'md';
+    };
+    'mb-breadcrumbs': MbBaseAttrs & {
+      label?: string;
+      items?: Array<{ href?: string; label: string; current?: boolean }> | string;
+    };
+    'mb-nav': MbBaseAttrs & {
+      label?: string;
+      open?: boolean;
+    };
+    'mb-nav-toggle': MbBaseAttrs & {
+      expanded?: boolean;
+      for?: string;
+      'label-open'?: string;
+      'label-close'?: string;
+    };
+    'mb-avatar': MbBaseAttrs & {
+      src?: string;
+      alt?: string;
+      name?: string;
+      size?: 'sm' | 'md';
+    };
+    'mb-spinner': MbBaseAttrs & {
+      size?: 'sm' | 'md';
+      label?: string;
+    };
+    'mb-toolbar': MbBaseAttrs;
   }
 }
 
