@@ -98,3 +98,7 @@ See [docs/go-htmx.md](./docs/go-htmx.md) for `html/template` snippets, FOUC, CSR
 | `npm run lint` | ESLint (typescript-eslint + lit + wc) |
 
 Peer dependency: `lit@^3.2.0`.
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for what shipped in 0.2.0 / 0.3.0 (Revues consumer gaps).
