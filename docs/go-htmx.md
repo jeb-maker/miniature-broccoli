@@ -85,6 +85,22 @@ Or a JSON attribute (escape carefully in templates):
 
 FACE honors the HTML `form="…"` attribute so controls can live outside the `<form>` element.
 
+### App shell nav + mobile toggle
+
+```html
+<header class="app-bar">
+  <strong>Acme</strong>
+  <mb-nav-toggle for="app-nav"></mb-nav-toggle>
+</header>
+
+<mb-nav id="app-nav" label="Site">
+  <a href="/revues" aria-current="page">Revues</a>
+  <a href="/tasks">Tasks</a>
+</mb-nav>
+```
+
+Import `./nav` and `./nav-toggle`. Below `36rem`, the toggle is shown and controls `open` on `#app-nav`.
+
 ## Events for `hx-trigger`
 
 Shadow-DOM native `change` / `input` do **not** retarget. Listen for composed custom events:
@@ -94,8 +110,13 @@ Shadow-DOM native `change` / `input` do **not** retarget. Listen for composed cu
 | `mb-change` | input, textarea, select, checkbox, radio-group | `{ value }` or `{ checked, value }` |
 | `mb-input` | input, textarea | `{ value }` (+ `files` for file inputs) |
 | `mb-close` | modal, toast | — |
+| `mb-toggle` | nav-toggle | `{ expanded }` |
 
 Example: `hx-trigger="mb-change delay:300ms"`.
+
+`mb-nav-toggle` also flips `open` on the target `mb-nav` when `for` matches its `id`. Prefer that over wiring `mb-toggle` yourself unless the host needs a side effect (analytics, focus trap, etc.).
+
+Document-level bus (not for `hx-trigger`): dispatch `mb-toast` on `document` with `{ message, variant? }` to show the mounted `<mb-toast>`.
 
 ## CSRF + multipart
 

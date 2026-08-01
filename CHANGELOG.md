@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Docs: `mb-nav-toggle` / `mb-toggle` coverage in README, Introduction, and `docs/go-htmx.md`
+- Tests: move badge / card / input suites into their own files
+
 ## 0.3.0 — 2026-07-22
 
 Revues P1 shell primitives + select polish.

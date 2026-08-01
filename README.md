@@ -78,6 +78,7 @@ Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'`
 - **`mb-select`**: JS `.options`, JSON `options='[…]'` attribute, or slotted `<option>` (slotted wins). Use `placeholder` (or a slotted empty option) to label `value=""`.
 - **`mb-button`**: `variant="danger"`; with `href`, renders a styled `<a>` (no accidental form submit).
 - **`mb-modal`**: native `<dialog>`.
+- **`mb-nav-toggle`**: pairs with `mb-nav` via `for` / `id`; emits `mb-toggle` (`{ expanded }`).
 - **Anti-FOUC**: interactive controls/overlays are hidden until defined. Layout primitives (`mb-card`, toolbar, nav, …) stay visible; opt in with class `mb-fouc`.
 - **Dark tokens**: `prefers-color-scheme: dark`, or force with `data-mb-color-scheme="dark"|"light"` on `:root` / `.mb-theme`.
 - **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4.
