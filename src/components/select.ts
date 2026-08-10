@@ -40,7 +40,8 @@ export class MbSelect extends LitElement {
         display: block;
       }
 
-      slot[name='options'] {
+      /* Options are mirrored into the shadow <select>; keep light-DOM slots invisible. */
+      slot {
         display: none;
       }
     `,

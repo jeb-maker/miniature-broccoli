@@ -148,6 +148,31 @@ describe('mb-select', () => {
     form.remove();
   });
 
+  it('hides light-DOM option slots so labels do not render under the control', async () => {
+    const form = document.createElement('form');
+    const el = document.createElement('mb-select') as MbSelect;
+    el.label = 'Status';
+    const a = document.createElement('option');
+    a.value = 'todo';
+    a.textContent = 'Todo';
+    const b = document.createElement('option');
+    b.value = 'done';
+    b.textContent = 'Done';
+    b.slot = 'options';
+    el.append(a, b);
+    form.appendChild(el);
+    document.body.appendChild(form);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const slots = [...el.shadowRoot!.querySelectorAll('slot')];
+    expect(slots.length).toBeGreaterThan(0);
+    for (const slot of slots) {
+      expect(getComputedStyle(slot).display).toBe('none');
+    }
+    form.remove();
+  });
+
   it('supports compact density and aria-label-only mode', async () => {
     const el = document.createElement('mb-select') as MbSelect;
     el.density = 'compact';
