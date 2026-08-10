@@ -104,6 +104,8 @@ export class MbRadioGroup extends LitElement {
   #defaultValue = '';
   #defaultCaptured = false;
   #touched = false;
+  /** Author `disabled` on slotted radios, captured before the group forces disable. */
+  #slottedDisabled = new WeakMap<MbRadio, boolean>();
 
   get #isDisabled(): boolean {
     return this.disabled || this.#formDisabled;
@@ -163,16 +165,20 @@ export class MbRadioGroup extends LitElement {
     this.invalid = false;
   }
 
-  #radios(): MbRadio[] {
-    const slotted =
+  #slottedRadios(): MbRadio[] {
+    return (
       this.renderRoot
         .querySelector('slot')
         ?.assignedElements({ flatten: true })
-        .filter((el): el is MbRadio => el.localName === 'mb-radio') ?? [];
+        .filter((el): el is MbRadio => el.localName === 'mb-radio') ?? []
+    );
+  }
+
+  #radios(): MbRadio[] {
     const generated = [
       ...this.renderRoot.querySelectorAll<MbRadio>('.options > mb-radio'),
     ];
-    return [...slotted, ...generated];
+    return [...this.#slottedRadios(), ...generated];
   }
 
   #syncRadios(): void {
@@ -180,9 +186,15 @@ export class MbRadioGroup extends LitElement {
     for (const radio of radios) {
       radio.name = this.name || 'mb-radio-group';
       radio.checked = radio.value === this.value;
-      if (this.#isDisabled) {
-        radio.disabled = true;
+    }
+
+    // JSON `options` radios get `disabled` from the Lit template. Slotted radios
+    // need an explicit restore so group re-enable does not leave them stuck.
+    for (const radio of this.#slottedRadios()) {
+      if (!this.#slottedDisabled.has(radio)) {
+        this.#slottedDisabled.set(radio, radio.disabled);
       }
+      radio.disabled = this.#isDisabled || Boolean(this.#slottedDisabled.get(radio));
     }
   }
 

@@ -1,8 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.3.1 — 2026-08-10
 
-- Fix: hide all `mb-select` option slots so slotted `<option>` labels no longer appear under the control
+Patch for slotted form controls + small FOUC gap.
+
+- Fix: hide all `mb-select` option slots so slotted `<option>` labels no longer appear under the control (#35)
+- Fix: `mb-radio-group` restores slotted `mb-radio` `disabled` when the group re-enables
+- Fix: include `mb-nav-toggle` in anti-FOUC `:not(:defined)` hide list
 - Docs: `mb-nav-toggle` / `mb-toggle` coverage in README, Introduction, and `docs/go-htmx.md`
 - Tests: move badge / card / input suites into their own files
 
