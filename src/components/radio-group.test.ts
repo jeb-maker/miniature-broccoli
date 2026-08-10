@@ -52,6 +52,37 @@ describe('mb-radio-group', () => {
     fieldset.remove();
   });
 
+  it('restores slotted radio disabled state when the group re-enables', async () => {
+    const group = document.createElement('mb-radio-group') as MbRadioGroup;
+    group.name = 'org';
+    const a = document.createElement('mb-radio') as MbRadio;
+    a.value = 'a';
+    a.label = 'A';
+    const b = document.createElement('mb-radio') as MbRadio;
+    b.value = 'b';
+    b.label = 'B';
+    b.disabled = true;
+    group.append(a, b);
+    document.body.appendChild(group);
+    await group.updateComplete;
+    await group.updateComplete;
+    await a.updateComplete;
+    await b.updateComplete;
+
+    group.disabled = true;
+    await group.updateComplete;
+    await group.updateComplete;
+    expect(a.disabled).toBe(true);
+    expect(b.disabled).toBe(true);
+
+    group.disabled = false;
+    await group.updateComplete;
+    await group.updateComplete;
+    expect(a.disabled).toBe(false);
+    expect(b.disabled).toBe(true);
+    group.remove();
+  });
+
   it('updates value from slotted radio selection', async () => {
     const group = document.createElement('mb-radio-group') as MbRadioGroup;
     group.name = 'org';
