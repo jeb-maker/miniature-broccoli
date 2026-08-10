@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fix: hide all `mb-select` option slots so slotted `<option>` labels no longer appear under the control
 - Docs: `mb-nav-toggle` / `mb-toggle` coverage in README, Introduction, and `docs/go-htmx.md`
 - Tests: move badge / card / input suites into their own files
 
