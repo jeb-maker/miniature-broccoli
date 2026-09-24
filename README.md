@@ -65,6 +65,7 @@ npm run storybook
 | `./avatar` | `mb-avatar` |
 | `./spinner` | `mb-spinner` |
 | `./toolbar` | `mb-toolbar` |
+| `./table` | `mb-table`, `mb-table-row`, `mb-table-cell` |
 
 Typography: CSS classes `.mb-title`, `.mb-body`, `.mb-body-sm` (from `tokens.css` or `typography.css`).
 
@@ -79,7 +80,8 @@ Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'`
 - **`mb-button`**: `variant="danger"`; with `href`, renders a styled `<a>` (no accidental form submit).
 - **`mb-modal`**: native `<dialog>`.
 - **`mb-nav-toggle`**: pairs with `mb-nav` via `for` / `id`; emits `mb-toggle` (`{ expanded }`).
-- **Anti-FOUC**: interactive controls/overlays are hidden until defined. Layout primitives (`mb-card`, toolbar, nav, …) stay visible; opt in with class `mb-fouc`.
+- **`mb-table`**: wide = grid, narrow (`≤36rem`) = stacked cards; labels come from the head row (or `label` on each cell). Force with `layout="table"|"cards"`. Editable cells: slot `mb-input` / `mb-select` with `density="compact"` + `hide-label`.
+- **Anti-FOUC**: interactive controls/overlays are hidden until defined. Layout primitives (`mb-card`, toolbar, nav, table, …) stay visible; opt in with class `mb-fouc`.
 - **Dark tokens**: `prefers-color-scheme: dark`, or force with `data-mb-color-scheme="dark"|"light"` on `:root` / `.mb-theme`.
 - **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4.
 

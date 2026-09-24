@@ -22,6 +22,14 @@ export type { MbNavToggle } from './components/nav-toggle.js';
 export type { MbAvatar, AvatarSize } from './components/avatar.js';
 export type { MbSpinner, SpinnerSize } from './components/spinner.js';
 export type { MbToolbar } from './components/toolbar.js';
+export type {
+  MbTable,
+  MbTableRow,
+  MbTableCell,
+  TableLayout,
+  TableDensity,
+  TableCellAlign,
+} from './components/table.js';
 
 import type { MbAlert } from './components/alert.js';
 import type { MbAvatar } from './components/avatar.js';
@@ -46,6 +54,7 @@ import type { MbTag } from './components/tag.js';
 import type { MbTextarea } from './components/textarea.js';
 import type { MbToast } from './components/toast.js';
 import type { MbToolbar } from './components/toolbar.js';
+import type { MbTable, MbTableRow, MbTableCell } from './components/table.js';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -72,6 +81,9 @@ declare global {
     'mb-avatar': MbAvatar;
     'mb-spinner': MbSpinner;
     'mb-toolbar': MbToolbar;
+    'mb-table': MbTable;
+    'mb-table-row': MbTableRow;
+    'mb-table-cell': MbTableCell;
   }
 }
 

@@ -178,6 +178,20 @@ declare namespace JSX {
       label?: string;
     };
     'mb-toolbar': MbBaseAttrs;
+    'mb-table': MbBaseAttrs & {
+      label?: string;
+      columns?: string;
+      density?: 'default' | 'compact';
+      layout?: 'auto' | 'table' | 'cards';
+    };
+    'mb-table-row': MbBaseAttrs & {
+      head?: boolean;
+    };
+    'mb-table-cell': MbBaseAttrs & {
+      label?: string;
+      align?: 'start' | 'center' | 'end';
+      primary?: boolean;
+    };
   }
 }
 

@@ -64,26 +64,54 @@ Or a JSON attribute (escape carefully in templates):
 
 ### Compact table / HTMX cells
 
-```html
-<form id="item-form-{{ .ID }}" hx-post="/items/{{ .ID }}" hx-trigger="mb-change from:#status-{{ .ID }}">
-  <!-- CSRF + hidden fields -->
-</form>
+Import `./table`. Below `36rem`, each body row becomes a labeled card (same breakpoint as `mb-nav`). Head labels are copied onto cells when `label` is omitted.
 
-<mb-select
-  id="status-{{ .ID }}"
-  form="item-form-{{ .ID }}"
-  name="status"
-  value="{{ .Status }}"
-  density="compact"
-  hide-label
-  aria-label="Status"
->
-  <option value="todo">Todo</option>
-  <option value="done">Done</option>
-</mb-select>
+```html
+<mb-table label="Items" density="compact" columns="2fr 1fr auto">
+  <mb-table-row slot="head">
+    <mb-table-cell>Title</mb-table-cell>
+    <mb-table-cell>Status</mb-table-cell>
+    <mb-table-cell></mb-table-cell>
+  </mb-table-row>
+
+  {{ range .Items }}
+  <mb-table-row>
+    <mb-table-cell primary>
+      <form id="item-form-{{ .ID }}" hx-post="/items/{{ .ID }}" hx-trigger="mb-change from:#status-{{ .ID }}">
+        <!-- CSRF + hidden fields -->
+      </form>
+      <mb-input
+        form="item-form-{{ .ID }}"
+        name="title"
+        value="{{ .Title }}"
+        density="compact"
+        hide-label
+        aria-label="Title"
+      ></mb-input>
+    </mb-table-cell>
+    <mb-table-cell>
+      <mb-select
+        id="status-{{ .ID }}"
+        form="item-form-{{ .ID }}"
+        name="status"
+        value="{{ .Status }}"
+        density="compact"
+        hide-label
+        aria-label="Status"
+      >
+        <option value="todo">Todo</option>
+        <option value="done">Done</option>
+      </mb-select>
+    </mb-table-cell>
+    <mb-table-cell align="end">
+      <mb-button size="sm" type="submit" form="item-form-{{ .ID }}">Save</mb-button>
+    </mb-table-cell>
+  </mb-table-row>
+  {{ end }}
+</mb-table>
 ```
 
-FACE honors the HTML `form="…"` attribute so controls can live outside the `<form>` element.
+Force cards in a narrow column with `layout="cards"`. FACE honors the HTML `form="…"` attribute so controls can live outside the `<form>` element.
 
 ### App shell nav + mobile toggle
 
