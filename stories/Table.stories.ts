@@ -24,7 +24,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          'Responsive editable table: wide viewports use a grid; below `36rem` each row becomes a labeled card (same breakpoint as `mb-nav`).',
+          'Responsive editable table: wide viewports use a grid; below `36rem` each row becomes a labeled card. Pass `sections` and set `section` on rows to group; head cells with `sort-key` sort within each section.',
       },
     },
   },
@@ -179,6 +179,129 @@ export const Empty: Story = {
         Create a row to start editing inline.
         <mb-button slot="actions" size="sm">Add task</mb-button>
       </mb-empty-state>
+    </mb-table>
+  `,
+};
+
+const demoSections = [
+  { id: 'ops', label: 'Ops' },
+  { id: 'eng', label: 'Engineering' },
+];
+
+export const SectionsAndSort: Story = {
+  name: 'Sections + sort',
+  render: () => html`
+    <mb-table
+      label="Backlog"
+      density="compact"
+      columns="2fr 1fr auto"
+      .sections=${demoSections}
+    >
+      <mb-table-row slot="head">
+        <mb-table-cell sort-key="title">Title</mb-table-cell>
+        <mb-table-cell sort-key="status">Status</mb-table-cell>
+        <mb-table-cell></mb-table-cell>
+      </mb-table-row>
+
+      <mb-table-row section="ops">
+        <mb-table-cell primary sort-value="Wire HTMX save">
+          <mb-input
+            name="t1"
+            value="Wire HTMX save"
+            density="compact"
+            hide-label
+            aria-label="Title"
+          ></mb-input>
+        </mb-table-cell>
+        <mb-table-cell sort-value="doing">
+          <mb-select
+            name="s1"
+            value="doing"
+            density="compact"
+            hide-label
+            aria-label="Status"
+            .options=${statusOptions}
+          ></mb-select>
+        </mb-table-cell>
+        <mb-table-cell align="end">
+          <mb-button size="sm">Save</mb-button>
+        </mb-table-cell>
+      </mb-table-row>
+
+      <mb-table-row section="eng">
+        <mb-table-cell primary sort-value="Mobile card layout">
+          <mb-input
+            name="t2"
+            value="Mobile card layout"
+            density="compact"
+            hide-label
+            aria-label="Title"
+          ></mb-input>
+        </mb-table-cell>
+        <mb-table-cell sort-value="todo">
+          <mb-select
+            name="s2"
+            value="todo"
+            density="compact"
+            hide-label
+            aria-label="Status"
+            .options=${statusOptions}
+          ></mb-select>
+        </mb-table-cell>
+        <mb-table-cell align="end">
+          <mb-button size="sm">Save</mb-button>
+        </mb-table-cell>
+      </mb-table-row>
+
+      <mb-table-row section="ops">
+        <mb-table-cell primary sort-value="Pager rotation">
+          <mb-input
+            name="t3"
+            value="Pager rotation"
+            density="compact"
+            hide-label
+            aria-label="Title"
+          ></mb-input>
+        </mb-table-cell>
+        <mb-table-cell sort-value="done">
+          <mb-select
+            name="s3"
+            value="done"
+            density="compact"
+            hide-label
+            aria-label="Status"
+            .options=${statusOptions}
+          ></mb-select>
+        </mb-table-cell>
+        <mb-table-cell align="end">
+          <mb-button size="sm">Save</mb-button>
+        </mb-table-cell>
+      </mb-table-row>
+
+      <mb-table-row section="eng">
+        <mb-table-cell primary sort-value="Design tokens">
+          <mb-input
+            name="t4"
+            value="Design tokens"
+            density="compact"
+            hide-label
+            aria-label="Title"
+          ></mb-input>
+        </mb-table-cell>
+        <mb-table-cell sort-value="doing">
+          <mb-select
+            name="s4"
+            value="doing"
+            density="compact"
+            hide-label
+            aria-label="Status"
+            .options=${statusOptions}
+          ></mb-select>
+        </mb-table-cell>
+        <mb-table-cell align="end">
+          <mb-button size="sm">Save</mb-button>
+        </mb-table-cell>
+      </mb-table-row>
     </mb-table>
   `,
 };

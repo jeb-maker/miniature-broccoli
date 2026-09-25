@@ -29,6 +29,8 @@ export type {
   TableLayout,
   TableDensity,
   TableCellAlign,
+  TableSortDirection,
+  TableSection,
 } from './components/table.js';
 
 import type { MbAlert } from './components/alert.js';

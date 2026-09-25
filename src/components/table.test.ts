@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import './table.js';
-import type { MbTable, MbTableCell } from './table.js';
+import type { MbTable, MbTableCell, MbTableRow } from './table.js';
 
 describe('mb-table', () => {
   let widthMatcher = false;
@@ -57,7 +57,6 @@ describe('mb-table', () => {
     `;
     document.body.appendChild(el);
     await el.updateComplete;
-    // slotchange sync is sync after upgrade
     await el.updateComplete;
     return el;
   }
@@ -135,6 +134,130 @@ describe('mb-table', () => {
     listener?.({ matches: true } as MediaQueryListEvent);
     await el.updateComplete;
     expect(el.getAttribute('data-mode')).toBe('cards');
+    el.remove();
+  });
+
+  it('groups rows into section slots from sections + row.section', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.sections = [
+      { id: 'ops', label: 'Ops' },
+      { id: 'eng', label: 'Engineering' },
+    ];
+    el.innerHTML = `
+      <mb-table-row slot="head">
+        <mb-table-cell sort-key="name">Name</mb-table-cell>
+      </mb-table-row>
+      <mb-table-row section="eng"><mb-table-cell sort-value="Zoe">Zoe</mb-table-cell></mb-table-row>
+      <mb-table-row section="ops"><mb-table-cell sort-value="Ada">Ada</mb-table-cell></mb-table-row>
+      <mb-table-row section="ops"><mb-table-cell sort-value="Lin">Lin</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const opsRows = [...el.querySelectorAll<MbTableRow>('mb-table-row[section="ops"]')];
+    const engRows = [...el.querySelectorAll<MbTableRow>('mb-table-row[section="eng"]')];
+    expect(opsRows.every((row) => row.slot === 'section-ops')).toBe(true);
+    expect(engRows.every((row) => row.slot === 'section-eng')).toBe(true);
+    expect(el.shadowRoot!.textContent).toContain('Ops');
+    expect(el.shadowRoot!.textContent).toContain('Engineering');
+    el.remove();
+  });
+
+  it('sorts rows within each section and emits mb-sort', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.sections = [
+      { id: 'ops', label: 'Ops' },
+      { id: 'eng', label: 'Engineering' },
+    ];
+    el.innerHTML = `
+      <mb-table-row slot="head">
+        <mb-table-cell sort-key="name">Name</mb-table-cell>
+      </mb-table-row>
+      <mb-table-row section="ops"><mb-table-cell sort-value="Lin">Lin</mb-table-cell></mb-table-row>
+      <mb-table-row section="ops"><mb-table-cell sort-value="Ada">Ada</mb-table-cell></mb-table-row>
+      <mb-table-row section="eng"><mb-table-cell sort-value="Zoe">Zoe</mb-table-cell></mb-table-row>
+      <mb-table-row section="eng"><mb-table-cell sort-value="Bea">Bea</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const sorts: Array<{ key: string; direction: string }> = [];
+    el.addEventListener('mb-sort', ((event: CustomEvent) => {
+      sorts.push(event.detail);
+    }) as EventListener);
+
+    const headCell = el.querySelector<MbTableCell>('mb-table-row[slot="head"] mb-table-cell')!;
+    await headCell.updateComplete;
+    const sortBtn = headCell.shadowRoot!.querySelector('button.sort') as HTMLButtonElement;
+    sortBtn.click();
+    await el.updateComplete;
+
+    expect(el.sortKey).toBe('name');
+    expect(el.sortDirection).toBe('asc');
+    expect(sorts).toEqual([{ key: 'name', direction: 'asc' }]);
+
+    const opsOrder = [...el.querySelectorAll<MbTableRow>('mb-table-row[section="ops"]')].map(
+      (row) => row.querySelector('mb-table-cell')!.sortValue || row.textContent?.trim(),
+    );
+    const engOrder = [...el.querySelectorAll<MbTableRow>('mb-table-row[section="eng"]')].map(
+      (row) => row.querySelector('mb-table-cell')!.sortValue || row.textContent?.trim(),
+    );
+    expect(opsOrder).toEqual(['Ada', 'Lin']);
+    expect(engOrder).toEqual(['Bea', 'Zoe']);
+
+    sortBtn.click();
+    await el.updateComplete;
+    expect(el.sortDirection).toBe('desc');
+    const opsDesc = [...el.querySelectorAll<MbTableRow>('mb-table-row[section="ops"]')].map(
+      (row) => row.querySelector('mb-table-cell')!.sortValue,
+    );
+    expect(opsDesc).toEqual(['Lin', 'Ada']);
+    el.remove();
+  });
+
+  it('toggles section collapsed and emits mb-section-toggle', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.sections = [{ id: 'ops', label: 'Ops' }];
+    el.innerHTML = `
+      <mb-table-row slot="head"><mb-table-cell>Name</mb-table-cell></mb-table-row>
+      <mb-table-row section="ops"><mb-table-cell>Ada</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const toggles: Array<{ id: string; collapsed: boolean }> = [];
+    el.addEventListener('mb-section-toggle', ((event: CustomEvent) => {
+      toggles.push(event.detail);
+    }) as EventListener);
+
+    const button = el.shadowRoot!.querySelector('.section-head') as HTMLButtonElement;
+    button.click();
+    await el.updateComplete;
+
+    expect(el.sections[0].collapsed).toBe(true);
+    expect(toggles).toEqual([{ id: 'ops', collapsed: true }]);
+    expect(el.shadowRoot!.querySelector('.section')?.hasAttribute('data-collapsed')).toBe(true);
+    el.remove();
+  });
+
+  it('parses sections JSON attribute', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.setAttribute(
+      'sections',
+      JSON.stringify([
+        { id: 'a', label: 'A' },
+        { id: 'b', label: 'B', collapsed: true },
+      ]),
+    );
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.sections).toEqual([
+      { id: 'a', label: 'A', collapsed: false },
+      { id: 'b', label: 'B', collapsed: true },
+    ]);
     el.remove();
   });
 });

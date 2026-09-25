@@ -1,29 +1,65 @@
 import { LitElement, html, css, nothing } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { sharedStyles } from '../lib/styles.js';
 
 export type TableLayout = 'auto' | 'table' | 'cards';
 export type TableDensity = 'default' | 'compact';
 export type TableCellAlign = 'start' | 'center' | 'end';
+export type TableSortDirection = 'asc' | 'desc';
+export type TableSection = { id: string; label: string; collapsed?: boolean };
 
 const NARROW_MQ = '(max-width: 36rem)';
 
+function parseSectionsAttribute(value: string | null): TableSection[] {
+  if (!value) return [];
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter(
+        (item): item is TableSection =>
+          Boolean(item) &&
+          typeof item === 'object' &&
+          typeof (item as TableSection).id === 'string' &&
+          typeof (item as TableSection).label === 'string',
+      )
+      .map((item) => ({
+        id: item.id,
+        label: item.label,
+        collapsed: Boolean(item.collapsed),
+      }));
+  } catch {
+    return [];
+  }
+}
+
+function compareSortValues(a: string, b: string): number {
+  const na = Number(a);
+  const nb = Number(b);
+  if (a !== '' && b !== '' && !Number.isNaN(na) && !Number.isNaN(nb)) {
+    return na - nb;
+  }
+  return a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true });
+}
+
 /**
  * Responsive data table: grid on wide viewports, stacked cards when narrow.
- * Pair cells with `mb-input` / `mb-select` (`density="compact"` + `hide-label`) for editable rows.
+ * Optional `sections` group body rows (`section` on each row). Head cells with
+ * `sort-key` are sortable (client reorder + `mb-sort` event).
  *
  * ```html
- * <mb-table label="Items" columns="2fr 1fr auto" density="compact">
+ * <mb-table
+ *   sections='[{"id":"ops","label":"Ops"},{"id":"eng","label":"Engineering"}]'
+ *   columns="2fr 1fr auto"
+ * >
  *   <mb-table-row slot="head">
- *     <mb-table-cell>Name</mb-table-cell>
- *     <mb-table-cell>Status</mb-table-cell>
+ *     <mb-table-cell sort-key="title">Title</mb-table-cell>
+ *     <mb-table-cell sort-key="status">Status</mb-table-cell>
  *     <mb-table-cell></mb-table-cell>
  *   </mb-table-row>
- *   <mb-table-row>
- *     <mb-table-cell label="Name">…</mb-table-cell>
- *     …
- *   </mb-table-row>
+ *   <mb-table-row section="ops">…</mb-table-row>
  * </mb-table>
  * ```
  */
@@ -69,6 +105,76 @@ export class MbTable extends LitElement {
         min-inline-size: 0;
       }
 
+      .section {
+        display: flex;
+        flex-direction: column;
+        gap: var(--mb-space-2);
+        min-inline-size: 0;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--mb-space-3);
+        inline-size: 100%;
+        margin: 0;
+        padding-block: var(--mb-space-2);
+        padding-inline: var(--mb-space-3);
+        border: 1px solid var(--mb-color-border);
+        border-radius: var(--mb-radius-md);
+        background: var(--mb-color-bg);
+        color: var(--mb-color-fg);
+        font: inherit;
+        font-family: var(--mb-font-display);
+        font-weight: 650;
+        text-align: start;
+        cursor: pointer;
+      }
+
+      .section-head:focus-visible {
+        outline: var(--mb-focus-ring);
+        outline-offset: var(--mb-focus-offset);
+      }
+
+      .section-label {
+        min-inline-size: 0;
+      }
+
+      .section-meta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--mb-space-2);
+        color: var(--mb-color-muted);
+        font-family: var(--mb-font-body);
+        font-size: var(--mb-font-size-sm);
+        font-weight: 600;
+      }
+
+      .section-chevron {
+        display: inline-block;
+        transition: transform var(--mb-transition);
+      }
+
+      .section[data-collapsed] .section-chevron {
+        transform: rotate(-90deg);
+      }
+
+      .section-rows {
+        display: flex;
+        flex-direction: column;
+        gap: var(--mb-space-3);
+        min-inline-size: 0;
+      }
+
+      .section[data-collapsed] .section-rows {
+        display: none;
+      }
+
+      .ungrouped:not([data-has-content]) {
+        display: none;
+      }
+
       .empty:not([data-has-content]) {
         display: none;
       }
@@ -91,8 +197,27 @@ export class MbTable extends LitElement {
         gap: 0;
       }
 
+      :host([data-mode='table']) .section {
+        gap: 0;
+      }
+
+      :host([data-mode='table']) .section-head {
+        border: none;
+        border-radius: 0;
+        border-block-end: 1px solid var(--mb-color-border);
+        padding-inline: var(--mb-space-4);
+      }
+
+      :host([data-mode='table']) .section-rows {
+        gap: 0;
+      }
+
       :host([data-mode='table'][density='compact']) .root {
         gap: var(--mb-space-2);
+      }
+
+      :host([data-mode='table'][density='compact']) .section-head {
+        padding-inline: var(--mb-space-3);
       }
     `,
   ];
@@ -118,8 +243,36 @@ export class MbTable extends LitElement {
   @property({ reflect: true })
   layout: TableLayout = 'auto';
 
+  /**
+   * Section list (JS property or JSON attribute). Body rows reference a section
+   * via `section="id"` and are slotted under that group.
+   */
+  @property({
+    attribute: 'sections',
+    converter: {
+      fromAttribute: parseSectionsAttribute,
+      toAttribute(value: TableSection[]): string | null {
+        return value?.length ? JSON.stringify(value) : null;
+      },
+    },
+  })
+  sections: TableSection[] = [];
+
+  /** Active sort column key (matches `sort-key` on a head cell). */
+  @property({ attribute: 'sort-key', reflect: true })
+  sortKey = '';
+
+  /** Active sort direction when `sort-key` is set. */
+  @property({ attribute: 'sort-direction', reflect: true })
+  sortDirection: TableSortDirection = 'asc';
+
+  @state()
+  private _sectionCounts: Record<string, number> = {};
+
   #mq?: MediaQueryList;
   #onMq = () => this.#syncMode();
+  #sorting = false;
+  #syncing = false;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -127,7 +280,7 @@ export class MbTable extends LitElement {
     this.#mq = window.matchMedia(NARROW_MQ);
     this.#mq.addEventListener('change', this.#onMq);
     this.#applyColumns();
-    this.#syncMode();
+    queueMicrotask(() => this.#syncMode());
   }
 
   override disconnectedCallback(): void {
@@ -141,9 +294,24 @@ export class MbTable extends LitElement {
     } else {
       this.removeAttribute('aria-label');
     }
-    if (changed.has('columns') || changed.has('layout') || changed.has('density')) {
-      this.#applyColumns();
-      this.#syncMode();
+    const needsSync =
+      changed.has('columns') ||
+      changed.has('layout') ||
+      changed.has('density') ||
+      changed.has('sections');
+    const needsSort =
+      changed.has('sortKey') || changed.has('sortDirection') || changed.has('sections');
+    if (needsSync || needsSort) {
+      queueMicrotask(() => {
+        if (needsSync) {
+          this.#applyColumns();
+          this.#syncMode();
+        }
+        if (needsSort) {
+          this.#syncSortUi();
+          this.#applySort();
+        }
+      });
     }
   }
 
@@ -151,6 +319,10 @@ export class MbTable extends LitElement {
     if (this.layout === 'table') return 'table';
     if (this.layout === 'cards') return 'cards';
     return this.#mq?.matches ? 'cards' : 'table';
+  }
+
+  get #hasSections(): boolean {
+    return this.sections.length > 0;
   }
 
   #applyColumns(): void {
@@ -171,26 +343,92 @@ export class MbTable extends LitElement {
     this.style.setProperty('--mb-table-template', raw);
   }
 
+  /** Re-slot rows and refresh presentation (called when a row `section` changes). */
+  refreshRows(): void {
+    this.#syncMode();
+    this.#applySort();
+  }
+
+  #bodyRows(): MbTableRow[] {
+    return [...this.querySelectorAll('mb-table-row')].filter(
+      (row) => row.slot !== 'head' && !row.hasAttribute('head'),
+    );
+  }
+
+  #headRow(): MbTableRow | null {
+    return (
+      this.querySelector<MbTableRow>('mb-table-row[slot="head"]') ??
+      this.querySelector<MbTableRow>('mb-table-row[head]')
+    );
+  }
+
+  #syncRowSlots(): void {
+    const known = new Set(this.sections.map((section) => section.id));
+    const counts: Record<string, number> = {};
+    for (const section of this.sections) {
+      counts[section.id] = 0;
+    }
+
+    for (const row of this.#bodyRows()) {
+      const id = row.section.trim();
+      if (id && known.has(id)) {
+        const slotName = `section-${id}`;
+        if (row.slot !== slotName) {
+          row.slot = slotName;
+        }
+        counts[id] = (counts[id] ?? 0) + 1;
+      } else if (row.slot.startsWith('section-')) {
+        row.slot = '';
+      }
+    }
+
+    const prev = this._sectionCounts;
+    const same =
+      Object.keys(counts).length === Object.keys(prev).length &&
+      Object.keys(counts).every((key) => prev[key] === counts[key]);
+    if (!same) {
+      this._sectionCounts = counts;
+    }
+  }
+
   #syncMode(): void {
-    const mode = this.#mode;
-    this.setAttribute('data-mode', mode);
-    const rows = this.querySelectorAll('mb-table-row');
-    rows.forEach((row) => {
-      row.setAttribute('data-mode', mode);
-      row.toggleAttribute('data-compact', this.density === 'compact');
-    });
-    const cells = this.querySelectorAll('mb-table-cell');
-    cells.forEach((cell) => {
-      cell.setAttribute('data-mode', mode);
-      cell.toggleAttribute('data-compact', this.density === 'compact');
-    });
-    this.#syncLabelsFromHead();
+    if (this.#syncing) return;
+    this.#syncing = true;
+    try {
+      const mode = this.#mode;
+      this.setAttribute('data-mode', mode);
+      this.#syncRowSlots();
+      const rows = this.querySelectorAll('mb-table-row');
+      rows.forEach((row) => {
+        row.setAttribute('data-mode', mode);
+        row.toggleAttribute('data-compact', this.density === 'compact');
+      });
+      const cells = this.querySelectorAll('mb-table-cell');
+      cells.forEach((cell) => {
+        cell.setAttribute('data-mode', mode);
+        cell.toggleAttribute('data-compact', this.density === 'compact');
+      });
+      this.#syncLabelsFromHead();
+      this.#syncSortUi();
+      this.#syncUngroupedVisibility();
+    } finally {
+      this.#syncing = false;
+    }
+  }
+
+  #syncUngroupedVisibility(): void {
+    if (!this.#hasSections) return;
+    const slot = this.renderRoot.querySelector<HTMLSlotElement>('slot.ungrouped-slot');
+    const host = this.renderRoot.querySelector('.ungrouped');
+    if (!slot || !host) return;
+    const has = slot.assignedElements({ flatten: true }).some(
+      (node) => node.localName === 'mb-table-row',
+    );
+    host.toggleAttribute('data-has-content', has);
   }
 
   #syncLabelsFromHead(): void {
-    const head =
-      this.querySelector<MbTableRow>('mb-table-row[slot="head"]') ??
-      this.querySelector<MbTableRow>('mb-table-row[head]');
+    const head = this.#headRow();
     if (!head) return;
     const labels = [...head.querySelectorAll('mb-table-cell')].map((cell) =>
       (cell.textContent ?? '').replace(/\s+/g, ' ').trim(),
@@ -205,10 +443,7 @@ export class MbTable extends LitElement {
       );
     }
 
-    const bodyRows = [...this.querySelectorAll('mb-table-row')].filter(
-      (row) => row.slot !== 'head' && !row.hasAttribute('head'),
-    );
-    for (const row of bodyRows) {
+    for (const row of this.#bodyRows()) {
       const cells = [...row.querySelectorAll<MbTableCell>(':scope > mb-table-cell')];
       cells.forEach((cell, index) => {
         if (cell.dataset.labelLocked === 'true') return;
@@ -217,13 +452,127 @@ export class MbTable extends LitElement {
           return;
         }
         const text = labels[index];
-        if (text) cell.label = text;
+        if (text && cell.label !== text) cell.label = text;
       });
     }
   }
 
+  #syncSortUi(): void {
+    const head = this.#headRow();
+    if (!head) return;
+    for (const cell of head.querySelectorAll<MbTableCell>('mb-table-cell')) {
+      const key = cell.sortKey.trim();
+      const active = Boolean(key) && key === this.sortKey;
+      const direction = active ? this.sortDirection : null;
+      if (key && !cell.sortable) {
+        cell.sortable = true;
+      }
+      if (cell.sortActive !== active) {
+        cell.sortActive = active;
+      }
+      if (cell.sortDirection !== direction) {
+        cell.sortDirection = direction;
+      }
+    }
+  }
+
+  #sortColumnIndex(key: string): number {
+    const head = this.#headRow();
+    if (!head) return -1;
+    return [...head.querySelectorAll<MbTableCell>('mb-table-cell')].findIndex(
+      (cell) => cell.sortKey.trim() === key,
+    );
+  }
+
+  #rowSortValue(row: MbTableRow, key: string): string {
+    if (row.sortValue.trim() && (!key || this.#sortColumnIndex(key) < 0)) {
+      return row.sortValue.trim();
+    }
+    const index = this.#sortColumnIndex(key);
+    if (index < 0) return row.sortValue.trim();
+    const cell = row.querySelectorAll<MbTableCell>(':scope > mb-table-cell')[index];
+    if (!cell) return '';
+    if (cell.sortValue.trim()) return cell.sortValue.trim();
+    const control = cell.querySelector<HTMLElement & { value?: string }>(
+      'mb-input, mb-select, mb-textarea, input, select, textarea',
+    );
+    if (control && typeof control.value === 'string' && control.value !== '') {
+      return control.value;
+    }
+    return (cell.textContent ?? '').replace(/\s+/g, ' ').trim();
+  }
+
+  #applySort(): void {
+    if (this.#sorting || !this.sortKey.trim()) return;
+    this.#sorting = true;
+    try {
+      const key = this.sortKey.trim();
+      const dir = this.sortDirection === 'desc' ? -1 : 1;
+      const groups = this.#hasSections
+        ? this.sections.map((section) =>
+            this.#bodyRows().filter((row) => row.section.trim() === section.id),
+          )
+        : [this.#bodyRows()];
+
+      for (const rows of groups) {
+        const sorted = [...rows].sort(
+          (a, b) =>
+            dir * compareSortValues(this.#rowSortValue(a, key), this.#rowSortValue(b, key)),
+        );
+        const unchanged =
+          rows.length === sorted.length && rows.every((row, index) => row === sorted[index]);
+        if (unchanged) continue;
+        for (const row of sorted) {
+          this.appendChild(row);
+        }
+      }
+    } finally {
+      this.#sorting = false;
+    }
+  }
+
+  #cycleSort(key: string): void {
+    if (this.sortKey === key) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortKey = key;
+      this.sortDirection = 'asc';
+    }
+    this.#syncSortUi();
+    this.#applySort();
+    this.dispatchEvent(
+      new CustomEvent('mb-sort', {
+        detail: { key: this.sortKey, direction: this.sortDirection },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  #toggleSection(id: string): void {
+    const index = this.sections.findIndex((section) => section.id === id);
+    if (index < 0) return;
+    const next = this.sections.map((section, i) =>
+      i === index ? { ...section, collapsed: !section.collapsed } : section,
+    );
+    this.sections = next;
+    const collapsed = Boolean(next[index]?.collapsed);
+    this.dispatchEvent(
+      new CustomEvent('mb-section-toggle', {
+        detail: { id, collapsed },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
   #onSlotChange = (): void => {
-    this.#syncMode();
+    if (this.#sorting || this.#syncing) return;
+    queueMicrotask(() => {
+      if (this.#sorting || this.#syncing) return;
+      this.#syncMode();
+      this.#applySort();
+    });
   };
 
   #onEmptySlot(event: Event): void {
@@ -232,6 +581,25 @@ export class MbTable extends LitElement {
     this.renderRoot.querySelector('.empty')?.toggleAttribute('data-has-content', has);
   }
 
+  #onHeadClick = (event: Event): void => {
+    const path = event.composedPath();
+    const cell = path.find(
+      (node): node is MbTableCell =>
+        node instanceof HTMLElement && node.localName === 'mb-table-cell',
+    );
+    if (!cell?.sortKey.trim()) return;
+    if (event.defaultPrevented) return;
+    const blocked = path.some(
+      (node) =>
+        node instanceof Element &&
+        node.matches(
+          'mb-input, mb-select, mb-textarea, mb-button, a, input, select, textarea',
+        ),
+    );
+    if (blocked) return;
+    this.#cycleSort(cell.sortKey.trim());
+  };
+
   override render() {
     return html`
       <div part="root" class="root">
@@ -239,11 +607,52 @@ export class MbTable extends LitElement {
           ? html`<div part="caption" class="caption">${this.label}</div>`
           : nothing}
         <div part="frame" class="frame">
-          <div part="head" class="head">
+          <div part="head" class="head" @click=${this.#onHeadClick}>
             <slot name="head" @slotchange=${this.#onSlotChange}></slot>
           </div>
           <div part="body" class="body">
-            <slot @slotchange=${this.#onSlotChange}></slot>
+            ${this.#hasSections
+              ? html`
+                  ${repeat(
+                    this.sections,
+                    (section) => section.id,
+                    (section) => html`
+                      <section
+                        part="section"
+                        class="section"
+                        data-section=${section.id}
+                        ?data-collapsed=${Boolean(section.collapsed)}
+                      >
+                        <button
+                          type="button"
+                          part="section-head"
+                          class="section-head"
+                          aria-expanded=${section.collapsed ? 'false' : 'true'}
+                          @click=${() => this.#toggleSection(section.id)}
+                        >
+                          <span class="section-label">${section.label}</span>
+                          <span class="section-meta">
+                            <span part="section-count">${this._sectionCounts[section.id] ?? 0}</span>
+                            <span class="section-chevron" aria-hidden="true">▾</span>
+                          </span>
+                        </button>
+                        <div part="section-rows" class="section-rows">
+                          <slot
+                            name=${`section-${section.id}`}
+                            @slotchange=${this.#onSlotChange}
+                          ></slot>
+                        </div>
+                      </section>
+                    `,
+                  )}
+                  <div part="ungrouped" class="ungrouped section">
+                    <slot
+                      class="ungrouped-slot"
+                      @slotchange=${this.#onSlotChange}
+                    ></slot>
+                  </div>
+                `
+              : html`<slot @slotchange=${this.#onSlotChange}></slot>`}
           </div>
         </div>
         <div part="empty" class="empty">
@@ -326,6 +735,14 @@ export class MbTableRow extends LitElement {
   @property({ type: Boolean, reflect: true })
   head = false;
 
+  /** Section id referencing an entry in `mb-table.sections`. */
+  @property({ reflect: true })
+  section = '';
+
+  /** Fallback sort value when cell `sort-value` / control value is empty. */
+  @property({ attribute: 'sort-value' })
+  sortValue = '';
+
   override connectedCallback(): void {
     super.connectedCallback();
     this.setAttribute('role', 'row');
@@ -337,6 +754,16 @@ export class MbTableRow extends LitElement {
   override updated(changed: Map<string, unknown>): void {
     if (changed.has('head') && this.head) {
       this.slot = 'head';
+    }
+    if (changed.has('section')) {
+      const prev = changed.get('section');
+      // Skip the initial undefined → value hydration; slotchange handles first paint.
+      if (prev !== undefined || this.section) {
+        const table = this.closest('mb-table');
+        if (table && prev !== undefined) {
+          table.refreshRows();
+        }
+      }
     }
     const isHead = this.slot === 'head' || this.head;
     const hideHead = isHead && this.getAttribute('data-mode') === 'cards';
@@ -379,6 +806,36 @@ export class MbTableCell extends LitElement {
       .value {
         min-inline-size: 0;
         max-inline-size: 100%;
+      }
+
+      .sort {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--mb-space-1);
+        max-inline-size: 100%;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-weight: inherit;
+        text-align: inherit;
+        cursor: pointer;
+      }
+
+      .sort:focus-visible {
+        outline: var(--mb-focus-ring);
+        outline-offset: var(--mb-focus-offset);
+      }
+
+      .sort-indicator {
+        color: var(--mb-color-muted);
+        font-size: 0.75em;
+      }
+
+      :host([sort-active]) .sort-indicator {
+        color: var(--mb-color-accent);
       }
 
       :host([align='center']) .cell {
@@ -427,13 +884,41 @@ export class MbTableCell extends LitElement {
   @property({ type: Boolean, reflect: true })
   primary = false;
 
+  /** Column key used for sorting when this is a head cell. */
+  @property({ attribute: 'sort-key', reflect: true })
+  sortKey = '';
+
+  /** Explicit sortable affordance (implied when `sort-key` is set). */
+  @property({ type: Boolean, reflect: true })
+  sortable = false;
+
+  /** Explicit value used when sorting this column. */
+  @property({ attribute: 'sort-value' })
+  sortValue = '';
+
+  @property({ type: Boolean, reflect: true, attribute: 'sort-active' })
+  sortActive = false;
+
+  @property({ attribute: false })
+  sortDirection: TableSortDirection | null = null;
+
   override connectedCallback(): void {
     super.connectedCallback();
     this.#syncRole();
   }
 
-  override updated(): void {
+  override updated(changed: Map<string, unknown>): void {
     this.#syncRole();
+    if (changed.has('sortKey') && this.sortKey.trim()) {
+      this.sortable = true;
+    }
+    if (this.#isHead() && this.sortKey.trim()) {
+      const ariaSort =
+        this.sortActive && this.sortDirection ? this.sortDirection : 'none';
+      this.setAttribute('aria-sort', ariaSort);
+    } else {
+      this.removeAttribute('aria-sort');
+    }
   }
 
   #isHead(): boolean {
@@ -445,15 +930,28 @@ export class MbTableCell extends LitElement {
     this.setAttribute('role', this.#isHead() ? 'columnheader' : 'cell');
   }
 
+  #indicator(): string {
+    if (!this.sortActive || !this.sortDirection) return '↕';
+    return this.sortDirection === 'asc' ? '↑' : '↓';
+  }
+
   override render() {
     const showLabel =
       Boolean(this.label) && this.getAttribute('data-mode') === 'cards' && !this.#isHead();
+    const isSortableHead = this.#isHead() && (this.sortable || Boolean(this.sortKey.trim()));
 
     return html`
       <div part="cell" class="cell">
         <span part="label" class="label" ?hidden=${!showLabel}>${this.label}</span>
         <div part="value" class="value">
-          <slot></slot>
+          ${isSortableHead
+            ? html`
+                <button type="button" part="sort" class="sort" aria-label=${`Sort by ${this.sortKey || this.label || 'column'}`}>
+                  <slot></slot>
+                  <span class="sort-indicator" aria-hidden="true">${this.#indicator()}</span>
+                </button>
+              `
+            : html`<slot></slot>`}
         </div>
       </div>
     `;

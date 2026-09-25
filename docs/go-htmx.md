@@ -113,6 +113,35 @@ Import `./table`. Below `36rem`, each body row becomes a labeled card (same brea
 
 Force cards in a narrow column with `layout="cards"`. FACE honors the HTML `form="…"` attribute so controls can live outside the `<form>` element.
 
+### Sections + sort
+
+Pass a section list (JSON attribute or JS `.sections`). Each body row sets `section="…"`. Head cells with `sort-key` reorder rows **within** each section and emit composed `mb-sort` (`{ key, direction }`). Section headers toggle `collapsed` and emit `mb-section-toggle` (`{ id, collapsed }`).
+
+```html
+<mb-table
+  label="Backlog"
+  density="compact"
+  columns="2fr 1fr auto"
+  sections='[{"id":"ops","label":"Ops"},{"id":"eng","label":"Engineering"}]'
+>
+  <mb-table-row slot="head">
+    <mb-table-cell sort-key="title">Title</mb-table-cell>
+    <mb-table-cell sort-key="status">Status</mb-table-cell>
+    <mb-table-cell></mb-table-cell>
+  </mb-table-row>
+
+  {{ range .Items }}
+  <mb-table-row section="{{ .SectionID }}">
+    <mb-table-cell primary sort-value="{{ .Title }}">…</mb-table-cell>
+    <mb-table-cell sort-value="{{ .Status }}">…</mb-table-cell>
+    <mb-table-cell align="end">…</mb-table-cell>
+  </mb-table-row>
+  {{ end }}
+</mb-table>
+```
+
+Prefer `sort-value` on cells when the visible control is an `mb-input` / `mb-select` so sort stays stable while editing.
+
 ### App shell nav + mobile toggle
 
 ```html
@@ -139,6 +168,8 @@ Shadow-DOM native `change` / `input` do **not** retarget. Listen for composed cu
 | `mb-input` | input, textarea | `{ value }` (+ `files` for file inputs) |
 | `mb-close` | modal, toast | — |
 | `mb-toggle` | nav-toggle | `{ expanded }` |
+| `mb-sort` | table | `{ key, direction }` (`asc` \| `desc`) |
+| `mb-section-toggle` | table | `{ id, collapsed }` |
 
 Example: `hx-trigger="mb-change delay:300ms"`.
 
