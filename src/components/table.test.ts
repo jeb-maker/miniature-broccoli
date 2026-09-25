@@ -260,4 +260,91 @@ describe('mb-table', () => {
     ]);
     el.remove();
   });
+
+  it('reorders rows via moveRow and emits mb-reorder', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.reorderable = true;
+    el.innerHTML = `
+      <mb-table-row slot="head"><mb-table-cell>Name</mb-table-cell></mb-table-row>
+      <mb-table-row id="a"><mb-table-cell>Ada</mb-table-cell></mb-table-row>
+      <mb-table-row id="b"><mb-table-cell>Bea</mb-table-cell></mb-table-row>
+      <mb-table-row id="c"><mb-table-cell>Cyd</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const bodyRows = () =>
+      [...el.querySelectorAll<MbTableRow>('mb-table-row')].filter((row) => row.slot !== 'head');
+    expect(bodyRows().map((row) => row.id)).toEqual(['a', 'b', 'c']);
+
+    const rowA = el.querySelector<MbTableRow>('#a')!;
+    await rowA.updateComplete;
+    expect(rowA.hasAttribute('data-reorderable')).toBe(true);
+    expect(rowA.shadowRoot!.querySelector('.handle')).toBeTruthy();
+
+    const events: Array<{ rowId: string; order: Array<{ id: string }> }> = [];
+    el.addEventListener('mb-reorder', ((event: CustomEvent) => {
+      events.push(event.detail);
+    }) as EventListener);
+
+    el.moveRow(rowA, { after: el.querySelector<MbTableRow>('#c')! });
+    await el.updateComplete;
+
+    expect(bodyRows().map((row) => row.id)).toEqual(['b', 'c', 'a']);
+    expect(events.length).toBe(1);
+    expect(events[0].rowId).toBe('a');
+    expect(events[0].order.map((item) => item.id)).toEqual(['b', 'c', 'a']);
+    el.remove();
+  });
+
+  it('moves a row to another section on drop', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.reorderable = true;
+    el.sections = [
+      { id: 'ops', label: 'Ops' },
+      { id: 'eng', label: 'Engineering' },
+    ];
+    el.innerHTML = `
+      <mb-table-row slot="head"><mb-table-cell>Name</mb-table-cell></mb-table-row>
+      <mb-table-row id="a" section="ops"><mb-table-cell>Ada</mb-table-cell></mb-table-row>
+      <mb-table-row id="b" section="eng"><mb-table-cell>Bea</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const rowA = el.querySelector<MbTableRow>('#a')!;
+    el.moveRow(rowA, { before: el.querySelector<MbTableRow>('#b')!, section: 'eng' });
+    await el.updateComplete;
+    await el.updateComplete;
+
+    expect(rowA.section).toBe('eng');
+    expect(rowA.slot).toBe('section-eng');
+    el.remove();
+  });
+
+  it('exposes a drag handle when reorderable', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.reorderable = true;
+    el.innerHTML = `
+      <mb-table-row slot="head"><mb-table-cell>Name</mb-table-cell></mb-table-row>
+      <mb-table-row id="a"><mb-table-cell>Ada</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+    const row = el.querySelector<MbTableRow>('#a')!;
+    await row.updateComplete;
+    const handle = row.shadowRoot!.querySelector('.handle') as HTMLButtonElement;
+    expect(handle.getAttribute('aria-label')).toBe('Drag to reorder');
+    el.beginReorder(
+      row,
+      new PointerEvent('pointerdown', { pointerId: 9, button: 0, clientX: 1, clientY: 1 }),
+    );
+    expect(row.hasAttribute('data-dragging')).toBe(true);
+    window.dispatchEvent(new PointerEvent('pointerup', { pointerId: 9 }));
+    expect(row.hasAttribute('data-dragging')).toBe(false);
+    el.remove();
+  });
 });

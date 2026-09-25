@@ -142,6 +142,25 @@ Pass a section list (JSON attribute or JS `.sections`). Each body row sets `sect
 
 Prefer `sort-value` on cells when the visible control is an `mb-input` / `mb-select` so sort stays stable while editing.
 
+### Drag and drop reorder
+
+Add `reorderable` to show a grab handle on each body row (pointer / touch). Drop on another row to reorder; drop onto a row in another section (or an empty section) to move it. Emits composed `mb-reorder` and clears any active column sort so the manual order sticks. Prefer stable `id` / `data-id` on rows for the event payload.
+
+```html
+<mb-table
+  reorderable
+  sections='[{"id":"ops","label":"Ops"},{"id":"eng","label":"Engineering"}]'
+  hx-trigger="mb-reorder"
+  hx-post="/backlog/reorder"
+  hx-include="[name='csrf']"
+>
+  …
+  <mb-table-row id="item-{{ .ID }}" section="{{ .SectionID }}">…</mb-table-row>
+</mb-table>
+```
+
+`mb-reorder` detail: `{ rowId, fromSection, toSection, beforeId, afterId, order: [{ id, section }] }`.
+
 ### App shell nav + mobile toggle
 
 ```html
@@ -170,6 +189,7 @@ Shadow-DOM native `change` / `input` do **not** retarget. Listen for composed cu
 | `mb-toggle` | nav-toggle | `{ expanded }` |
 | `mb-sort` | table | `{ key, direction }` (`asc` \| `desc`) |
 | `mb-section-toggle` | table | `{ id, collapsed }` |
+| `mb-reorder` | table | `{ rowId, fromSection, toSection, beforeId, afterId, order }` |
 
 Example: `hx-trigger="mb-change delay:300ms"`.
 

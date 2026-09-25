@@ -186,6 +186,7 @@ declare namespace JSX {
       sections?: Array<{ id: string; label: string; collapsed?: boolean }> | string;
       'sort-key'?: string;
       'sort-direction'?: 'asc' | 'desc';
+      reorderable?: boolean;
     };
     'mb-table-row': MbBaseAttrs & {
       head?: boolean;

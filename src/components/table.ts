@@ -47,10 +47,12 @@ function compareSortValues(a: string, b: string): number {
 /**
  * Responsive data table: grid on wide viewports, stacked cards when narrow.
  * Optional `sections` group body rows (`section` on each row). Head cells with
- * `sort-key` are sortable (client reorder + `mb-sort` event).
+ * `sort-key` are sortable (client reorder + `mb-sort` event). Set `reorderable`
+ * for drag-and-drop row reordering (and cross-section moves).
  *
  * ```html
  * <mb-table
+ *   reorderable
  *   sections='[{"id":"ops","label":"Ops"},{"id":"eng","label":"Engineering"}]'
  *   columns="2fr 1fr auto"
  * >
@@ -219,6 +221,12 @@ export class MbTable extends LitElement {
       :host([data-mode='table'][density='compact']) .section-head {
         padding-inline: var(--mb-space-3);
       }
+
+      .section[data-drop-section] {
+        outline: 2px solid var(--mb-color-accent);
+        outline-offset: 2px;
+        border-radius: var(--mb-radius-md);
+      }
     `,
   ];
 
@@ -266,6 +274,10 @@ export class MbTable extends LitElement {
   @property({ attribute: 'sort-direction', reflect: true })
   sortDirection: TableSortDirection = 'asc';
 
+  /** Enable drag-and-drop reordering via the row handle (pointer / touch). */
+  @property({ type: Boolean, reflect: true })
+  reorderable = false;
+
   @state()
   private _sectionCounts: Record<string, number> = {};
 
@@ -273,6 +285,11 @@ export class MbTable extends LitElement {
   #onMq = () => this.#syncMode();
   #sorting = false;
   #syncing = false;
+  #committingReorder = false;
+  #dragRow: MbTableRow | null = null;
+  #dropRow: MbTableRow | null = null;
+  #dropEdge: 'before' | 'after' = 'before';
+  #dropSectionId: string | null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -298,7 +315,8 @@ export class MbTable extends LitElement {
       changed.has('columns') ||
       changed.has('layout') ||
       changed.has('density') ||
-      changed.has('sections');
+      changed.has('sections') ||
+      changed.has('reorderable');
     const needsSort =
       changed.has('sortKey') || changed.has('sortDirection') || changed.has('sections');
     if (needsSync || needsSort) {
@@ -345,6 +363,7 @@ export class MbTable extends LitElement {
 
   /** Re-slot rows and refresh presentation (called when a row `section` changes). */
   refreshRows(): void {
+    if (this.#committingReorder) return;
     this.#syncMode();
     this.#applySort();
   }
@@ -402,6 +421,9 @@ export class MbTable extends LitElement {
       rows.forEach((row) => {
         row.setAttribute('data-mode', mode);
         row.toggleAttribute('data-compact', this.density === 'compact');
+        const isHead = row.slot === 'head' || row.hasAttribute('head');
+        row.toggleAttribute('data-reorderable', this.reorderable && !isHead);
+        row.toggleAttribute('data-reorder-spacer', this.reorderable && isHead);
       });
       const cells = this.querySelectorAll('mb-table-cell');
       cells.forEach((cell) => {
@@ -549,6 +571,191 @@ export class MbTable extends LitElement {
     );
   }
 
+  /** Begin pointer-driven reorder from a row handle. */
+  beginReorder(row: MbTableRow, event: PointerEvent): void {
+    if (!this.reorderable || row.head || row.slot === 'head' || this.#dragRow) return;
+    if (event.button !== undefined && event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.#dragRow = row;
+    row.toggleAttribute('data-dragging', true);
+    window.addEventListener('pointermove', this.#onReorderMove);
+    window.addEventListener('pointerup', this.#onReorderEnd);
+    window.addEventListener('pointercancel', this.#onReorderEnd);
+  }
+
+  #clearDropUi(): void {
+    this.querySelectorAll('mb-table-row[data-drop]').forEach((row) => {
+      row.removeAttribute('data-drop');
+    });
+    this.renderRoot.querySelectorAll('[data-drop-section]').forEach((node) => {
+      node.removeAttribute('data-drop-section');
+    });
+    this.#dropRow = null;
+    this.#dropSectionId = null;
+  }
+
+  #onReorderMove = (event: PointerEvent): void => {
+    if (!this.#dragRow) return;
+    const stack = document.elementsFromPoint(event.clientX, event.clientY);
+    const overRow = stack.find(
+      (node): node is MbTableRow =>
+        node instanceof HTMLElement &&
+        node.localName === 'mb-table-row' &&
+        node !== this.#dragRow &&
+        node.slot !== 'head' &&
+        !node.hasAttribute('head'),
+    );
+    const sectionHost = stack.find(
+      (node): node is HTMLElement =>
+        node instanceof HTMLElement && node.hasAttribute('data-section'),
+    );
+
+    this.#clearDropUi();
+
+    if (overRow) {
+      const rect = overRow.getBoundingClientRect();
+      const edge = event.clientY < rect.top + rect.height / 2 ? 'before' : 'after';
+      this.#dropRow = overRow;
+      this.#dropEdge = edge;
+      this.#dropSectionId = overRow.section.trim() || null;
+      overRow.setAttribute('data-drop', edge);
+      return;
+    }
+
+    if (sectionHost) {
+      const id = sectionHost.getAttribute('data-section');
+      if (id) {
+        this.#dropSectionId = id;
+        sectionHost.toggleAttribute('data-drop-section', true);
+      }
+    }
+  };
+
+  #onReorderEnd = (): void => {
+    const dragRow = this.#dragRow;
+    const dropRow = this.#dropRow;
+    const dropEdge = this.#dropEdge;
+    const dropSectionId = this.#dropSectionId;
+
+    window.removeEventListener('pointermove', this.#onReorderMove);
+    window.removeEventListener('pointerup', this.#onReorderEnd);
+    window.removeEventListener('pointercancel', this.#onReorderEnd);
+
+    dragRow?.removeAttribute('data-dragging');
+    this.#clearDropUi();
+    this.#dragRow = null;
+
+    if (!dragRow) return;
+
+    if (dropRow) {
+      this.moveRow(dragRow, {
+        before: dropEdge === 'before' ? dropRow : undefined,
+        after: dropEdge === 'after' ? dropRow : undefined,
+        section: dropRow.section.trim() || undefined,
+      });
+      return;
+    }
+
+    if (dropSectionId != null) {
+      this.moveRow(dragRow, { section: dropSectionId });
+    }
+  };
+
+  /**
+   * Move a body row before/after another row and/or into a section.
+   * Same outcome as a successful drag-and-drop; emits `mb-reorder`.
+   */
+  moveRow(
+    row: MbTableRow,
+    target: { before?: MbTableRow; after?: MbTableRow; section?: string } = {},
+  ): void {
+    if (row.head || row.slot === 'head') return;
+    if (!this.contains(row)) return;
+
+    const fromSection = row.section.trim();
+    let toSection = target.section ?? fromSection;
+    let moved = false;
+
+    this.#committingReorder = true;
+    if (this.sortKey) {
+      this.sortKey = '';
+      this.#syncSortUi();
+    }
+
+    try {
+      if (target.section != null && target.section !== fromSection) {
+        row.section = target.section;
+        toSection = target.section;
+        moved = true;
+      }
+
+      if (target.before && target.before !== row) {
+        if (target.before.previousElementSibling !== row) {
+          target.before.before(row);
+          moved = true;
+        }
+        toSection = target.before.section.trim() || toSection;
+        if (row.section.trim() !== toSection) {
+          row.section = toSection;
+          moved = true;
+        }
+      } else if (target.after && target.after !== row) {
+        if (target.after.nextElementSibling !== row) {
+          target.after.after(row);
+          moved = true;
+        }
+        toSection = target.after.section.trim() || toSection;
+        if (row.section.trim() !== toSection) {
+          row.section = toSection;
+          moved = true;
+        }
+      } else if (target.section != null) {
+        const sectionRows = this.#bodyRows().filter(
+          (item) => item !== row && item.section.trim() === target.section,
+        );
+        const last = sectionRows[sectionRows.length - 1];
+        if (last) {
+          last.after(row);
+          moved = true;
+        } else {
+          this.appendChild(row);
+          moved = true;
+        }
+      }
+    } finally {
+      this.#committingReorder = false;
+    }
+
+    if (!moved) return;
+
+    this.#syncMode();
+
+    const order = this.#bodyRows().map((item) => ({
+      id: item.id || item.getAttribute('data-id') || '',
+      section: item.section.trim(),
+    }));
+
+    this.dispatchEvent(
+      new CustomEvent('mb-reorder', {
+        detail: {
+          rowId: row.id || row.getAttribute('data-id') || '',
+          fromSection,
+          toSection,
+          beforeId: target.before
+            ? target.before.id || target.before.getAttribute('data-id') || ''
+            : null,
+          afterId: target.after
+            ? target.after.id || target.after.getAttribute('data-id') || ''
+            : null,
+          order,
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
   #toggleSection(id: string): void {
     const index = this.sections.findIndex((section) => section.id === id);
     if (index < 0) return;
@@ -672,34 +879,99 @@ export class MbTableRow extends LitElement {
         min-inline-size: 0;
       }
 
+      .wrap {
+        display: flex;
+        align-items: stretch;
+        gap: var(--mb-space-2);
+        min-inline-size: 0;
+      }
+
+      .handle,
+      .spacer {
+        flex: none;
+        inline-size: 1.25rem;
+        align-self: center;
+      }
+
+      .spacer {
+        visibility: hidden;
+      }
+
+      .handle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: var(--mb-radius-sm);
+        background: transparent;
+        color: var(--mb-color-muted);
+        font: inherit;
+        line-height: 1;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+      }
+
+      .handle:focus-visible {
+        outline: var(--mb-focus-ring);
+        outline-offset: var(--mb-focus-offset);
+      }
+
+      .handle:active {
+        cursor: grabbing;
+      }
+
+      :host(:not([data-reorderable]):not([data-reorder-spacer])) .handle,
+      :host(:not([data-reorderable]):not([data-reorder-spacer])) .spacer {
+        display: none;
+      }
+
+      :host([data-dragging]) {
+        opacity: 0.45;
+      }
+
+      :host([data-drop='before']) {
+        box-shadow: inset 0 2px 0 var(--mb-color-accent);
+      }
+
+      :host([data-drop='after']) {
+        box-shadow: inset 0 -2px 0 var(--mb-color-accent);
+      }
+
       .row {
         display: grid;
         grid-template-columns: var(--mb-table-template);
         align-items: center;
         gap: var(--mb-space-3);
         min-inline-size: 0;
+        flex: 1;
       }
 
-      :host([data-mode='table']) .row {
+      :host([data-mode='table']) .wrap {
         padding-block: var(--mb-space-3);
         padding-inline: var(--mb-space-4);
         border-block-end: 1px solid var(--mb-color-border);
         background: var(--mb-color-surface);
       }
 
-      :host([data-mode='table'][data-compact]) .row {
+      :host([data-mode='table'][data-compact]) .wrap {
         padding-block: var(--mb-space-2);
         padding-inline: var(--mb-space-3);
+      }
+
+      :host([data-mode='table'][data-compact]) .row {
         gap: var(--mb-space-2);
       }
 
-      :host([data-mode='table']:last-of-type) .row,
-      :host([data-mode='table'][slot='head']) .row {
+      :host([data-mode='table']:last-of-type) .wrap,
+      :host([data-mode='table'][slot='head']) .wrap {
         border-block-end: none;
       }
 
-      :host([slot='head']) .row,
-      :host([head]) .row {
+      :host([slot='head']) .wrap,
+      :host([head]) .wrap {
         font-size: var(--mb-font-size-sm);
         font-weight: 650;
         color: var(--mb-color-muted);
@@ -707,11 +979,7 @@ export class MbTableRow extends LitElement {
         padding-block: var(--mb-space-2);
       }
 
-      :host([data-mode='cards']) .row {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--mb-space-3);
+      :host([data-mode='cards']) .wrap {
         padding-block: var(--mb-space-4);
         padding-inline: var(--mb-space-4);
         background: var(--mb-color-surface);
@@ -719,15 +987,30 @@ export class MbTableRow extends LitElement {
         border-radius: var(--mb-radius-lg);
       }
 
-      :host([data-mode='cards'][data-compact]) .row {
-        gap: var(--mb-space-2);
+      :host([data-mode='cards']) .row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--mb-space-3);
+      }
+
+      :host([data-mode='cards'][data-compact]) .wrap {
         padding-block: var(--mb-space-3);
         padding-inline: var(--mb-space-3);
+      }
+
+      :host([data-mode='cards'][data-compact]) .row {
+        gap: var(--mb-space-2);
       }
 
       :host([data-mode='cards'][slot='head']),
       :host([data-mode='cards'][head]) {
         display: none;
+      }
+
+      :host([data-mode='cards'][data-reorderable]) .handle {
+        align-self: flex-start;
+        margin-block-start: 0.15rem;
       }
     `,
   ];
@@ -770,10 +1053,35 @@ export class MbTableRow extends LitElement {
     this.toggleAttribute('aria-hidden', hideHead);
   }
 
+  #onHandlePointerDown = (event: PointerEvent): void => {
+    const table = this.closest('mb-table');
+    table?.beginReorder(this, event);
+  };
+
   override render() {
+    const reorderable = this.hasAttribute('data-reorderable');
+    const spacer = this.hasAttribute('data-reorder-spacer');
+
     return html`
-      <div part="row" class="row">
-        <slot></slot>
+      <div part="wrap" class="wrap">
+        ${reorderable
+          ? html`
+              <button
+                type="button"
+                part="handle"
+                class="handle"
+                aria-label="Drag to reorder"
+                @pointerdown=${this.#onHandlePointerDown}
+              >
+                ⠿
+              </button>
+            `
+          : spacer
+            ? html`<span class="spacer" aria-hidden="true"></span>`
+            : nothing}
+        <div part="row" class="row">
+          <slot></slot>
+        </div>
       </div>
     `;
   }

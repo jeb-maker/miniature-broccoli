@@ -24,7 +24,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          'Responsive editable table: wide viewports use a grid; below `36rem` each row becomes a labeled card. Pass `sections` and set `section` on rows to group; head cells with `sort-key` sort within each section.',
+          'Responsive editable table: wide viewports use a grid; below `36rem` each row becomes a labeled card. Pass `sections` and set `section` on rows to group; head cells with `sort-key` sort within each section; `reorderable` enables drag handles.',
       },
     },
   },
@@ -189,12 +189,13 @@ const demoSections = [
 ];
 
 export const SectionsAndSort: Story = {
-  name: 'Sections + sort',
+  name: 'Sections + sort + drag',
   render: () => html`
     <mb-table
       label="Backlog"
       density="compact"
       columns="2fr 1fr auto"
+      reorderable
       .sections=${demoSections}
     >
       <mb-table-row slot="head">
@@ -203,7 +204,7 @@ export const SectionsAndSort: Story = {
         <mb-table-cell></mb-table-cell>
       </mb-table-row>
 
-      <mb-table-row section="ops">
+      <mb-table-row id="row-ops-1" section="ops">
         <mb-table-cell primary sort-value="Wire HTMX save">
           <mb-input
             name="t1"
@@ -228,7 +229,7 @@ export const SectionsAndSort: Story = {
         </mb-table-cell>
       </mb-table-row>
 
-      <mb-table-row section="eng">
+      <mb-table-row id="row-eng-1" section="eng">
         <mb-table-cell primary sort-value="Mobile card layout">
           <mb-input
             name="t2"
@@ -253,7 +254,7 @@ export const SectionsAndSort: Story = {
         </mb-table-cell>
       </mb-table-row>
 
-      <mb-table-row section="ops">
+      <mb-table-row id="row-ops-2" section="ops">
         <mb-table-cell primary sort-value="Pager rotation">
           <mb-input
             name="t3"
@@ -278,7 +279,7 @@ export const SectionsAndSort: Story = {
         </mb-table-cell>
       </mb-table-row>
 
-      <mb-table-row section="eng">
+      <mb-table-row id="row-eng-2" section="eng">
         <mb-table-cell primary sort-value="Design tokens">
           <mb-input
             name="t4"
