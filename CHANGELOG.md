@@ -2,10 +2,15 @@
 
 ## Unreleased
 
-- `mb-table` / `mb-table-row` / `mb-table-cell` — responsive editable table (grid → stacked cards below `36rem`)
-- `mb-table`: `sections` + row `section` grouping, collapsible section heads (`mb-section-toggle`)
-- `mb-table`: column sort via head `sort-key` / cell `sort-value` (`mb-sort`, sorts within each section)
-- `mb-table`: `reorderable` drag handles to reorder rows / move across sections (`mb-reorder`)
+## 0.4.0 — 2026-09-25
+
+Responsive editable table for Revues-style list pages.
+
+- `mb-table` / `mb-table-row` / `mb-table-cell` — grid on wide viewports, stacked labeled cards below `36rem` (#37)
+- Sections: `sections` list + row `section`; collapsible heads (`mb-section-toggle`)
+- Sort: head `sort-key` / cell `sort-value`; sorts within each section (`mb-sort`)
+- Reorder: `reorderable` drag handles + `moveRow()`; cross-section moves (`mb-reorder`)
+- Docs: README, Introduction, Go/HTMX snippets; Storybook `Components/Table`
 
 ## 0.3.1 — 2026-08-10
 
