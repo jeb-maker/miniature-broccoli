@@ -103,6 +103,10 @@
       "types": "./dist/components/toolbar.d.ts",
       "import": "./dist/components/toolbar.js"
     },
+    "./table": {
+      "types": "./dist/components/table.d.ts",
+      "import": "./dist/components/table.js"
+    },
     "./types": "./dist/types.d.ts",
     "./jsx": "./jsx.d.ts"
   },

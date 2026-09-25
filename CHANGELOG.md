@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- `mb-table` / `mb-table-row` / `mb-table-cell` — responsive editable table (grid → stacked cards below `36rem`)
+- `mb-table`: `sections` + row `section` grouping, collapsible section heads (`mb-section-toggle`)
+- `mb-table`: column sort via head `sort-key` / cell `sort-value` (`mb-sort`, sorts within each section)
+- `mb-table`: `reorderable` drag handles to reorder rows / move across sections (`mb-reorder`)
+
 ## 0.3.1 — 2026-08-10
 
 Patch for slotted form controls + small FOUC gap.

@@ -30,6 +30,7 @@ Install from GitHub Packages (`@jeb-maker` scope → `https://npm.pkg.github.com
 - **Forms** use Form-Associated Custom Elements, including `fieldset[disabled]` and `form="…"`.
 - **Select** options via JS property, JSON `options` attribute, or slotted `<option>` (slotted wins). Label the empty option with `placeholder` or a slotted `value=""`.
 - **Button** supports `variant="danger"` and `href` (anchor rendering).
+- **Table** (`mb-table`): grid on wide viewports, stacked cards below `36rem`; `sections` + row `section` for groups; head `sort-key` for in-section sort; `reorderable` for drag handles. Pair with compact unlabeled inputs/selects for editable rows.
 - **Anti-FOUC** hides interactive controls until defined; layout primitives (`mb-card`, …) stay visible (opt in with `mb-fouc`).
 - **Modal** uses native `<dialog>`.
 - **Nav**: `mb-nav-toggle` targets `mb-nav` by `for` / `id` and emits composed `mb-toggle`.

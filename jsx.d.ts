@@ -178,6 +178,29 @@ declare namespace JSX {
       label?: string;
     };
     'mb-toolbar': MbBaseAttrs;
+    'mb-table': MbBaseAttrs & {
+      label?: string;
+      columns?: string;
+      density?: 'default' | 'compact';
+      layout?: 'auto' | 'table' | 'cards';
+      sections?: Array<{ id: string; label: string; collapsed?: boolean }> | string;
+      'sort-key'?: string;
+      'sort-direction'?: 'asc' | 'desc';
+      reorderable?: boolean;
+    };
+    'mb-table-row': MbBaseAttrs & {
+      head?: boolean;
+      section?: string;
+      'sort-value'?: string;
+    };
+    'mb-table-cell': MbBaseAttrs & {
+      label?: string;
+      align?: 'start' | 'center' | 'end';
+      primary?: boolean;
+      'sort-key'?: string;
+      sortable?: boolean;
+      'sort-value'?: string;
+    };
   }
 }
 

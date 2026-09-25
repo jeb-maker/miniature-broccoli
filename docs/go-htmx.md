@@ -64,26 +64,102 @@ Or a JSON attribute (escape carefully in templates):
 
 ### Compact table / HTMX cells
 
-```html
-<form id="item-form-{{ .ID }}" hx-post="/items/{{ .ID }}" hx-trigger="mb-change from:#status-{{ .ID }}">
-  <!-- CSRF + hidden fields -->
-</form>
+Import `./table`. Below `36rem`, each body row becomes a labeled card (same breakpoint as `mb-nav`). Head labels are copied onto cells when `label` is omitted.
 
-<mb-select
-  id="status-{{ .ID }}"
-  form="item-form-{{ .ID }}"
-  name="status"
-  value="{{ .Status }}"
-  density="compact"
-  hide-label
-  aria-label="Status"
->
-  <option value="todo">Todo</option>
-  <option value="done">Done</option>
-</mb-select>
+```html
+<mb-table label="Items" density="compact" columns="2fr 1fr auto">
+  <mb-table-row slot="head">
+    <mb-table-cell>Title</mb-table-cell>
+    <mb-table-cell>Status</mb-table-cell>
+    <mb-table-cell></mb-table-cell>
+  </mb-table-row>
+
+  {{ range .Items }}
+  <mb-table-row>
+    <mb-table-cell primary>
+      <form id="item-form-{{ .ID }}" hx-post="/items/{{ .ID }}" hx-trigger="mb-change from:#status-{{ .ID }}">
+        <!-- CSRF + hidden fields -->
+      </form>
+      <mb-input
+        form="item-form-{{ .ID }}"
+        name="title"
+        value="{{ .Title }}"
+        density="compact"
+        hide-label
+        aria-label="Title"
+      ></mb-input>
+    </mb-table-cell>
+    <mb-table-cell>
+      <mb-select
+        id="status-{{ .ID }}"
+        form="item-form-{{ .ID }}"
+        name="status"
+        value="{{ .Status }}"
+        density="compact"
+        hide-label
+        aria-label="Status"
+      >
+        <option value="todo">Todo</option>
+        <option value="done">Done</option>
+      </mb-select>
+    </mb-table-cell>
+    <mb-table-cell align="end">
+      <mb-button size="sm" type="submit" form="item-form-{{ .ID }}">Save</mb-button>
+    </mb-table-cell>
+  </mb-table-row>
+  {{ end }}
+</mb-table>
 ```
 
-FACE honors the HTML `form="…"` attribute so controls can live outside the `<form>` element.
+Force cards in a narrow column with `layout="cards"`. FACE honors the HTML `form="…"` attribute so controls can live outside the `<form>` element.
+
+### Sections + sort
+
+Pass a section list (JSON attribute or JS `.sections`). Each body row sets `section="…"`. Head cells with `sort-key` reorder rows **within** each section and emit composed `mb-sort` (`{ key, direction }`). Section headers toggle `collapsed` and emit `mb-section-toggle` (`{ id, collapsed }`).
+
+```html
+<mb-table
+  label="Backlog"
+  density="compact"
+  columns="2fr 1fr auto"
+  sections='[{"id":"ops","label":"Ops"},{"id":"eng","label":"Engineering"}]'
+>
+  <mb-table-row slot="head">
+    <mb-table-cell sort-key="title">Title</mb-table-cell>
+    <mb-table-cell sort-key="status">Status</mb-table-cell>
+    <mb-table-cell></mb-table-cell>
+  </mb-table-row>
+
+  {{ range .Items }}
+  <mb-table-row section="{{ .SectionID }}">
+    <mb-table-cell primary sort-value="{{ .Title }}">…</mb-table-cell>
+    <mb-table-cell sort-value="{{ .Status }}">…</mb-table-cell>
+    <mb-table-cell align="end">…</mb-table-cell>
+  </mb-table-row>
+  {{ end }}
+</mb-table>
+```
+
+Prefer `sort-value` on cells when the visible control is an `mb-input` / `mb-select` so sort stays stable while editing.
+
+### Drag and drop reorder
+
+Add `reorderable` to show a grab handle on each body row (pointer / touch). Drop on another row to reorder; drop onto a row in another section (or an empty section) to move it. Emits composed `mb-reorder` and clears any active column sort so the manual order sticks. Prefer stable `id` / `data-id` on rows for the event payload.
+
+```html
+<mb-table
+  reorderable
+  sections='[{"id":"ops","label":"Ops"},{"id":"eng","label":"Engineering"}]'
+  hx-trigger="mb-reorder"
+  hx-post="/backlog/reorder"
+  hx-include="[name='csrf']"
+>
+  …
+  <mb-table-row id="item-{{ .ID }}" section="{{ .SectionID }}">…</mb-table-row>
+</mb-table>
+```
+
+`mb-reorder` detail: `{ rowId, fromSection, toSection, beforeId, afterId, order: [{ id, section }] }`.
 
 ### App shell nav + mobile toggle
 
@@ -111,6 +187,9 @@ Shadow-DOM native `change` / `input` do **not** retarget. Listen for composed cu
 | `mb-input` | input, textarea | `{ value }` (+ `files` for file inputs) |
 | `mb-close` | modal, toast | — |
 | `mb-toggle` | nav-toggle | `{ expanded }` |
+| `mb-sort` | table | `{ key, direction }` (`asc` \| `desc`) |
+| `mb-section-toggle` | table | `{ id, collapsed }` |
+| `mb-reorder` | table | `{ rowId, fromSection, toSection, beforeId, afterId, order }` |
 
 Example: `hx-trigger="mb-change delay:300ms"`.
 
