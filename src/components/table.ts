@@ -278,6 +278,17 @@ export class MbTable extends LitElement {
   @property({ type: Boolean, reflect: true })
   reorderable = false;
 
+  /** `aria-label` for the reorder handle (SSR / i18n). Default: English. */
+  @property({ attribute: 'reorder-label' })
+  reorderLabel = 'Drag to reorder';
+
+  /**
+   * `aria-label` template for sortable head buttons.
+   * `{name}` is replaced with the column `sort-key` or visible head text.
+   */
+  @property({ attribute: 'sort-label' })
+  sortLabel = 'Sort by {name}';
+
   @state()
   private _sectionCounts: Record<string, number> = {};
 
@@ -316,7 +327,9 @@ export class MbTable extends LitElement {
       changed.has('layout') ||
       changed.has('density') ||
       changed.has('sections') ||
-      changed.has('reorderable');
+      changed.has('reorderable') ||
+      changed.has('reorderLabel') ||
+      changed.has('sortLabel');
     const needsSort =
       changed.has('sortKey') || changed.has('sortDirection') || changed.has('sections');
     if (needsSync || needsSort) {
@@ -424,11 +437,19 @@ export class MbTable extends LitElement {
         const isHead = row.slot === 'head' || row.hasAttribute('head');
         row.toggleAttribute('data-reorderable', this.reorderable && !isHead);
         row.toggleAttribute('data-reorder-spacer', this.reorderable && isHead);
+        if (this.reorderable && !isHead) {
+          row.setAttribute('data-reorder-label', this.reorderLabel);
+        } else {
+          row.removeAttribute('data-reorder-label');
+        }
       });
       const cells = this.querySelectorAll('mb-table-cell');
       cells.forEach((cell) => {
         cell.setAttribute('data-mode', mode);
         cell.toggleAttribute('data-compact', this.density === 'compact');
+        if (cell.sortKey.trim() || cell.sortable) {
+          cell.setAttribute('data-sort-label', this.sortLabel);
+        }
       });
       this.#syncLabelsFromHead();
       this.#syncSortUi();
@@ -452,22 +473,29 @@ export class MbTable extends LitElement {
   #syncLabelsFromHead(): void {
     const head = this.#headRow();
     if (!head) return;
-    const labels = [...head.querySelectorAll('mb-table-cell')].map((cell) =>
-      (cell.textContent ?? '').replace(/\s+/g, ' ').trim(),
-    );
-    if (!labels.length) return;
+    const headCells = [...head.querySelectorAll<MbTableCell>('mb-table-cell')];
+    const labels = headCells.map((cell) => {
+      if (cell.hideLabel || cell.actions) return '';
+      return (cell.textContent ?? '').replace(/\s+/g, ' ').trim();
+    });
+    if (!headCells.length) return;
 
     if (!this.columns.trim()) {
-      this.style.setProperty('--mb-table-col-count', String(labels.length));
+      this.style.setProperty('--mb-table-col-count', String(headCells.length));
       this.style.setProperty(
         '--mb-table-template',
-        `repeat(${labels.length}, minmax(0, 1fr))`,
+        `repeat(${headCells.length}, minmax(0, 1fr))`,
       );
     }
 
     for (const row of this.#bodyRows()) {
       const cells = [...row.querySelectorAll<MbTableCell>(':scope > mb-table-cell')];
       cells.forEach((cell, index) => {
+        if (cell.hideLabel || cell.actions) {
+          cell.dataset.labelLocked = 'true';
+          if (cell.label) cell.label = '';
+          return;
+        }
         if (cell.dataset.labelLocked === 'true') return;
         if (cell.hasAttribute('label')) {
           cell.dataset.labelLocked = 'true';
@@ -1034,6 +1062,17 @@ export class MbTableRow extends LitElement {
     }
   }
 
+  override attributeChangedCallback(
+    name: string,
+    old: string | null,
+    value: string | null,
+  ): void {
+    super.attributeChangedCallback(name, old, value);
+    if (name === 'data-reorder-label' && old !== value) {
+      this.requestUpdate();
+    }
+  }
+
   override updated(changed: Map<string, unknown>): void {
     if (changed.has('head') && this.head) {
       this.slot = 'head';
@@ -1058,6 +1097,14 @@ export class MbTableRow extends LitElement {
     table?.beginReorder(this, event);
   };
 
+  #reorderAriaLabel(): string {
+    return (
+      this.getAttribute('data-reorder-label')?.trim() ||
+      this.closest('mb-table')?.reorderLabel?.trim() ||
+      'Drag to reorder'
+    );
+  }
+
   override render() {
     const reorderable = this.hasAttribute('data-reorderable');
     const spacer = this.hasAttribute('data-reorder-spacer');
@@ -1070,7 +1117,7 @@ export class MbTableRow extends LitElement {
                 type="button"
                 part="handle"
                 class="handle"
-                aria-label="Drag to reorder"
+                aria-label=${this.#reorderAriaLabel()}
                 @pointerdown=${this.#onHandlePointerDown}
               >
                 ⠿
@@ -1178,6 +1225,15 @@ export class MbTableCell extends LitElement {
         flex-wrap: wrap;
         gap: var(--mb-space-2);
       }
+
+      :host([actions][data-mode='cards']) .value,
+      :host([actions][data-mode='table']) .value {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--mb-space-2);
+      }
     `,
   ];
 
@@ -1191,6 +1247,20 @@ export class MbTableCell extends LitElement {
   /** Emphasize this cell as the card title on narrow viewports. */
   @property({ type: Boolean, reflect: true })
   primary = false;
+
+  /**
+   * Never show the cards-mode field label (and skip auto-copy from head).
+   * Use for checkbox-only cells or columns that already label themselves.
+   */
+  @property({ type: Boolean, reflect: true, attribute: 'hide-label' })
+  hideLabel = false;
+
+  /**
+   * Toolbar / actions cell: hide cards label and end-align content.
+   * Prefer on icon-button columns with an empty head cell.
+   */
+  @property({ type: Boolean, reflect: true })
+  actions = false;
 
   /** Column key used for sorting when this is a head cell. */
   @property({ attribute: 'sort-key', reflect: true })
@@ -1215,10 +1285,28 @@ export class MbTableCell extends LitElement {
     this.#syncRole();
   }
 
+  override attributeChangedCallback(
+    name: string,
+    old: string | null,
+    value: string | null,
+  ): void {
+    super.attributeChangedCallback(name, old, value);
+    if (name === 'data-sort-label' && old !== value) {
+      this.requestUpdate();
+    }
+  }
+
   override updated(changed: Map<string, unknown>): void {
     this.#syncRole();
     if (changed.has('sortKey') && this.sortKey.trim()) {
       this.sortable = true;
+    }
+    if (
+      (changed.has('hideLabel') || changed.has('actions')) &&
+      (this.hideLabel || this.actions)
+    ) {
+      this.dataset.labelLocked = 'true';
+      if (this.label) this.label = '';
     }
     if (this.#isHead() && this.sortKey.trim()) {
       const ariaSort =
@@ -1243,9 +1331,28 @@ export class MbTableCell extends LitElement {
     return this.sortDirection === 'asc' ? '↑' : '↓';
   }
 
+  #sortAriaLabel(): string {
+    const name =
+      this.sortKey.trim() ||
+      this.label.trim() ||
+      (this.textContent ?? '').replace(/\s+/g, ' ').trim() ||
+      'column';
+    const template =
+      this.getAttribute('data-sort-label')?.trim() ||
+      this.closest('mb-table')?.sortLabel?.trim() ||
+      'Sort by {name}';
+    return template.includes('{name}')
+      ? template.replace(/\{name\}/g, name)
+      : `${template} ${name}`.trim();
+  }
+
   override render() {
     const showLabel =
-      Boolean(this.label) && this.getAttribute('data-mode') === 'cards' && !this.#isHead();
+      Boolean(this.label) &&
+      this.getAttribute('data-mode') === 'cards' &&
+      !this.#isHead() &&
+      !this.hideLabel &&
+      !this.actions;
     const isSortableHead = this.#isHead() && (this.sortable || Boolean(this.sortKey.trim()));
 
     return html`
@@ -1254,7 +1361,12 @@ export class MbTableCell extends LitElement {
         <div part="value" class="value">
           ${isSortableHead
             ? html`
-                <button type="button" part="sort" class="sort" aria-label=${`Sort by ${this.sortKey || this.label || 'column'}`}>
+                <button
+                  type="button"
+                  part="sort"
+                  class="sort"
+                  aria-label=${this.#sortAriaLabel()}
+                >
                   <slot></slot>
                   <span class="sort-indicator" aria-hidden="true">${this.#indicator()}</span>
                 </button>

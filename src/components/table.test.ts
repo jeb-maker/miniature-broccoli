@@ -347,4 +347,69 @@ describe('mb-table', () => {
     expect(row.hasAttribute('data-dragging')).toBe(false);
     el.remove();
   });
+
+  it('applies reorder-label and sort-label attributes for a11y (#41)', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.reorderable = true;
+    el.reorderLabel = 'Réordonner';
+    el.sortLabel = 'Trier par {name}';
+    el.innerHTML = `
+      <mb-table-row slot="head">
+        <mb-table-cell sort-key="title">Titre</mb-table-cell>
+      </mb-table-row>
+      <mb-table-row id="a"><mb-table-cell>Ada</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const row = el.querySelector<MbTableRow>('#a')!;
+    await row.updateComplete;
+    expect(row.shadowRoot!.querySelector('.handle')!.getAttribute('aria-label')).toBe(
+      'Réordonner',
+    );
+
+    const headCell = el.querySelector<MbTableCell>('mb-table-row[slot="head"] mb-table-cell')!;
+    await headCell.updateComplete;
+    expect(headCell.shadowRoot!.querySelector('button.sort')!.getAttribute('aria-label')).toBe(
+      'Trier par title',
+    );
+    el.remove();
+  });
+
+  it('skips cards labels for hide-label / actions cells (#42)', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.layout = 'cards';
+    el.innerHTML = `
+      <mb-table-row slot="head">
+        <mb-table-cell>Title</mb-table-cell>
+        <mb-table-cell hide-label>Required</mb-table-cell>
+        <mb-table-cell></mb-table-cell>
+      </mb-table-row>
+      <mb-table-row>
+        <mb-table-cell primary><span>Ada</span></mb-table-cell>
+        <mb-table-cell hide-label><span>✓</span></mb-table-cell>
+        <mb-table-cell actions><button type="button">Save</button></mb-table-cell>
+      </mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const cells = [
+      ...el.querySelectorAll<MbTableCell>('mb-table-row:not([slot="head"]) > mb-table-cell'),
+    ];
+    expect(cells[0].label).toBe('Title');
+    expect(cells[1].label).toBe('');
+    expect(cells[2].label).toBe('');
+
+    await cells[0].updateComplete;
+    await cells[1].updateComplete;
+    await cells[2].updateComplete;
+
+    expect(cells[0].shadowRoot!.querySelector('.label')!.hasAttribute('hidden')).toBe(false);
+    expect(cells[1].shadowRoot!.querySelector('.label')!.hasAttribute('hidden')).toBe(true);
+    expect(cells[2].shadowRoot!.querySelector('.label')!.hasAttribute('hidden')).toBe(true);
+    el.remove();
+  });
 });

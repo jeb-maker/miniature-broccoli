@@ -187,6 +187,8 @@ declare namespace JSX {
       'sort-key'?: string;
       'sort-direction'?: 'asc' | 'desc';
       reorderable?: boolean;
+      'reorder-label'?: string;
+      'sort-label'?: string;
     };
     'mb-table-row': MbBaseAttrs & {
       head?: boolean;
@@ -197,6 +199,8 @@ declare namespace JSX {
       label?: string;
       align?: 'start' | 'center' | 'end';
       primary?: boolean;
+      'hide-label'?: boolean;
+      actions?: boolean;
       'sort-key'?: string;
       sortable?: boolean;
       'sort-value'?: string;

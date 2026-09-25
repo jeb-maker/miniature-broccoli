@@ -106,10 +106,11 @@ export const CardsForced: Story = {
   name: 'Cards (forced)',
   render: () => html`
     <div style="max-inline-size: 24rem;">
-      <mb-table label="Assignees" layout="cards" density="compact" columns="1fr auto">
+      <mb-table label="Assignees" layout="cards" density="compact" columns="1fr auto auto">
         <mb-table-row slot="head">
           <mb-table-cell>Person</mb-table-cell>
-          <mb-table-cell>Role</mb-table-cell>
+          <mb-table-cell hide-label>Role</mb-table-cell>
+          <mb-table-cell></mb-table-cell>
         </mb-table-row>
         <mb-table-row>
           <mb-table-cell primary>
@@ -121,8 +122,11 @@ export const CardsForced: Story = {
               aria-label="Person"
             ></mb-input>
           </mb-table-cell>
-          <mb-table-cell>
+          <mb-table-cell hide-label>
             <mb-badge variant="info">Owner</mb-badge>
+          </mb-table-cell>
+          <mb-table-cell actions>
+            <mb-button size="sm">Save</mb-button>
           </mb-table-cell>
         </mb-table-row>
         <mb-table-row>
@@ -135,8 +139,11 @@ export const CardsForced: Story = {
               aria-label="Person"
             ></mb-input>
           </mb-table-cell>
-          <mb-table-cell>
+          <mb-table-cell hide-label>
             <mb-badge>Reviewer</mb-badge>
+          </mb-table-cell>
+          <mb-table-cell actions>
+            <mb-button size="sm">Save</mb-button>
           </mb-table-cell>
         </mb-table-row>
       </mb-table>
@@ -196,6 +203,8 @@ export const SectionsAndSort: Story = {
       density="compact"
       columns="2fr 1fr auto"
       reorderable
+      reorder-label="Réordonner"
+      sort-label="Trier par {name}"
       .sections=${demoSections}
     >
       <mb-table-row slot="head">
@@ -249,7 +258,7 @@ export const SectionsAndSort: Story = {
             .options=${statusOptions}
           ></mb-select>
         </mb-table-cell>
-        <mb-table-cell align="end">
+        <mb-table-cell actions>
           <mb-button size="sm">Save</mb-button>
         </mb-table-cell>
       </mb-table-row>
@@ -274,7 +283,7 @@ export const SectionsAndSort: Story = {
             .options=${statusOptions}
           ></mb-select>
         </mb-table-cell>
-        <mb-table-cell align="end">
+        <mb-table-cell actions>
           <mb-button size="sm">Save</mb-button>
         </mb-table-cell>
       </mb-table-row>
@@ -299,7 +308,7 @@ export const SectionsAndSort: Story = {
             .options=${statusOptions}
           ></mb-select>
         </mb-table-cell>
-        <mb-table-cell align="end">
+        <mb-table-cell actions>
           <mb-button size="sm">Save</mb-button>
         </mb-table-cell>
       </mb-table-row>

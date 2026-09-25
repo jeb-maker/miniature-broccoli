@@ -161,6 +161,41 @@ Add `reorderable` to show a grab handle on each body row (pointer / touch). Drop
 
 `mb-reorder` detail: `{ rowId, fromSection, toSection, beforeId, afterId, order: [{ id, section }] }`.
 
+French (or other) a11y copy — attributes only, no JS:
+
+```html
+<mb-table
+  reorderable
+  reorder-label="Réordonner"
+  sort-label="Trier par {name}"
+  …
+>
+```
+
+### Cards labels: actions / hide-label
+
+In cards mode, head text is copied onto body cells as field labels. Opt out per cell (or whole column via the head cell):
+
+- `hide-label` — never show the cards label (checkbox-only columns, etc.)
+- `actions` — same + end-align toolbar content (icon buttons)
+
+Empty head cells never invent a label. Wide table layout is unchanged.
+
+```html
+<mb-table-row slot="head">
+  <mb-table-cell sort-key="title">Titre</mb-table-cell>
+  <mb-table-cell hide-label>Obligatoire</mb-table-cell>
+  <mb-table-cell></mb-table-cell>
+</mb-table-row>
+<mb-table-row>
+  <mb-table-cell primary>…</mb-table-cell>
+  <mb-table-cell hide-label><mb-checkbox …></mb-checkbox></mb-table-cell>
+  <mb-table-cell actions>
+    <mb-button size="sm" icon-only aria-label="Éditer">…</mb-button>
+  </mb-table-cell>
+</mb-table-row>
+```
+
 ### App shell nav + mobile toggle
 
 ```html
