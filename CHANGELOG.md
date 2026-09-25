@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `mb-table`: `reorder-label` / `sort-label` for SSR a11y i18n (#41)
+- `mb-table-cell`: `hide-label` / `actions` to opt out of cards field labels (#42)
+
 ## 0.4.0 — 2026-09-25
 
 Responsive editable table for Revues-style list pages.
