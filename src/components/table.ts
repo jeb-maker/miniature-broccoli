@@ -1157,7 +1157,11 @@ export class MbTableRow extends LitElement {
     }
     const isHead = this.slot === 'head' || this.head;
     const hideHead = isHead && this.getAttribute('data-mode') === 'cards';
-    this.toggleAttribute('aria-hidden', hideHead);
+    if (hideHead) {
+      this.setAttribute('aria-hidden', 'true');
+    } else {
+      this.removeAttribute('aria-hidden');
+    }
   }
 
   #onHandlePointerDown = (event: PointerEvent): void => {
