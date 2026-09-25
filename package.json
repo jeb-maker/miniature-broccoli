@@ -1,6 +1,6 @@
 {
   "name": "@jeb-maker/mb",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Lightweight Lit design system with atomic ESM entries",
   "type": "module",
   "files": [

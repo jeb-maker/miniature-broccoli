@@ -2,11 +2,15 @@
 
 ## Unreleased
 
-- `mb-table`: `reorder-label` / `sort-label` for SSR a11y i18n (#41)
-- `mb-table-cell`: `hide-label` / `actions` to opt out of cards field labels (#42)
-- `mb-table`: section `meta` / `count: false` + table `hide-count`; optional `slot="section-meta-{id}"` (#40)
-- `mb-table`: `sticky-header` for wide layout (#44)
-- Docs: HTMX `outerHTML` row-swap + sections contract (#43)
+## 0.4.1 — 2026-09-25
+
+Revues adoption polish for `mb-table`.
+
+- `mb-table`: `reorder-label` / `sort-label` for SSR a11y i18n (#41, #45)
+- `mb-table-cell`: `hide-label` / `actions` to opt out of cards field labels (#42, #45)
+- `mb-table`: section `meta` / `count: false` + table `hide-count`; optional `slot="section-meta-{id}"` (#40, #46)
+- `mb-table`: `sticky-header` for wide layout (#44, #46)
+- Docs: HTMX `outerHTML` row-swap + sections contract (#43, #46)
 
 ## 0.4.0 — 2026-09-25
 
