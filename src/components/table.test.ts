@@ -412,4 +412,50 @@ describe('mb-table', () => {
     expect(cells[2].shadowRoot!.querySelector('.label')!.hasAttribute('hidden')).toBe(true);
     el.remove();
   });
+
+  it('renders section meta and can hide the auto count (#40)', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.sections = [
+      { id: 'ops', label: 'Ops', meta: '8 / 12 OK', count: false },
+      { id: 'eng', label: 'Engineering', meta: '12 points · terminé' },
+    ];
+    el.innerHTML = `
+      <mb-table-row slot="head"><mb-table-cell>Name</mb-table-cell></mb-table-row>
+      <mb-table-row section="ops"><mb-table-cell>Ada</mb-table-cell></mb-table-row>
+      <mb-table-row section="ops"><mb-table-cell>Lin</mb-table-cell></mb-table-row>
+      <mb-table-row section="eng"><mb-table-cell>Bea</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const heads = [...el.shadowRoot!.querySelectorAll('.section-head')];
+    expect(heads[0].textContent).toContain('8 / 12 OK');
+    expect(heads[0].querySelector('[part="section-count"]')).toBeNull();
+    expect(heads[1].textContent).toContain('12 points · terminé');
+    expect(heads[1].querySelector('[part="section-count"]')?.textContent).toBe('1');
+
+    el.hideCount = true;
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelectorAll('[part="section-count"]').length).toBe(0);
+    el.remove();
+  });
+
+  it('applies sticky-header styles only in table mode (#44)', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.stickyHeader = true;
+    el.layout = 'table';
+    el.innerHTML = `
+      <mb-table-row slot="head"><mb-table-cell>Name</mb-table-cell></mb-table-row>
+      <mb-table-row><mb-table-cell>Ada</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.hasAttribute('sticky-header')).toBe(true);
+    expect(el.getAttribute('data-mode')).toBe('table');
+    el.layout = 'cards';
+    await el.updateComplete;
+    expect(el.getAttribute('data-mode')).toBe('cards');
+    el.remove();
+  });
 });

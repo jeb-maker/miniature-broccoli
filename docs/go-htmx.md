@@ -122,7 +122,10 @@ Pass a section list (JSON attribute or JS `.sections`). Each body row sets `sect
   label="Backlog"
   density="compact"
   columns="2fr 1fr auto"
-  sections='[{"id":"ops","label":"Ops"},{"id":"eng","label":"Engineering"}]'
+  sections='[
+    {"id":"ops","label":"Ops","meta":"8 / 12 OK","count":false},
+    {"id":"eng","label":"Engineering","meta":"12 points · terminé"}
+  ]'
 >
   <mb-table-row slot="head">
     <mb-table-cell sort-key="title">Title</mb-table-cell>
@@ -141,6 +144,72 @@ Pass a section list (JSON attribute or JS `.sections`). Each body row sets `sect
 ```
 
 Prefer `sort-value` on cells when the visible control is an `mb-input` / `mb-select` so sort stays stable while editing.
+
+Optional custom meta markup (alongside or instead of `meta`):
+
+```html
+<span slot="section-meta-ops">8 / 12 OK</span>
+```
+
+- Per section: `"count": false` hides that section’s auto row count.
+- Table-wide: `hide-count` suppresses every auto count.
+
+### Sticky header
+
+Stick the column header while scrolling (wide / `data-mode="table"` only — no effect in cards):
+
+```html
+<mb-table sticky-header columns="2fr 1fr auto">…</mb-table>
+```
+
+### HTMX row swap + sections contract
+
+When a row is refreshed with `hx-swap="outerHTML"`, the fragment must remain an `mb-table-row` **inside** the same `mb-table`. With `sections`, always echo `section="…"` so the table can re-slot to `section-${id}` after `slotchange` / `refreshRows()`.
+
+**Do**
+
+```html
+{{/* parent page */}}
+<mb-table
+  id="run-table"
+  density="compact"
+  columns="2fr 1fr auto"
+  sections='{{ .SectionsJSON }}'
+>
+  <mb-table-row slot="head">…</mb-table-row>
+  {{ range .Items }}
+    {{ template "item-row" . }}
+  {{ end }}
+</mb-table>
+```
+
+```html
+{{/* templates/item-row — also returned as HTMX fragment */}}
+<mb-table-row
+  id="item-{{ .ID }}"
+  section="{{ .SectionID }}"
+  hx-get="/items/{{ .ID }}"
+  hx-trigger="mb-change delay:300ms"
+  hx-swap="outerHTML"
+>
+  <mb-table-cell primary sort-value="{{ .Title }}">…</mb-table-cell>
+  <mb-table-cell sort-value="{{ .Status }}">
+    <mb-select name="status" value="{{ .Status }}" density="compact" hide-label aria-label="Status">
+      …
+    </mb-select>
+  </mb-table-cell>
+  <mb-table-cell actions>…</mb-table-cell>
+</mb-table-row>
+```
+
+**Don't**
+
+- Omit `section` on a swapped row when the parent table has `sections` (row lands in the ungrouped slot).
+- Return a bare `<tr>` or non-`mb-table-row` wrapper.
+- Rely on client column sort for server-driven list pages — omit `sort-key`, or keep `sort-value` on editable FACE cells.
+- Expect `collapsed` on the row — collapse is controlled by the `sections` JSON / `.sections` property (SSR), toggled via `mb-section-toggle`.
+
+Events useful with `hx-trigger`: `mb-change`, `mb-sort`, `mb-section-toggle`, `mb-reorder`.
 
 ### Drag and drop reorder
 

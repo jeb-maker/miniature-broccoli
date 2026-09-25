@@ -154,23 +154,40 @@ export const CardsForced: Story = {
 export const ReadOnly: Story = {
   name: 'Read-only rows',
   render: () => html`
-    <mb-table label="Deployments" columns="1.5fr 1fr 1fr">
-      <mb-table-row slot="head">
-        <mb-table-cell>Service</mb-table-cell>
-        <mb-table-cell>Env</mb-table-cell>
-        <mb-table-cell>Version</mb-table-cell>
-      </mb-table-row>
-      <mb-table-row>
-        <mb-table-cell primary>portal-website</mb-table-cell>
-        <mb-table-cell>production</mb-table-cell>
-        <mb-table-cell>1.4.2</mb-table-cell>
-      </mb-table-row>
-      <mb-table-row>
-        <mb-table-cell primary>api</mb-table-cell>
-        <mb-table-cell>staging</mb-table-cell>
-        <mb-table-cell>1.5.0-rc.1</mb-table-cell>
-      </mb-table-row>
-    </mb-table>
+    <div style="max-block-size: 14rem; overflow: auto;">
+      <mb-table label="Deployments" columns="1.5fr 1fr 1fr" sticky-header>
+        <mb-table-row slot="head">
+          <mb-table-cell>Service</mb-table-cell>
+          <mb-table-cell>Env</mb-table-cell>
+          <mb-table-cell>Version</mb-table-cell>
+        </mb-table-row>
+        <mb-table-row>
+          <mb-table-cell primary>portal-website</mb-table-cell>
+          <mb-table-cell>production</mb-table-cell>
+          <mb-table-cell>1.4.2</mb-table-cell>
+        </mb-table-row>
+        <mb-table-row>
+          <mb-table-cell primary>api</mb-table-cell>
+          <mb-table-cell>staging</mb-table-cell>
+          <mb-table-cell>1.5.0-rc.1</mb-table-cell>
+        </mb-table-row>
+        <mb-table-row>
+          <mb-table-cell primary>worker</mb-table-cell>
+          <mb-table-cell>production</mb-table-cell>
+          <mb-table-cell>1.2.0</mb-table-cell>
+        </mb-table-row>
+        <mb-table-row>
+          <mb-table-cell primary>scheduler</mb-table-cell>
+          <mb-table-cell>staging</mb-table-cell>
+          <mb-table-cell>0.9.1</mb-table-cell>
+        </mb-table-row>
+        <mb-table-row>
+          <mb-table-cell primary>ingest</mb-table-cell>
+          <mb-table-cell>production</mb-table-cell>
+          <mb-table-cell>2.0.0</mb-table-cell>
+        </mb-table-row>
+      </mb-table>
+    </div>
   `,
 };
 
@@ -191,8 +208,8 @@ export const Empty: Story = {
 };
 
 const demoSections = [
-  { id: 'ops', label: 'Ops' },
-  { id: 'eng', label: 'Engineering' },
+  { id: 'ops', label: 'Ops', meta: '8 / 12 OK', count: false as const },
+  { id: 'eng', label: 'Engineering', meta: '12 points · terminé' },
 ];
 
 export const SectionsAndSort: Story = {
@@ -205,6 +222,7 @@ export const SectionsAndSort: Story = {
       reorderable
       reorder-label="Réordonner"
       sort-label="Trier par {name}"
+      sticky-header
       .sections=${demoSections}
     >
       <mb-table-row slot="head">
