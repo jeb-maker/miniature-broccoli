@@ -120,7 +120,11 @@ export class MbInput extends LitElement {
       changed.has('error') ||
       changed.has('disabled') ||
       changed.has('name') ||
-      changed.has('type')
+      changed.has('type') ||
+      changed.has('min') ||
+      changed.has('max') ||
+      changed.has('step') ||
+      changed.has('multiple')
     ) {
       this.#sync();
     }
@@ -164,10 +168,32 @@ export class MbInput extends LitElement {
     } else {
       setFormValue(this.#internals, this.name ? this.value : null);
     }
+    const validity = this.#input?.validity;
+    const nativeFlags: ValidityStateFlags =
+      validity && !validity.valid
+        ? {
+            badInput: validity.badInput,
+            patternMismatch: validity.patternMismatch,
+            rangeOverflow: validity.rangeOverflow,
+            rangeUnderflow: validity.rangeUnderflow,
+            stepMismatch: validity.stepMismatch,
+            tooLong: validity.tooLong,
+            tooShort: validity.tooShort,
+            typeMismatch: validity.typeMismatch,
+            valueMissing: validity.valueMissing,
+          }
+        : {};
     const missing =
       this.required &&
       (this.#isFile ? !this.#input?.files?.length : !this.value);
-    const { flags, message } = constraintFlags(this.error, missing);
+    const constrained = constraintFlags(this.error, missing);
+    const flags = this.error || missing ? constrained.flags : nativeFlags;
+    const message =
+      this.error || missing
+        ? constrained.message
+        : validity && !validity.valid
+          ? this.#input?.validationMessage || 'Please enter a valid value.'
+          : '';
     if (message) {
       setValidity(this.#internals, flags, message, this.#input);
       this.invalid = Boolean(this.error) || this.#touched;

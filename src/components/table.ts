@@ -475,6 +475,7 @@ export class MbTable extends LitElement {
         } else {
           row.removeAttribute('data-reorder-label');
         }
+        row.requestUpdate();
       });
       const cells = this.querySelectorAll('mb-table-cell');
       cells.forEach((cell) => {
@@ -483,6 +484,7 @@ export class MbTable extends LitElement {
         if (cell.sortKey.trim() || cell.sortable) {
           cell.setAttribute('data-sort-label', this.sortLabel);
         }
+        cell.requestUpdate();
       });
       this.#syncLabelsFromHead();
       this.#syncSortUi();
@@ -663,13 +665,16 @@ export class MbTable extends LitElement {
       (node): node is MbTableRow =>
         node instanceof HTMLElement &&
         node.localName === 'mb-table-row' &&
+        this.contains(node) &&
         node !== this.#dragRow &&
         node.slot !== 'head' &&
         !node.hasAttribute('head'),
     );
     const sectionHost = stack.find(
       (node): node is HTMLElement =>
-        node instanceof HTMLElement && node.hasAttribute('data-section'),
+        node instanceof HTMLElement &&
+        this.renderRoot.contains(node) &&
+        node.hasAttribute('data-section'),
     );
 
     this.#clearDropUi();
@@ -733,6 +738,8 @@ export class MbTable extends LitElement {
   ): void {
     if (row.head || row.slot === 'head') return;
     if (!this.contains(row)) return;
+    if (target.before && !this.contains(target.before)) return;
+    if (target.after && !this.contains(target.after)) return;
 
     const fromSection = row.section.trim();
     let toSection = target.section ?? fromSection;
@@ -815,6 +822,20 @@ export class MbTable extends LitElement {
         composed: true,
       }),
     );
+  }
+
+  /** Move a body row one position with the keyboard. */
+  moveRowByKeyboard(row: MbTableRow, direction: -1 | 1): void {
+    if (!this.reorderable || !this.contains(row)) return;
+    const rows = this.#bodyRows();
+    const index = rows.indexOf(row);
+    const target = rows[index + direction];
+    if (index < 0 || !target) return;
+    if (direction < 0) {
+      this.moveRow(row, { before: target, section: target.section || undefined });
+    } else {
+      this.moveRow(row, { after: target, section: target.section || undefined });
+    }
   }
 
   #toggleSection(id: string): void {
@@ -1136,12 +1157,23 @@ export class MbTableRow extends LitElement {
     }
     const isHead = this.slot === 'head' || this.head;
     const hideHead = isHead && this.getAttribute('data-mode') === 'cards';
-    this.toggleAttribute('aria-hidden', hideHead);
+    if (hideHead) {
+      this.setAttribute('aria-hidden', 'true');
+    } else {
+      this.removeAttribute('aria-hidden');
+    }
   }
 
   #onHandlePointerDown = (event: PointerEvent): void => {
     const table = this.closest('mb-table');
     table?.beginReorder(this, event);
+  };
+
+  #onHandleKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+    event.preventDefault();
+    const table = this.closest('mb-table');
+    table?.moveRowByKeyboard(this, event.key === 'ArrowUp' ? -1 : 1);
   };
 
   #reorderAriaLabel(): string {
@@ -1165,7 +1197,9 @@ export class MbTableRow extends LitElement {
                 part="handle"
                 class="handle"
                 aria-label=${this.#reorderAriaLabel()}
+                aria-keyshortcuts="ArrowUp ArrowDown"
                 @pointerdown=${this.#onHandlePointerDown}
+                @keydown=${this.#onHandleKeyDown}
               >
                 ⠿
               </button>

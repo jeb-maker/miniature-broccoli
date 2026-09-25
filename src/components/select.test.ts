@@ -80,6 +80,27 @@ describe('mb-select', () => {
     form.remove();
   });
 
+  it('synchronizes FormData before change and rejects stale values', async () => {
+    const { el, form } = await mount((select) => {
+      select.name = 'country';
+    });
+    let serialized: FormDataEntryValue | null = null;
+    el.addEventListener('mb-change', () => {
+      serialized = new FormData(form).get('country');
+    });
+
+    const control = el.shadowRoot!.querySelector('select')!;
+    control.value = 'de';
+    control.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(serialized).toBe('de');
+
+    el.value = 'removed';
+    await el.updateComplete;
+    expect(new FormData(form).get('country')).toBeNull();
+    expect(form.checkValidity()).toBe(false);
+    form.remove();
+  });
+
   it('restores default value on form reset', async () => {
     const { el, form } = await mount((s) => {
       s.name = 'country';

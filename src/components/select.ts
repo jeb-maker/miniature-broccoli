@@ -169,6 +169,7 @@ export class MbSelect extends LitElement {
     this.value = this.#defaultValue;
     this.error = '';
     this.invalid = false;
+    this.#sync();
   }
 
   #optionFromElement(node: Element): SelectOption | null {
@@ -216,13 +217,32 @@ export class MbSelect extends LitElement {
     if (this.#control && this.#control.value !== this.value) {
       this.#control.value = this.value;
     }
-    setFormValue(this.#internals, this.name ? this.value : null);
+    const validChoice =
+      !this.value ||
+      this.#effectiveOptions.some(
+        (option) => option.value === this.value && !option.disabled,
+      );
+    setFormValue(
+      this.#internals,
+      this.name && validChoice ? this.value : null,
+    );
     const missing = this.required && !this.value;
-    const { flags, message } = constraintFlags(
+    const invalidChoice = Boolean(this.value) && !validChoice;
+    const constrained = constraintFlags(
       this.error,
       missing,
       'Please select an option.',
     );
+    const flags = this.error
+      ? constrained.flags
+      : invalidChoice
+        ? { badInput: true }
+        : constrained.flags;
+    const message = this.error
+      ? constrained.message
+      : invalidChoice
+        ? 'Please select a valid option.'
+        : constrained.message;
     if (message) {
       setValidity(this.#internals, flags, message, this.#control);
       this.invalid = Boolean(this.error) || this.#touched;
@@ -236,6 +256,7 @@ export class MbSelect extends LitElement {
     const target = event.target as HTMLSelectElement;
     this.#touched = true;
     this.value = target.value;
+    this.#sync();
     this.dispatchEvent(
       new CustomEvent('mb-change', {
         detail: { value: this.value },

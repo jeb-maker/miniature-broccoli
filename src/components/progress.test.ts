@@ -30,4 +30,24 @@ describe('mb-progress', () => {
     expect(bar.getAttribute('aria-valuemax')).toBe('100');
     el.remove();
   });
+
+  it('clamps visual and ARIA values to the valid range', async () => {
+    const el = document.createElement('mb-progress') as MbProgress;
+    el.value = 150;
+    el.max = 100;
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const bar = el.shadowRoot!.querySelector('[role="progressbar"]')!;
+    const fill = el.shadowRoot!.querySelector('.bar') as HTMLElement;
+    expect(bar.getAttribute('aria-valuenow')).toBe('100');
+    expect(bar.getAttribute('aria-valuemax')).toBe('100');
+    expect(fill.style.inlineSize).toBe('100%');
+
+    el.value = -5;
+    await el.updateComplete;
+    expect(bar.getAttribute('aria-valuenow')).toBe('0');
+    expect(fill.style.inlineSize).toBe('0%');
+    el.remove();
+  });
 });

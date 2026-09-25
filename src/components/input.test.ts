@@ -104,6 +104,30 @@ describe('mb-input', () => {
     el.remove();
   });
 
+  it('propagates native type and range constraints to the form', async () => {
+    const form = document.createElement('form');
+    const el = document.createElement('mb-input') as MbInput;
+    el.name = 'amount';
+    el.type = 'number';
+    el.min = '10';
+    el.value = '5';
+    form.appendChild(el);
+    document.body.appendChild(form);
+    await el.updateComplete;
+
+    expect(form.checkValidity()).toBe(false);
+
+    el.value = '10';
+    await el.updateComplete;
+    expect(form.checkValidity()).toBe(true);
+
+    el.type = 'email';
+    el.value = 'not-an-email';
+    await el.updateComplete;
+    expect(form.checkValidity()).toBe(false);
+    form.remove();
+  });
+
   it('fires mb-input on keystroke and mb-change on commit', async () => {
     const el = document.createElement('mb-input') as MbInput;
     document.body.appendChild(el);
