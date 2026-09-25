@@ -55,25 +55,26 @@ export class MbProgress extends LitElement {
   label = '';
 
   get #percent(): number {
-    if (this.percent != null && !Number.isNaN(this.percent)) {
+    if (this.percent != null && Number.isFinite(this.percent)) {
       return Math.min(100, Math.max(0, this.percent));
     }
-    const max = this.max > 0 ? this.max : 100;
-    return Math.min(100, Math.max(0, (this.value / max) * 100));
+    const value = Number.isFinite(this.value) ? this.value : 0;
+    return Math.min(100, Math.max(0, (value / this.#max) * 100));
   }
 
   get #now(): number {
-    if (this.percent != null && !Number.isNaN(this.percent)) {
+    if (this.percent != null && Number.isFinite(this.percent)) {
       return this.#percent;
     }
-    return this.value;
+    const value = Number.isFinite(this.value) ? this.value : 0;
+    return Math.min(this.#max, Math.max(0, value));
   }
 
   get #max(): number {
-    if (this.percent != null && !Number.isNaN(this.percent)) {
+    if (this.percent != null && Number.isFinite(this.percent)) {
       return 100;
     }
-    return this.max > 0 ? this.max : 100;
+    return Number.isFinite(this.max) && this.max > 0 ? this.max : 100;
   }
 
   override render() {

@@ -52,15 +52,69 @@ export class MbNavToggle extends LitElement {
   @property({ attribute: 'label-close' })
   labelClose = 'Close menu';
 
+  #target: HTMLElement | null = null;
+  #targetObserver = new MutationObserver(() => this.#syncFromTarget());
+
+  override firstUpdated(): void {
+    this.#observeTarget();
+  }
+
+  override updated(changed: Map<string, unknown>): void {
+    if (changed.has('for')) {
+      this.#observeTarget();
+    } else if (changed.has('expanded')) {
+      this.#setTargetOpen();
+    }
+  }
+
+  override disconnectedCallback(): void {
+    this.#targetObserver.disconnect();
+    super.disconnectedCallback();
+  }
+
+  #findTarget(): HTMLElement | null {
+    if (!this.for) return null;
+    const root = this.getRootNode();
+    const local =
+      'getElementById' in root
+        ? (root as Document | ShadowRoot).getElementById(this.for)
+        : null;
+    return local ?? this.ownerDocument.getElementById(this.for);
+  }
+
+  #observeTarget(): void {
+    this.#targetObserver.disconnect();
+    this.#target = this.#findTarget();
+    if (!this.#target) return;
+    this.#syncFromTarget();
+    this.#targetObserver.observe(this.#target, {
+      attributes: true,
+      attributeFilter: ['open'],
+    });
+  }
+
+  #syncFromTarget(): void {
+    const nav = this.#target;
+    if (!nav) return;
+    const open =
+      'open' in nav
+        ? Boolean((nav as HTMLElement & { open: boolean }).open)
+        : nav.hasAttribute('open');
+    if (this.expanded !== open) this.expanded = open;
+  }
+
+  #setTargetOpen(): void {
+    const nav = this.#target;
+    if (!nav) return;
+    nav.toggleAttribute('open', this.expanded);
+    if ('open' in nav) {
+      (nav as HTMLElement & { open: boolean }).open = this.expanded;
+    }
+  }
+
   #onClick(): void {
     this.expanded = !this.expanded;
-    const nav = this.for ? document.getElementById(this.for) : null;
-    if (nav) {
-      nav.toggleAttribute('open', this.expanded);
-      if ('open' in nav) {
-        (nav as HTMLElement & { open: boolean }).open = this.expanded;
-      }
-    }
+    this.#setTargetOpen();
     this.dispatchEvent(
       new CustomEvent('mb-toggle', {
         detail: { expanded: this.expanded },

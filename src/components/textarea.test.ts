@@ -47,6 +47,26 @@ describe('mb-textarea', () => {
     form.remove();
   });
 
+  it('updates FormData before emitting input events', async () => {
+    const form = document.createElement('form');
+    const el = document.createElement('mb-textarea') as MbTextarea;
+    el.name = 'bio';
+    form.appendChild(el);
+    document.body.appendChild(form);
+    await el.updateComplete;
+
+    let serialized: FormDataEntryValue | null = null;
+    el.addEventListener('mb-input', () => {
+      serialized = new FormData(form).get('bio');
+    });
+    const control = el.shadowRoot!.querySelector('textarea')!;
+    control.value = 'Immediate';
+    control.dispatchEvent(new Event('input', { bubbles: true }));
+
+    expect(serialized).toBe('Immediate');
+    form.remove();
+  });
+
   it('restores default value on form reset', async () => {
     const form = document.createElement('form');
     const el = document.createElement('mb-textarea') as MbTextarea;

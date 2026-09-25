@@ -112,4 +112,37 @@ describe('mb-radio-group', () => {
     expect(changes).toEqual(['b']);
     group.remove();
   });
+
+  it('synchronizes FormData before change and rejects stale values', async () => {
+    const form = document.createElement('form');
+    const group = document.createElement('mb-radio-group') as MbRadioGroup;
+    group.name = 'org';
+    group.options = [
+      { value: 'a', label: 'A' },
+      { value: 'b', label: 'B' },
+    ];
+    form.appendChild(group);
+    document.body.appendChild(form);
+    await group.updateComplete;
+    await group.updateComplete;
+
+    let serialized: FormDataEntryValue | null = null;
+    group.addEventListener('mb-change', () => {
+      serialized = new FormData(form).get('org');
+    });
+    group.dispatchEvent(
+      new CustomEvent('mb-radio-select', {
+        detail: { value: 'b' },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+    expect(serialized).toBe('b');
+
+    group.value = 'removed';
+    await group.updateComplete;
+    expect(new FormData(form).get('org')).toBeNull();
+    expect(form.checkValidity()).toBe(false);
+    form.remove();
+  });
 });

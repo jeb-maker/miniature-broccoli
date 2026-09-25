@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import './toast.js';
 import type { MbToast } from './toast.js';
 
@@ -33,5 +33,27 @@ describe('mb-toast', () => {
     await el.updateComplete;
     expect(el.shadowRoot!.querySelector('[role="alert"]')).toBeTruthy();
     el.remove();
+  });
+
+  it('restarts auto-dismiss when an open toast is shown again', async () => {
+    vi.useFakeTimers();
+    try {
+      const el = document.createElement('mb-toast') as MbToast;
+      el.autoDismiss = 4000;
+      document.body.appendChild(el);
+      await el.updateComplete;
+
+      el.show('First');
+      vi.advanceTimersByTime(3000);
+      el.show('Second');
+      vi.advanceTimersByTime(1500);
+      expect(el.open).toBe(true);
+
+      vi.advanceTimersByTime(2500);
+      expect(el.open).toBe(false);
+      el.remove();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

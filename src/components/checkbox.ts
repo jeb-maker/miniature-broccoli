@@ -124,6 +124,7 @@ export class MbCheckbox extends LitElement {
     this.indeterminate = false;
     this.error = '';
     this.invalid = false;
+    this.#sync();
   }
 
   #applyIndeterminate(): void {
@@ -153,6 +154,7 @@ export class MbCheckbox extends LitElement {
     this.#touched = true;
     this.checked = target.checked;
     this.indeterminate = false;
+    this.#sync();
     this.dispatchEvent(
       new CustomEvent('mb-change', {
         detail: { checked: this.checked, value: this.value },

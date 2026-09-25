@@ -58,6 +58,21 @@ describe('mb-checkbox', () => {
     form.remove();
   });
 
+  it('updates FormData before emitting change', async () => {
+    const { el, form } = await mount((checkbox) => {
+      checkbox.name = 'opt';
+    });
+    let serialized: FormDataEntryValue | null = null;
+    el.addEventListener('mb-change', () => {
+      serialized = new FormData(form).get('opt');
+    });
+
+    el.shadowRoot!.querySelector('input')!.click();
+
+    expect(serialized).toBe('on');
+    form.remove();
+  });
+
   it('restores the default checked state on form reset', async () => {
     const { el, form } = await mount((c) => {
       c.name = 'news';

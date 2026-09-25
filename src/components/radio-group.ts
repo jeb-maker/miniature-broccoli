@@ -163,6 +163,8 @@ export class MbRadioGroup extends LitElement {
     this.value = this.#defaultValue;
     this.error = '';
     this.invalid = false;
+    this.#syncRadios();
+    this.#sync();
   }
 
   #slottedRadios(): MbRadio[] {
@@ -199,13 +201,34 @@ export class MbRadioGroup extends LitElement {
   }
 
   #sync(): void {
-    setFormValue(this.#internals, this.name ? this.value : null);
+    const validChoice =
+      !this.value ||
+      this.#radios().some(
+        (radio) =>
+          radio.value === this.value &&
+          (!radio.disabled || this.#isDisabled),
+      );
+    setFormValue(
+      this.#internals,
+      this.name && validChoice ? this.value : null,
+    );
     const missing = this.required && !this.value;
-    const { flags, message } = constraintFlags(
+    const invalidChoice = Boolean(this.value) && !validChoice;
+    const constrained = constraintFlags(
       this.error,
       missing,
       'Please select an option.',
     );
+    const flags = this.error
+      ? constrained.flags
+      : invalidChoice
+        ? { badInput: true }
+        : constrained.flags;
+    const message = this.error
+      ? constrained.message
+      : invalidChoice
+        ? 'Please select a valid option.'
+        : constrained.message;
     if (message) {
       setValidity(this.#internals, flags, message);
       this.invalid = Boolean(this.error) || this.#touched;
@@ -220,6 +243,8 @@ export class MbRadioGroup extends LitElement {
     if (value == null) return;
     this.#touched = true;
     this.value = value;
+    this.#syncRadios();
+    this.#sync();
     this.dispatchEvent(
       new CustomEvent('mb-change', {
         detail: { value: this.value },
@@ -239,6 +264,8 @@ export class MbRadioGroup extends LitElement {
     const next = radios[(current + delta + radios.length) % radios.length];
     this.#touched = true;
     this.value = next.value;
+    this.#syncRadios();
+    this.#sync();
     next.focus();
     this.dispatchEvent(
       new CustomEvent('mb-change', {
