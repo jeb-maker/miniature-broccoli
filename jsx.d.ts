@@ -183,12 +183,22 @@ declare namespace JSX {
       columns?: string;
       density?: 'default' | 'compact';
       layout?: 'auto' | 'table' | 'cards';
-      sections?: Array<{ id: string; label: string; collapsed?: boolean }> | string;
+      sections?:
+        | Array<{
+            id: string;
+            label: string;
+            collapsed?: boolean;
+            meta?: string;
+            count?: boolean;
+          }>
+        | string;
       'sort-key'?: string;
       'sort-direction'?: 'asc' | 'desc';
       reorderable?: boolean;
       'reorder-label'?: string;
       'sort-label'?: string;
+      'hide-count'?: boolean;
+      'sticky-header'?: boolean;
     };
     'mb-table-row': MbBaseAttrs & {
       head?: boolean;

@@ -8,7 +8,15 @@ export type TableLayout = 'auto' | 'table' | 'cards';
 export type TableDensity = 'default' | 'compact';
 export type TableCellAlign = 'start' | 'center' | 'end';
 export type TableSortDirection = 'asc' | 'desc';
-export type TableSection = { id: string; label: string; collapsed?: boolean };
+export type TableSection = {
+  id: string;
+  label: string;
+  collapsed?: boolean;
+  /** Extra status copy in the section head (e.g. `8 / 12 OK`). */
+  meta?: string;
+  /** When `false`, hide the auto row count for this section. Default: show. */
+  count?: boolean;
+};
 
 const NARROW_MQ = '(max-width: 36rem)';
 
@@ -29,6 +37,8 @@ function parseSectionsAttribute(value: string | null): TableSection[] {
         id: item.id,
         label: item.label,
         collapsed: Boolean(item.collapsed),
+        meta: typeof item.meta === 'string' ? item.meta : undefined,
+        count: item.count === false ? false : undefined,
       }));
   } catch {
     return [];
@@ -189,10 +199,22 @@ export class MbTable extends LitElement {
         overflow: clip;
       }
 
+      /* Sticky headers need a non-clipping ancestor. */
+      :host([sticky-header][data-mode='table']) .frame {
+        overflow: visible;
+      }
+
       :host([data-mode='table']) .head {
         display: block;
         background: var(--mb-color-bg);
         border-block-end: 1px solid var(--mb-color-border);
+      }
+
+      :host([sticky-header][data-mode='table']) .head {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: 2;
+        background: var(--mb-color-bg);
       }
 
       :host([data-mode='table']) .body {
@@ -288,6 +310,17 @@ export class MbTable extends LitElement {
    */
   @property({ attribute: 'sort-label' })
   sortLabel = 'Sort by {name}';
+
+  /**
+   * When set, hide auto row counts in section heads (per-section `count: false`
+   * also hides). Custom `meta` / slotted meta still render.
+   */
+  @property({ type: Boolean, reflect: true, attribute: 'hide-count' })
+  hideCount = false;
+
+  /** Stick the column header row while scrolling (wide / table mode only). */
+  @property({ type: Boolean, reflect: true, attribute: 'sticky-header' })
+  stickyHeader = false;
 
   @state()
   private _sectionCounts: Record<string, number> = {};
@@ -816,6 +849,12 @@ export class MbTable extends LitElement {
     this.renderRoot.querySelector('.empty')?.toggleAttribute('data-has-content', has);
   }
 
+  #showSectionCount(section: TableSection): boolean {
+    if (this.hideCount) return false;
+    if (section.count === false) return false;
+    return true;
+  }
+
   #onHeadClick = (event: Event): void => {
     const path = event.composedPath();
     const cell = path.find(
@@ -867,7 +906,15 @@ export class MbTable extends LitElement {
                         >
                           <span class="section-label">${section.label}</span>
                           <span class="section-meta">
-                            <span part="section-count">${this._sectionCounts[section.id] ?? 0}</span>
+                            ${section.meta
+                              ? html`<span part="section-custom-meta">${section.meta}</span>`
+                              : nothing}
+                            <slot name=${`section-meta-${section.id}`}></slot>
+                            ${this.#showSectionCount(section)
+                              ? html`<span part="section-count"
+                                  >${this._sectionCounts[section.id] ?? 0}</span
+                                >`
+                              : nothing}
                             <span class="section-chevron" aria-hidden="true">▾</span>
                           </span>
                         </button>
