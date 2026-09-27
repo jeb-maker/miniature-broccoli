@@ -17,27 +17,28 @@ export class MbAlert extends LitElement {
       .alert {
         padding-block: var(--mb-space-3);
         padding-inline: var(--mb-space-4);
+        border: 1px solid var(--mb-color-info);
+        border-inline-start-width: 4px;
         border-radius: var(--mb-radius-md);
-        border-inline-start: 4px solid currentColor;
         background: var(--mb-color-info-soft);
-        color: var(--mb-color-info);
+        color: var(--mb-color-fg);
         overflow-wrap: anywhere;
         max-inline-size: 100%;
       }
 
       :host([variant='success']) .alert {
         background: var(--mb-color-success-soft);
-        color: var(--mb-color-success);
+        border-color: var(--mb-color-success);
       }
 
       :host([variant='warning']) .alert {
         background: var(--mb-color-warning-soft);
-        color: var(--mb-color-warning);
+        border-color: var(--mb-color-warning);
       }
 
       :host([variant='danger']) .alert {
         background: var(--mb-color-danger-soft);
-        color: var(--mb-color-danger);
+        border-color: var(--mb-color-danger);
       }
     `,
   ];

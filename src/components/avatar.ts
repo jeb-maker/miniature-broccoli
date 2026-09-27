@@ -22,6 +22,7 @@ export class MbAvatar extends LitElement {
         border-radius: 50%;
         background: var(--mb-color-accent-soft);
         color: var(--mb-color-accent);
+        box-shadow: inset 0 0 0 1px var(--mb-color-border-strong);
         font-weight: 700;
         line-height: 1;
         user-select: none;

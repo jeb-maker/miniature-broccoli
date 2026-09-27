@@ -25,9 +25,10 @@ export class MbProgress extends LitElement {
 
       .track {
         inline-size: 100%;
-        block-size: 0.5rem;
-        border-radius: var(--mb-radius-sm);
-        background: var(--mb-color-border);
+        block-size: 0.625rem;
+        border: 1px solid var(--mb-color-border-strong);
+        border-radius: 999px;
+        background: var(--mb-color-bg);
         overflow: clip;
       }
 

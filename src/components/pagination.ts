@@ -33,20 +33,38 @@ export class MbPagination extends LitElement {
       span.disabled {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         min-block-size: 2.25rem;
+        min-inline-size: 2.25rem;
         padding-inline: var(--mb-space-3);
-        border: 1px solid var(--mb-color-border);
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-md);
         background: var(--mb-color-surface);
         color: var(--mb-color-fg);
         font-size: var(--mb-font-size-sm);
         font-weight: 600;
         text-decoration: none;
+        transition:
+          background-color var(--mb-transition),
+          border-color var(--mb-transition);
+      }
+
+      a:hover {
+        background-color: var(--mb-color-surface);
+        background-image: linear-gradient(var(--mb-color-hover), var(--mb-color-hover));
+        border-color: var(--mb-color-border-hover);
+      }
+
+      a:active {
+        background-color: var(--mb-color-bg);
+        background-image: none;
+        border-color: var(--mb-color-border-hover);
       }
 
       span.disabled {
-        opacity: 0.45;
+        opacity: 0.55;
         cursor: not-allowed;
+        border-color: var(--mb-color-border);
       }
     `,
   ];

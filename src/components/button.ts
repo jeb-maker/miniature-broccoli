@@ -52,6 +52,11 @@ export class MbButton extends LitElement {
         pointer-events: none;
       }
 
+      .base[aria-busy='true'] {
+        cursor: progress;
+        opacity: 1;
+      }
+
       :host([size='sm']) .base {
         min-block-size: 2rem;
         padding-inline: var(--mb-space-3);
@@ -94,7 +99,7 @@ export class MbButton extends LitElement {
       :host([variant='secondary']) .base {
         background: var(--mb-color-surface);
         color: var(--mb-color-fg);
-        border-color: var(--mb-color-border);
+        border-color: var(--mb-color-border-strong);
       }
 
       :host([variant='ghost']) .base {
@@ -107,7 +112,41 @@ export class MbButton extends LitElement {
         color: var(--mb-color-on-danger);
       }
 
+      :host([variant='primary']) .base:hover:not(:disabled):not([aria-disabled='true']) {
+        background: var(--mb-color-accent-hover);
+      }
+
+      :host([variant='primary']) .base:active:not(:disabled):not([aria-disabled='true']) {
+        background: var(--mb-color-accent-active);
+      }
+
+      :host([variant='secondary']) .base:hover:not(:disabled):not([aria-disabled='true']) {
+        background-color: var(--mb-color-surface);
+        background-image: linear-gradient(var(--mb-color-hover), var(--mb-color-hover));
+        border-color: var(--mb-color-border-hover);
+      }
+
+      :host([variant='secondary']) .base:active:not(:disabled):not([aria-disabled='true']) {
+        background-color: var(--mb-color-bg);
+        background-image: none;
+        border-color: var(--mb-color-border-hover);
+      }
+
+      :host([variant='ghost']) .base:hover:not(:disabled):not([aria-disabled='true']),
+      :host([variant='ghost']) .base:active:not(:disabled):not([aria-disabled='true']) {
+        background: var(--mb-color-accent-soft);
+      }
+
+      :host([variant='danger']) .base:hover:not(:disabled):not([aria-disabled='true']) {
+        background: var(--mb-color-danger-hover);
+      }
+
+      :host([variant='danger']) .base:active:not(:disabled):not([aria-disabled='true']) {
+        background: var(--mb-color-danger-active);
+      }
+
       .spinner {
+        flex: none;
         inline-size: 1em;
         block-size: 1em;
         border: 2px solid currentColor;

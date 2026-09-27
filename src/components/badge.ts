@@ -19,32 +19,37 @@ export class MbBadge extends LitElement {
         gap: var(--mb-space-1);
         padding-block: 0.15rem;
         padding-inline: var(--mb-space-2);
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-sm);
         font-size: var(--mb-font-size-sm);
         font-weight: 600;
         line-height: 1.3;
-        background: var(--mb-color-border);
+        background: var(--mb-color-bg);
         color: var(--mb-color-fg);
       }
 
       :host([variant='success']) span {
         background: var(--mb-color-success-soft);
         color: var(--mb-color-success);
+        border-color: var(--mb-color-success);
       }
 
       :host([variant='warning']) span {
         background: var(--mb-color-warning-soft);
         color: var(--mb-color-warning);
+        border-color: var(--mb-color-warning);
       }
 
       :host([variant='danger']) span {
         background: var(--mb-color-danger-soft);
         color: var(--mb-color-danger);
+        border-color: var(--mb-color-danger);
       }
 
       :host([variant='info']) span {
         background: var(--mb-color-info-soft);
         color: var(--mb-color-info);
+        border-color: var(--mb-color-info);
       }
     `,
   ];
