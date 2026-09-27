@@ -20,10 +20,6 @@ export class MbInput extends LitElement {
     sharedStyles,
     fieldStyles,
     css`
-      :host {
-        display: block;
-      }
-
       input[type='file'].control {
         padding-block: var(--mb-space-2);
       }

@@ -10,13 +10,11 @@ export class MbTextarea extends LitElement {
     sharedStyles,
     fieldStyles,
     css`
-      :host {
-        display: block;
-      }
-
       textarea.control {
         min-block-size: 6rem;
-        resize: vertical;
+        /* Full-width block; not user-resizable unless hosts opt in later. */
+        resize: none;
+        field-sizing: fixed;
       }
     `,
   ];

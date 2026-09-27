@@ -127,6 +127,28 @@ describe('mb-input', () => {
     el.remove();
   });
 
+  it('stacks label above a full-width control with a consistent gap', async () => {
+    const el = document.createElement('mb-input') as MbInput;
+    el.label = 'Email';
+    document.body.style.width = '400px';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(getComputedStyle(el).display).toBe('block');
+    const field = el.shadowRoot!.querySelector('.field')!;
+    const label = el.shadowRoot!.querySelector('.label')!;
+    const control = el.shadowRoot!.querySelector('input')!;
+    const fieldStyles = getComputedStyle(field);
+    expect(fieldStyles.flexDirection).toBe('column');
+    const gap = parseFloat(fieldStyles.rowGap);
+    expect(Number.isFinite(gap) ? gap : parseFloat(fieldStyles.gap)).toBeGreaterThanOrEqual(8);
+    expect(label.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+      control.getBoundingClientRect().top + 1,
+    );
+    expect(control.getBoundingClientRect().width).toBeGreaterThan(300);
+    el.remove();
+  });
+
   it('restores default value on reset and keeps required field visually valid until touched', async () => {
     const form = document.createElement('form');
     const el = document.createElement('mb-input') as MbInput;

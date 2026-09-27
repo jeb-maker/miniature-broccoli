@@ -377,6 +377,34 @@ describe('mb-table', () => {
     el.remove();
   });
 
+  it('end-aligns actions cell content across the full cell track', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.layout = 'table';
+    el.columns = '1fr auto';
+    el.innerHTML = `
+      <mb-table-row slot="head">
+        <mb-table-cell>Title</mb-table-cell>
+        <mb-table-cell></mb-table-cell>
+      </mb-table-row>
+      <mb-table-row>
+        <mb-table-cell><span>Ada</span></mb-table-cell>
+        <mb-table-cell actions><button type="button">Save</button></mb-table-cell>
+      </mb-table-row>
+    `;
+    document.body.style.width = '640px';
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    expect(getComputedStyle(el).width).not.toBe('0px');
+    const action = el.querySelector<MbTableCell>('mb-table-cell[actions]')!;
+    await action.updateComplete;
+    const value = action.shadowRoot!.querySelector('.value')!;
+    expect(getComputedStyle(value).justifyContent).toBe('flex-end');
+    expect(getComputedStyle(value).width).not.toBe('0px');
+    el.remove();
+  });
+
   it('skips cards labels for hide-label / actions cells (#42)', async () => {
     const el = document.createElement('mb-table') as MbTable;
     el.layout = 'cards';

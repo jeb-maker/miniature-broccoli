@@ -22,7 +22,13 @@ type Story = StoryObj;
 export const ListToolbar: Story = {
   render: () => html`
     <mb-toolbar>
-      <mb-input slot="start" density="compact" hide-label aria-label="Search" placeholder="Search…" type="search"></mb-input>
+      <mb-input
+        slot="start"
+        hide-label
+        aria-label="Search"
+        placeholder="Search…"
+        type="search"
+      ></mb-input>
       <mb-segmented-control slot="start" label="Filters">
         <a href="#all" aria-current="page">All</a>
         <a href="#mine">Mine</a>

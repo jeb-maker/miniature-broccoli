@@ -30,12 +30,15 @@ export class MbSegmentedControl extends LitElement {
 
       .list {
         display: inline-flex;
+        align-items: stretch;
         min-inline-size: 100%;
+        min-block-size: var(--mb-control-height, 2.5rem);
         gap: 0;
         padding: var(--mb-space-1);
         border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-md);
         background: var(--mb-color-surface);
+        box-sizing: border-box;
       }
 
       ::slotted(a),
@@ -44,7 +47,9 @@ export class MbSegmentedControl extends LitElement {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-block-size: 2rem;
+        min-block-size: calc(
+          var(--mb-control-height, 2.5rem) - 2 * var(--mb-space-1) - 2px
+        );
         border: 0;
         background: transparent;
         color: var(--mb-color-muted);
@@ -52,7 +57,7 @@ export class MbSegmentedControl extends LitElement {
         font-weight: 600;
         font-size: var(--mb-font-size-sm);
         text-decoration: none;
-        padding-block: var(--mb-space-2);
+        padding-block: 0;
         padding-inline: var(--mb-space-3);
         border-radius: var(--mb-radius-sm);
         white-space: nowrap;

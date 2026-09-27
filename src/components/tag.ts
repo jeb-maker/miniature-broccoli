@@ -21,16 +21,16 @@ export class MbTag extends LitElement {
         align-items: center;
         gap: var(--mb-space-1);
         max-inline-size: 100%;
-        min-block-size: 1.5rem;
-        padding-block: 0.15rem;
-        padding-inline: var(--mb-space-2);
+        min-block-size: var(--mb-control-height-sm, 2rem);
+        padding-block: var(--mb-space-1);
+        padding-inline: var(--mb-space-3);
         border: 1px solid var(--mb-color-border-strong);
-        border-radius: var(--mb-radius-sm);
+        border-radius: var(--mb-radius-md);
         background: var(--mb-color-surface);
         color: var(--mb-color-fg);
         font-size: var(--mb-font-size-sm);
         font-weight: 600;
-        line-height: 1.3;
+        line-height: var(--mb-line-height-tight);
         text-decoration: none;
         overflow-wrap: anywhere;
         transition:
@@ -51,8 +51,11 @@ export class MbTag extends LitElement {
       }
 
       :host([size='sm']) .tag {
+        min-block-size: 1.5rem;
         font-size: 0.75rem;
-        padding-inline: 0.4rem;
+        padding-block: 0.1rem;
+        padding-inline: var(--mb-space-2);
+        border-radius: var(--mb-radius-sm);
       }
     `,
   ];

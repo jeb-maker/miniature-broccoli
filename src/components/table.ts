@@ -82,6 +82,7 @@ export class MbTable extends LitElement {
       :host {
         display: block;
         inline-size: 100%;
+        max-inline-size: 100%;
         --mb-table-template: repeat(var(--mb-table-col-count, 1), minmax(0, 1fr));
       }
 
@@ -89,6 +90,8 @@ export class MbTable extends LitElement {
         display: flex;
         flex-direction: column;
         gap: var(--mb-space-3);
+        inline-size: 100%;
+        max-inline-size: 100%;
       }
 
       .caption {
@@ -103,6 +106,7 @@ export class MbTable extends LitElement {
         display: flex;
         flex-direction: column;
         gap: var(--mb-space-3);
+        inline-size: 100%;
         min-inline-size: 0;
       }
 
@@ -133,7 +137,7 @@ export class MbTable extends LitElement {
         margin: 0;
         padding-block: var(--mb-space-2);
         padding-inline: var(--mb-space-3);
-        min-block-size: 2.5rem;
+        min-block-size: var(--mb-control-height, 2.5rem);
         border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-md);
         background: var(--mb-color-bg);
@@ -963,6 +967,7 @@ export class MbTableRow extends LitElement {
     css`
       :host {
         display: block;
+        inline-size: 100%;
         min-inline-size: 0;
       }
 
@@ -970,6 +975,7 @@ export class MbTableRow extends LitElement {
         display: flex;
         align-items: stretch;
         gap: var(--mb-space-2);
+        inline-size: 100%;
         min-inline-size: 0;
       }
 
@@ -1038,8 +1044,9 @@ export class MbTableRow extends LitElement {
         grid-template-columns: var(--mb-table-template);
         align-items: center;
         gap: var(--mb-space-3);
+        inline-size: 100%;
         min-inline-size: 0;
-        flex: 1;
+        flex: 1 1 auto;
       }
 
       :host([data-mode='table']) .wrap {
@@ -1206,6 +1213,7 @@ export class MbTableCell extends LitElement {
     css`
       :host {
         display: block;
+        inline-size: 100%;
         min-inline-size: 0;
       }
 
@@ -1214,6 +1222,7 @@ export class MbTableCell extends LitElement {
         flex-direction: column;
         align-items: stretch;
         gap: var(--mb-space-1);
+        inline-size: 100%;
         min-inline-size: 0;
       }
 
@@ -1225,6 +1234,7 @@ export class MbTableCell extends LitElement {
       }
 
       .value {
+        inline-size: 100%;
         min-inline-size: 0;
         max-inline-size: 100%;
       }
@@ -1272,9 +1282,25 @@ export class MbTableCell extends LitElement {
         text-align: center;
       }
 
+      :host([align='center']) .value {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--mb-space-2);
+      }
+
       :host([align='end']) .cell {
-        align-items: end;
+        align-items: stretch;
         text-align: end;
+      }
+
+      :host([align='end']) .value {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--mb-space-2);
       }
 
       :host([data-mode='cards']) .label:not([hidden]) {
@@ -1300,6 +1326,13 @@ export class MbTableCell extends LitElement {
         gap: var(--mb-space-2);
       }
 
+      /* Actions column: pin controls to the inline-end of the cell track. */
+      :host([actions]) .cell {
+        align-items: stretch;
+        text-align: end;
+      }
+
+      :host([actions]) .value,
       :host([actions][data-mode='cards']) .value,
       :host([actions][data-mode='table']) .value {
         display: flex;
@@ -1307,6 +1340,7 @@ export class MbTableCell extends LitElement {
         flex-wrap: wrap;
         align-items: center;
         gap: var(--mb-space-2);
+        inline-size: 100%;
       }
     `,
   ];

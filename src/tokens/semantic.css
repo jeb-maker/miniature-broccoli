@@ -62,6 +62,17 @@
   --mb-transition: 160ms ease;
   --mb-shadow: 0 12px 40px rgb(20 32 27 / 12%);
   --mb-shadow-sm: 0 1px 2px rgb(20 32 27 / 6%), 0 8px 24px rgb(20 32 27 / 6%);
+
+  /*
+    Control geometry — shared by buttons, fields, toolbar chrome, chips.
+    Keep toolbar siblings (input / select / button / segmented) on the same track.
+  */
+  --mb-control-height: 2.5rem;
+  --mb-control-height-sm: 2rem;
+  --mb-control-padding-inline: var(--mb-space-3);
+  --mb-control-padding-inline-end-select: var(--mb-space-5);
+  --mb-field-label-gap: var(--mb-space-2);
+  --mb-narrow: 36rem;
 }
 
 @media (prefers-color-scheme: dark) {

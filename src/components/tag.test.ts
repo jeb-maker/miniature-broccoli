@@ -23,4 +23,14 @@ describe('mb-tag', () => {
     expect(a.getAttribute('href')).toBe('/tags/domain');
     el.remove();
   });
+
+  it('defaults to control-sm height', async () => {
+    const el = document.createElement('mb-tag') as MbTag;
+    el.textContent = 'domain';
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const tag = el.shadowRoot!.querySelector('.tag')!;
+    expect(parseFloat(getComputedStyle(tag).minHeight)).toBeGreaterThanOrEqual(32);
+    el.remove();
+  });
 });

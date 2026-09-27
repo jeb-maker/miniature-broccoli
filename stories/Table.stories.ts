@@ -69,7 +69,7 @@ export const Editable: Story = {
             .options=${statusOptions}
           ></mb-select>
         </mb-table-cell>
-        <mb-table-cell align="end">
+        <mb-table-cell actions>
           <mb-button size="sm" type="button">Save</mb-button>
         </mb-table-cell>
       </mb-table-row>
@@ -94,7 +94,7 @@ export const Editable: Story = {
             .options=${statusOptions}
           ></mb-select>
         </mb-table-cell>
-        <mb-table-cell align="end">
+        <mb-table-cell actions>
           <mb-button size="sm" type="button">Save</mb-button>
         </mb-table-cell>
       </mb-table-row>

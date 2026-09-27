@@ -30,12 +30,33 @@ Install from GitHub Packages (`@jeb-maker` scope → `https://npm.pkg.github.com
 - **Forms** use Form-Associated Custom Elements, including `fieldset[disabled]` and `form="…"`.
 - **Select** options via JS property, JSON `options` attribute, or slotted `<option>` (slotted wins). Label the empty option with `placeholder` or a slotted `value=""`.
 - **Button** supports `variant="danger"` and `href` (anchor rendering).
-- **Table** (`mb-table`): grid on wide viewports, stacked cards below `36rem`; `sections` (+ optional `meta`) + row `section` for groups; head `sort-key` for in-section sort; `reorderable` for drag handles; `sticky-header` for long lists. Pair with compact unlabeled inputs/selects for editable rows.
+- **Table** (`mb-table`): grid on wide viewports, stacked cards below `36rem`; `sections` (+ optional `meta`) + row `section` for groups; head `sort-key` for in-section sort; `reorderable` for drag handles; `sticky-header` for long lists. Pair with compact unlabeled inputs/selects for editable rows. Action columns use `actions` (end-aligned).
 - **Anti-FOUC** hides interactive controls until defined; layout primitives (`mb-card`, …) stay visible (opt in with `mb-fouc`).
 - **Modal** uses native `<dialog>`.
 - **Nav**: `mb-nav-toggle` targets `mb-nav` by `for` / `id` and emits composed `mb-toggle`.
 - **React**: React 19+ preferred; React ≤18 use string attributes.
 - **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4.
+
+## Layout rules
+
+Shared geometry lives on semantic tokens — prefer these over one-off sizes:
+
+| Token | Role |
+|-------|------|
+| `--mb-control-height` (`2.5rem`) | Default control / button `md` / toolbar track |
+| `--mb-control-height-sm` (`2rem`) | Compact fields, button `sm`, default tags |
+| `--mb-control-padding-inline` | Field control inline padding |
+| `--mb-control-padding-inline-end-select` | Extra end padding for the select chevron |
+| `--mb-field-label-gap` | Space between label and control |
+| `--mb-narrow` (`36rem`) | Table cards + toolbar stack breakpoint |
+
+Rules of thumb:
+
+1. **One control height per row** — toolbar siblings share `--mb-control-height` (do not mix `density="compact"` fields with `md` buttons in the same toolbar).
+2. **Block fields fill their track** — `mb-input` / `mb-select` / `mb-textarea` / `mb-table` default to `inline-size: 100%`.
+3. **Textareas are not user-resizable** by default (`resize: none`) and still span the full field width.
+4. **Narrow viewports** — `mb-toolbar` stacks and stretches slotted controls to full width below `--mb-narrow`.
+5. **End-aligned cells** — use `align="end"` or `actions` on `mb-table-cell`; the value track spans the cell so content pins to the inline-end.
 
 ## Theming
 
