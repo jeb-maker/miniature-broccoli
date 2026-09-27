@@ -19,7 +19,7 @@ export class MbEmptyState extends LitElement {
         gap: var(--mb-space-3);
         padding-block: var(--mb-space-6);
         padding-inline: var(--mb-space-5);
-        border: 1px dashed var(--mb-color-border);
+        border: 1px dashed var(--mb-color-border-strong);
         border-radius: var(--mb-radius-lg);
         background: var(--mb-color-surface);
       }
@@ -28,7 +28,7 @@ export class MbEmptyState extends LitElement {
         margin: 0;
         font-family: var(--mb-font-display);
         font-size: var(--mb-font-size-lg);
-        font-weight: 650;
+        font-weight: 600;
         line-height: var(--mb-line-height-tight);
         color: var(--mb-color-fg);
       }

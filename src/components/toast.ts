@@ -37,8 +37,9 @@ export class MbToast extends LitElement {
         padding-block: var(--mb-space-3);
         padding-inline: var(--mb-space-4);
         border-radius: var(--mb-radius-md);
-        border: 1px solid var(--mb-color-border);
-        background: var(--mb-color-surface);
+        border: 1px solid var(--mb-color-info);
+        border-inline-start-width: 4px;
+        background: var(--mb-color-info-soft);
         box-shadow: var(--mb-shadow);
         color: var(--mb-color-fg);
       }
@@ -46,19 +47,16 @@ export class MbToast extends LitElement {
       :host([variant='success']) .toast {
         border-color: var(--mb-color-success);
         background: var(--mb-color-success-soft);
-        color: var(--mb-color-success);
       }
 
       :host([variant='danger']) .toast {
         border-color: var(--mb-color-danger);
         background: var(--mb-color-danger-soft);
-        color: var(--mb-color-danger);
       }
 
       :host([variant='info']) .toast {
         border-color: var(--mb-color-info);
         background: var(--mb-color-info-soft);
-        color: var(--mb-color-info);
       }
 
       .message {
@@ -69,7 +67,15 @@ export class MbToast extends LitElement {
 
       button {
         appearance: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        min-inline-size: 1.5rem;
+        min-block-size: 1.5rem;
+        margin-block-start: -0.15rem;
         border: 0;
+        border-radius: var(--mb-radius-sm);
         background: transparent;
         color: inherit;
         cursor: pointer;
@@ -77,6 +83,15 @@ export class MbToast extends LitElement {
         font-weight: 700;
         line-height: 1;
         padding: 0;
+        transition: background-color var(--mb-transition);
+      }
+
+      button:hover {
+        background: var(--mb-color-hover);
+      }
+
+      button:active {
+        background: var(--mb-color-border);
       }
     `,
   ];

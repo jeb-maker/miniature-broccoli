@@ -27,6 +27,9 @@ export class MbNav extends LitElement {
       }
 
       ::slotted(a) {
+        display: inline-flex;
+        align-items: center;
+        min-block-size: 2rem;
         color: var(--mb-color-muted);
         font-weight: 600;
         font-size: var(--mb-font-size-sm);
@@ -38,10 +41,13 @@ export class MbNav extends LitElement {
 
       ::slotted(a:hover) {
         color: var(--mb-color-fg);
+        background: var(--mb-color-hover);
       }
 
       ::slotted(a[aria-current='page']),
-      ::slotted(a.is-active) {
+      ::slotted(a.is-active),
+      ::slotted(a[aria-current='page']:hover),
+      ::slotted(a.is-active:hover) {
         color: var(--mb-color-accent);
         background: var(--mb-color-accent-soft);
       }

@@ -21,9 +21,10 @@ export class MbTag extends LitElement {
         align-items: center;
         gap: var(--mb-space-1);
         max-inline-size: 100%;
+        min-block-size: 1.5rem;
         padding-block: 0.15rem;
         padding-inline: var(--mb-space-2);
-        border: 1px solid var(--mb-color-border);
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-sm);
         background: var(--mb-color-surface);
         color: var(--mb-color-fg);
@@ -32,6 +33,21 @@ export class MbTag extends LitElement {
         line-height: 1.3;
         text-decoration: none;
         overflow-wrap: anywhere;
+        transition:
+          background-color var(--mb-transition),
+          border-color var(--mb-transition);
+      }
+
+      a.tag:hover {
+        background-color: var(--mb-color-surface);
+        background-image: linear-gradient(var(--mb-color-hover), var(--mb-color-hover));
+        border-color: var(--mb-color-border-hover);
+      }
+
+      a.tag:active {
+        background-color: var(--mb-color-bg);
+        background-image: none;
+        border-color: var(--mb-color-border-hover);
       }
 
       :host([size='sm']) .tag {

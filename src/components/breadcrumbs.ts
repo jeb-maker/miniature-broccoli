@@ -69,12 +69,14 @@ export class MbBreadcrumbs extends LitElement {
 
       a {
         color: var(--mb-color-accent);
-        text-decoration: none;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.18em;
         overflow-wrap: anywhere;
       }
 
       a:hover {
-        text-decoration: underline;
+        color: var(--mb-color-accent-hover);
       }
 
       [aria-current='page'] {

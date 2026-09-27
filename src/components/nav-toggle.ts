@@ -28,13 +28,28 @@ export class MbNavToggle extends LitElement {
         justify-content: center;
         min-inline-size: 2.5rem;
         min-block-size: 2.5rem;
-        border: 1px solid var(--mb-color-border);
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-md);
         background: var(--mb-color-surface);
         color: var(--mb-color-fg);
         cursor: pointer;
         font: inherit;
         font-weight: 700;
+        transition:
+          background-color var(--mb-transition),
+          border-color var(--mb-transition);
+      }
+
+      button:hover {
+        background-color: var(--mb-color-surface);
+        background-image: linear-gradient(var(--mb-color-hover), var(--mb-color-hover));
+        border-color: var(--mb-color-border-hover);
+      }
+
+      button:active {
+        background-color: var(--mb-color-bg);
+        background-image: none;
+        border-color: var(--mb-color-border-hover);
       }
     `,
   ];

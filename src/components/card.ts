@@ -14,8 +14,9 @@ export class MbCard extends LitElement {
 
       .card {
         background: var(--mb-color-surface);
-        border: 1px solid var(--mb-color-border);
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-lg);
+        box-shadow: var(--mb-shadow-sm);
         overflow: clip;
         max-inline-size: 100%;
       }
@@ -32,8 +33,11 @@ export class MbCard extends LitElement {
       .header {
         display: none;
         border-block-end: 1px solid var(--mb-color-border);
+        background: var(--mb-color-bg);
         font-family: var(--mb-font-display);
-        font-weight: 650;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        line-height: var(--mb-line-height-tight);
       }
 
       .footer {
