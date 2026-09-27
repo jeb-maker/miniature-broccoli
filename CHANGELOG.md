@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 0.4.2 — 2026-09-27
+
+Visual and WCAG 2.2 AA polish across existing components (no API changes).
+
+- Hover / pressed states on buttons, links, nav, segmented controls, pagination, tags, table headers, and icon buttons (#50)
+- Clearer card / table edges and light shadow; Fraunces 600 on card and section headings (#50)
+- Alert / toast tinted surfaces with status border; readable body text (#50)
+- Stronger badge, progress, empty-state, and avatar edges (#50)
+- Loading buttons keep full color with spinner (no longer look disabled) (#50)
+- Tokens: `--mb-color-border-strong` (3:1), success / dark accent text contrast (4.5:1) (#50)
+- 24×24 CSS px targets for checkboxes, radios, modal close, toast dismiss, tags, sort, drag handles (#50)
+- Focus-visible rings, muted placeholders, underlined breadcrumbs, invalid checkbox outline (#50)
+
 ## 0.4.1 — 2026-09-25
 
 Revues adoption polish for `mb-table`.
