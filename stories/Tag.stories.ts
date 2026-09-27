@@ -10,6 +10,7 @@ const meta: Meta = {
   title: 'Components/Tag',
   component: 'mb-tag',
   tags: ['autodocs'],
+  parameters: { layout: 'centered' },
 };
 export default meta;
 

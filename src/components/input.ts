@@ -21,7 +21,9 @@ export class MbInput extends LitElement {
     fieldStyles,
     css`
       input[type='file'].control {
-        padding-block: var(--mb-space-2);
+        /* File controls need a little block padding for the UA button chrome. */
+        padding-block: var(--mb-space-1, 0.25rem);
+        line-height: 1.2;
       }
     `,
   ];

@@ -8,6 +8,7 @@ const meta: Meta = {
   title: 'Components/Badge',
   component: 'mb-badge',
   tags: ['autodocs'],
+  parameters: { layout: 'centered' },
 };
 export default meta;
 

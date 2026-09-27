@@ -9,6 +9,7 @@ const meta: Meta = {
   title: 'Components/Checkbox',
   component: 'mb-checkbox',
   tags: ['autodocs'],
+  parameters: { layout: 'centered' },
 };
 export default meta;
 

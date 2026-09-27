@@ -8,6 +8,7 @@ const meta: Meta = {
   title: 'Components/Spinner',
   component: 'mb-spinner',
   tags: ['autodocs'],
+  parameters: { layout: 'centered' },
 };
 export default meta;
 

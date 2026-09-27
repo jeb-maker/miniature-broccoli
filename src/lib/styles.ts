@@ -111,16 +111,18 @@ export const fieldStyles = css`
     display: block;
     inline-size: 100%;
     max-inline-size: 100%;
+    /* Fixed track height so toolbar siblings (input / select / button) match. */
+    block-size: var(--mb-control-height, 2.5rem);
     min-block-size: var(--mb-control-height, 2.5rem);
     min-inline-size: 0;
-    padding-block: var(--mb-space-2, 0.5rem);
+    padding-block: 0;
     padding-inline: var(--mb-control-padding-inline, var(--mb-space-3, 0.75rem));
     border: 1px solid var(--mb-color-border-strong, #6e857a);
     border-radius: var(--mb-radius-md);
     background: var(--mb-color-surface);
     color: var(--mb-color-fg);
     font: inherit;
-    line-height: var(--mb-line-height);
+    line-height: calc(var(--mb-control-height, 2.5rem) - 2px);
     transition:
       border-color var(--mb-transition),
       background-color var(--mb-transition),
@@ -186,21 +188,26 @@ export const fieldStyles = css`
   }
 
   :host([density='compact']) .control {
+    block-size: var(--mb-control-height-sm, 2rem);
     min-block-size: var(--mb-control-height-sm, 2rem);
-    padding-block: 0.2rem;
-    padding-inline: var(--mb-space-2);
+    padding-block: 0;
+    padding-inline: var(--mb-space-2, 0.5rem);
     font-size: var(--mb-font-size-sm);
+    line-height: calc(var(--mb-control-height-sm, 2rem) - 2px);
   }
 
   :host([density='compact']) select.control {
-    padding-inline-end: var(--mb-space-4);
+    padding-inline-end: var(--mb-space-5, 1.5rem);
     background-position:
-      calc(100% - 0.75rem) 50%,
-      calc(100% - 0.45rem) 50%;
+      calc(100% - 0.85rem) 50%,
+      calc(100% - 0.5rem) 50%;
   }
 
   :host([density='compact']) textarea.control {
+    block-size: auto;
     min-block-size: var(--mb-control-height-sm, 2rem);
+    padding-block: var(--mb-space-2, 0.5rem);
+    line-height: var(--mb-line-height, 1.5);
   }
 `;
 
