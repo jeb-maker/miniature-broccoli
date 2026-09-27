@@ -49,7 +49,7 @@ npm run storybook
 | `./checkbox` | `mb-checkbox` |
 | `./radio` | `mb-radio` |
 | `./radio-group` | `mb-radio-group` |
-| `./badge` | `mb-badge` |
+| `./badge` | `mb-badge` (status + filter chip; prefer this) |
 | `./alert` | `mb-alert` |
 | `./card` | `mb-card` |
 | `./modal` | `mb-modal` |
@@ -58,7 +58,7 @@ npm run storybook
 | `./empty-state` | `mb-empty-state` |
 | `./pagination` | `mb-pagination` |
 | `./toast` | `mb-toast` |
-| `./tag` | `mb-tag` |
+| `./tag` | `mb-tag` (deprecated alias of `mb-badge`, default `size="md"`) |
 | `./breadcrumbs` | `mb-breadcrumbs` |
 | `./nav` | `mb-nav` |
 | `./nav-toggle` | `mb-nav-toggle` |
