@@ -108,6 +108,7 @@ export class MbTextarea extends LitElement {
     this.value = this.#defaultValue;
     this.error = '';
     this.invalid = false;
+    this.#sync();
   }
 
   #sync(): void {
@@ -127,6 +128,7 @@ export class MbTextarea extends LitElement {
     const target = event.target as HTMLTextAreaElement;
     this.#touched = true;
     this.value = target.value;
+    this.#sync();
     this.dispatchEvent(
       new CustomEvent('mb-input', {
         detail: { value: this.value },
@@ -140,6 +142,7 @@ export class MbTextarea extends LitElement {
     const target = event.target as HTMLTextAreaElement;
     this.#touched = true;
     this.value = target.value;
+    this.#sync();
     this.dispatchEvent(
       new CustomEvent('mb-change', {
         detail: { value: this.value },

@@ -56,6 +56,28 @@ describe('mb-button', () => {
     form.remove();
   });
 
+  it('allows a bubbling click listener to cancel submit', async () => {
+    const form = document.createElement('form');
+    const el = document.createElement('mb-button') as MbButton;
+    el.type = 'submit';
+    form.appendChild(el);
+    document.body.appendChild(form);
+    await el.updateComplete;
+
+    let submitted = false;
+    form.addEventListener('click', (event) => event.preventDefault());
+    form.addEventListener('submit', (event) => {
+      submitted = true;
+      event.preventDefault();
+    });
+
+    el.shadowRoot!.querySelector('button')!.click();
+    await Promise.resolve();
+
+    expect(submitted).toBe(false);
+    form.remove();
+  });
+
   it('renders danger variant and link when href is set', async () => {
     const el = document.createElement('mb-button') as MbButton;
     el.variant = 'danger';

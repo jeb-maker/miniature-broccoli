@@ -96,7 +96,16 @@ describe('mb-table', () => {
     const el = await mountEditable();
     el.layout = 'cards';
     await el.updateComplete;
+    await Promise.resolve();
+    const head = el.querySelector<MbTableRow>('mb-table-row[slot="head"]')!;
+    const bodyCell = el.querySelector<MbTableCell>(
+      'mb-table-row:not([slot="head"]) mb-table-cell',
+    )!;
+    await head.updateComplete;
+    await bodyCell.updateComplete;
     expect(el.getAttribute('data-mode')).toBe('cards');
+    expect(head.getAttribute('aria-hidden')).toBe('true');
+    expect(bodyCell.shadowRoot!.querySelector('.label')!.hasAttribute('hidden')).toBe(false);
     el.remove();
   });
 
@@ -298,6 +307,24 @@ describe('mb-table', () => {
     el.remove();
   });
 
+  it('rejects cross-table targets', async () => {
+    const first = document.createElement('mb-table') as MbTable;
+    const second = document.createElement('mb-table') as MbTable;
+    first.reorderable = true;
+    second.reorderable = true;
+    first.innerHTML = '<mb-table-row id="first"><mb-table-cell>A</mb-table-cell></mb-table-row>';
+    second.innerHTML = '<mb-table-row id="second"><mb-table-cell>B</mb-table-cell></mb-table-row>';
+    document.body.append(first, second);
+    await first.updateComplete;
+    await second.updateComplete;
+
+    const source = first.querySelector<MbTableRow>('#first')!;
+    const foreign = second.querySelector<MbTableRow>('#second')!;
+    first.moveRow(source, { before: foreign });
+
+    expect(source.parentElement).toBe(first);
+  });
+
   it('moves a row to another section on drop', async () => {
     const el = document.createElement('mb-table') as MbTable;
     el.reorderable = true;
@@ -345,6 +372,32 @@ describe('mb-table', () => {
     expect(row.hasAttribute('data-dragging')).toBe(true);
     window.dispatchEvent(new PointerEvent('pointerup', { pointerId: 9 }));
     expect(row.hasAttribute('data-dragging')).toBe(false);
+    el.remove();
+  });
+
+  it('adds handles dynamically and supports keyboard reordering', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.innerHTML = `
+      <mb-table-row id="a"><mb-table-cell>Ada</mb-table-cell></mb-table-row>
+      <mb-table-row id="b"><mb-table-cell>Bea</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const rowA = el.querySelector<MbTableRow>('#a')!;
+    expect(rowA.shadowRoot!.querySelector('.handle')).toBeNull();
+
+    el.reorderable = true;
+    await el.updateComplete;
+    await Promise.resolve();
+    await rowA.updateComplete;
+    const handle = rowA.shadowRoot!.querySelector('.handle') as HTMLButtonElement;
+    expect(handle).toBeTruthy();
+
+    handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    expect([...el.querySelectorAll<MbTableRow>('mb-table-row')].map((row) => row.id)).toEqual([
+      'b',
+      'a',
+    ]);
     el.remove();
   });
 

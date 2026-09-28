@@ -122,6 +122,7 @@ export class MbToast extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
     document.addEventListener('mb-toast', this.#onBus as EventListener);
+    if (this.open) this.#armTimer();
   }
 
   override disconnectedCallback(): void {
@@ -131,7 +132,7 @@ export class MbToast extends LitElement {
   }
 
   override updated(changed: Map<string, unknown>): void {
-    if (changed.has('open')) {
+    if (changed.has('open') || changed.has('autoDismiss')) {
       if (this.open) this.#armTimer();
       else this.#clearTimer();
     }
@@ -141,6 +142,7 @@ export class MbToast extends LitElement {
     if (message != null) this.message = message;
     if (variant) this.variant = variant;
     this.open = true;
+    if (this.isConnected) this.#armTimer();
   }
 
   hide(): void {

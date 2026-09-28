@@ -38,4 +38,32 @@ describe('mb-nav + mb-nav-toggle', () => {
     nav.remove();
     toggle.remove();
   });
+
+  it('finds and tracks a target inside the same shadow root', async () => {
+    const host = document.createElement('div');
+    const root = host.attachShadow({ mode: 'open' });
+    const nav = document.createElement('mb-nav') as MbNav;
+    nav.id = 'shadow-nav';
+    nav.open = true;
+    const toggle = document.createElement('mb-nav-toggle') as MbNavToggle;
+    toggle.for = 'shadow-nav';
+    root.append(nav, toggle);
+    document.body.appendChild(host);
+    await nav.updateComplete;
+    await toggle.updateComplete;
+    await toggle.updateComplete;
+
+    expect(toggle.expanded).toBe(true);
+
+    nav.open = false;
+    await nav.updateComplete;
+    await Promise.resolve();
+    await toggle.updateComplete;
+    expect(toggle.expanded).toBe(false);
+
+    toggle.shadowRoot!.querySelector('button')!.click();
+    await nav.updateComplete;
+    expect(nav.open).toBe(true);
+    host.remove();
+  });
 });
