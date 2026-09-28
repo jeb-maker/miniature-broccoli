@@ -6,7 +6,7 @@ export type { MbSelect, SelectOption } from './components/select.js';
 export type { MbCheckbox } from './components/checkbox.js';
 export type { MbRadio } from './components/radio.js';
 export type { MbRadioGroup, RadioOption } from './components/radio-group.js';
-export type { MbBadge, BadgeVariant } from './components/badge.js';
+export type { MbBadge, BadgeVariant, BadgeSize } from './components/badge.js';
 export type { MbAlert, AlertVariant } from './components/alert.js';
 export type { MbCard } from './components/card.js';
 export type { MbModal } from './components/modal.js';

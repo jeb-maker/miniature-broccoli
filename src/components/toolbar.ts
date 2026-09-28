@@ -29,10 +29,57 @@ export class MbToolbar extends LitElement {
         align-items: center;
         gap: var(--mb-space-2);
         min-inline-size: 0;
+        /* Shared control track so slotted fields / buttons / filters match height. */
+        --mb-control-height: 2.5rem;
+        --mb-control-height-sm: 2.5rem;
       }
 
       .end {
         margin-inline-start: auto;
+      }
+
+      /*
+        Fields default to inline-size: 100% (form stacks). In a toolbar row,
+        let them share the track instead of forcing a full-width wrap.
+      */
+      ::slotted(mb-input),
+      ::slotted(mb-select),
+      ::slotted(mb-textarea) {
+        flex: 1 1 12rem;
+        inline-size: auto;
+        max-inline-size: 20rem;
+      }
+
+      ::slotted(mb-segmented-control) {
+        flex: 0 1 auto;
+        max-inline-size: 100%;
+      }
+
+      /* Stretch interactive chrome across the row on narrow viewports. */
+      @media (max-width: 36rem) {
+        .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .start,
+        .end {
+          flex-direction: column;
+          align-items: stretch;
+          inline-size: 100%;
+          margin-inline-start: 0;
+        }
+
+        ::slotted(*),
+        ::slotted(mb-input),
+        ::slotted(mb-select),
+        ::slotted(mb-textarea),
+        ::slotted(mb-button),
+        ::slotted(mb-segmented-control) {
+          flex: 1 1 auto;
+          inline-size: 100%;
+          max-inline-size: none;
+        }
       }
     `,
   ];

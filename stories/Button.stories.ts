@@ -8,6 +8,7 @@ const meta: Meta = {
   title: 'Components/Button',
   component: 'mb-button',
   tags: ['autodocs'],
+  parameters: { layout: 'centered' },
   argTypes: {
     variant: { control: 'select', options: ['primary', 'secondary', 'ghost', 'danger'] },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },

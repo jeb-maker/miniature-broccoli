@@ -200,6 +200,23 @@ describe('mb-select', () => {
     form.remove();
   });
 
+  it('gives the chevron breathing room on the inline-end', async () => {
+    const { el, form } = await mount((s) => {
+      s.label = 'Country';
+    });
+    const control = el.shadowRoot!.querySelector('select')!;
+    const styles = getComputedStyle(control);
+    const appearance =
+      styles.appearance ||
+      (styles as CSSStyleDeclaration & { webkitAppearance?: string }).webkitAppearance;
+    expect(appearance).toBe('none');
+    expect(parseFloat(styles.paddingInlineEnd)).toBeGreaterThanOrEqual(24);
+    expect(parseFloat(styles.paddingInlineEnd)).toBeGreaterThan(
+      parseFloat(styles.paddingInlineStart),
+    );
+    form.remove();
+  });
+
   it('uses slotted empty option label without inventing a fake value', async () => {
     const form = document.createElement('form');
     const el = document.createElement('mb-select') as MbSelect;

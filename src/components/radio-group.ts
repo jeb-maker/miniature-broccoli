@@ -38,6 +38,7 @@ export class MbRadioGroup extends LitElement {
     css`
       :host {
         display: block;
+        inline-size: 100%;
       }
 
       fieldset {

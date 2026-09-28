@@ -20,12 +20,10 @@ export class MbInput extends LitElement {
     sharedStyles,
     fieldStyles,
     css`
-      :host {
-        display: block;
-      }
-
       input[type='file'].control {
-        padding-block: var(--mb-space-2);
+        /* File controls need a little block padding for the UA button chrome. */
+        padding-block: var(--mb-space-1, 0.25rem);
+        line-height: 1.2;
       }
     `,
   ];

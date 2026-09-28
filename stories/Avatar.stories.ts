@@ -8,6 +8,7 @@ const meta: Meta = {
   title: 'Components/Avatar',
   component: 'mb-avatar',
   tags: ['autodocs'],
+  parameters: { layout: 'centered' },
 };
 export default meta;
 

@@ -36,10 +36,6 @@ export class MbSelect extends LitElement {
     sharedStyles,
     fieldStyles,
     css`
-      :host {
-        display: block;
-      }
-
       /* Options are mirrored into the shadow <select>; keep light-DOM slots invisible. */
       slot {
         display: none;

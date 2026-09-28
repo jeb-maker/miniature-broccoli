@@ -49,7 +49,7 @@ npm run storybook
 | `./checkbox` | `mb-checkbox` |
 | `./radio` | `mb-radio` |
 | `./radio-group` | `mb-radio-group` |
-| `./badge` | `mb-badge` |
+| `./badge` | `mb-badge` (status + filter chip; prefer this) |
 | `./alert` | `mb-alert` |
 | `./card` | `mb-card` |
 | `./modal` | `mb-modal` |
@@ -58,7 +58,7 @@ npm run storybook
 | `./empty-state` | `mb-empty-state` |
 | `./pagination` | `mb-pagination` |
 | `./toast` | `mb-toast` |
-| `./tag` | `mb-tag` |
+| `./tag` | `mb-tag` (deprecated alias of `mb-badge`, default `size="md"`) |
 | `./breadcrumbs` | `mb-breadcrumbs` |
 | `./nav` | `mb-nav` |
 | `./nav-toggle` | `mb-nav-toggle` |
@@ -80,7 +80,8 @@ Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'`
 - **`mb-button`**: `variant="danger"`; with `href`, renders a styled `<a>` (no accidental form submit).
 - **`mb-modal`**: native `<dialog>`.
 - **`mb-nav-toggle`**: pairs with `mb-nav` via `for` / `id`; emits `mb-toggle` (`{ expanded }`).
-- **`mb-table`**: wide = grid, narrow (`≤36rem`) = stacked cards; labels come from the head row (or `label` on each cell). Force with `layout="table"|"cards"`. Editable cells: slot `mb-input` / `mb-select` with `density="compact"` + `hide-label`. Pass `sections='[{"id":"ops","label":"Ops"}]'` and set `section="ops"` on rows to group; head cells with `sort-key` sort within each section (`mb-sort` / `mb-section-toggle`). Set `reorderable` for drag handles (`mb-reorder`). Override handle/sort `aria-label`s with `reorder-label` / `sort-label` (`{name}`). Cell `hide-label` / `actions` skip cards labels (action columns). Section `meta` / `count: false` (or table `hide-count`) for rich section status; `sticky-header` sticks the wide head row.
+- **`mb-table`**: wide = grid, narrow (`≤36rem`) = stacked cards; labels come from the head row (or `label` on each cell). Force with `layout="table"|"cards"`. Editable cells: slot `mb-input` / `mb-select` with `density="compact"` + `hide-label`. Pass `sections='[{"id":"ops","label":"Ops"}]'` and set `section="ops"` on rows to group; head cells with `sort-key` sort within each section (`mb-sort` / `mb-section-toggle`). Set `reorderable` for drag handles (`mb-reorder`). Override handle/sort `aria-label`s with `reorder-label` / `sort-label` (`{name}`). Cell `hide-label` / `actions` skip cards labels; `actions` / `align="end"` pin content to the cell end. Section `meta` / `count: false` (or table `hide-count`) for rich section status; `sticky-header` sticks the wide head row. Table chrome fills its container width by default.
+- **Layout**: controls share `--mb-control-height` / `-sm`; fields fill their track; textareas are not user-resizable; toolbars stack full-width below `36rem`. See Introduction → Layout rules.
 - **Anti-FOUC**: interactive controls/overlays are hidden until defined. Layout primitives (`mb-card`, toolbar, nav, table, …) stay visible; opt in with class `mb-fouc`.
 - **Dark tokens**: `prefers-color-scheme: dark`, or force with `data-mb-color-scheme="dark"|"light"` on `:root` / `.mb-theme`.
 - **Browsers**: Chrome ≥105, Firefox ≥120, Safari ≥16.4.

@@ -66,6 +66,20 @@ describe('mb-textarea', () => {
     form.remove();
   });
 
+  it('fills the host width and is not user-resizable by default', async () => {
+    const el = document.createElement('mb-textarea') as MbTextarea;
+    el.label = 'Notes';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    expect(getComputedStyle(el).display).toBe('block');
+    expect(getComputedStyle(el).width).not.toBe('0px');
+    const control = el.shadowRoot!.querySelector('textarea')!;
+    expect(getComputedStyle(control).resize).toBe('none');
+    expect(getComputedStyle(control).width).not.toBe('0px');
+    el.remove();
+  });
+
   it('applies rows and shows hint/error accessibly', async () => {
     const el = document.createElement('mb-textarea') as MbTextarea;
     el.rows = 8;

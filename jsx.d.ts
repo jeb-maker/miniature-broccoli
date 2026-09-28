@@ -112,6 +112,8 @@ declare namespace JSX {
     };
     'mb-badge': MbBaseAttrs & {
       variant?: 'neutral' | 'success' | 'warning' | 'danger' | 'info';
+      href?: string;
+      size?: 'sm' | 'md';
     };
     'mb-alert': MbBaseAttrs & {
       variant?: 'info' | 'success' | 'warning' | 'danger';
@@ -149,7 +151,9 @@ declare namespace JSX {
       'auto-dismiss'?: number;
       message?: string;
     };
+    /** @deprecated Prefer `mb-badge` (same chip; tag defaults to size md). */
     'mb-tag': MbBaseAttrs & {
+      variant?: 'neutral' | 'success' | 'warning' | 'danger' | 'info';
       href?: string;
       size?: 'sm' | 'md';
     };

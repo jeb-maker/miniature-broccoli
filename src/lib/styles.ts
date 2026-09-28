@@ -57,16 +57,26 @@ export const sharedStyles = css`
 `;
 
 export const fieldStyles = css`
+  /* Block fields fill their containing track by default. */
+  :host {
+    display: block;
+    inline-size: 100%;
+  }
+
   .field {
     display: flex;
     flex-direction: column;
-    gap: var(--mb-space-1);
+    align-items: stretch;
+    gap: var(--mb-field-label-gap, var(--mb-space-2, 0.5rem));
     inline-size: 100%;
   }
 
   .label {
+    display: block;
+    margin: 0;
     font-size: var(--mb-font-size-sm);
     font-weight: 600;
+    line-height: var(--mb-line-height-tight);
     color: var(--mb-color-fg);
   }
 
@@ -85,6 +95,7 @@ export const fieldStyles = css`
   .hint,
   .error {
     font-size: var(--mb-font-size-sm);
+    line-height: var(--mb-line-height-tight);
     margin: 0;
   }
 
@@ -97,17 +108,21 @@ export const fieldStyles = css`
   }
 
   .control {
+    display: block;
     inline-size: 100%;
     max-inline-size: 100%;
-    min-block-size: 2.5rem;
+    /* Fixed track height so toolbar siblings (input / select / button) match. */
+    block-size: var(--mb-control-height, 2.5rem);
+    min-block-size: var(--mb-control-height, 2.5rem);
     min-inline-size: 0;
-    padding-block: var(--mb-space-2);
-    padding-inline: var(--mb-space-3);
-    border: 1px solid var(--mb-color-border-strong);
+    padding-block: 0;
+    padding-inline: var(--mb-control-padding-inline, var(--mb-space-3, 0.75rem));
+    border: 1px solid var(--mb-color-border-strong, #6e857a);
     border-radius: var(--mb-radius-md);
     background: var(--mb-color-surface);
     color: var(--mb-color-fg);
     font: inherit;
+    line-height: calc(var(--mb-control-height, 2.5rem) - 2px);
     transition:
       border-color var(--mb-transition),
       background-color var(--mb-transition),
@@ -135,6 +150,33 @@ export const fieldStyles = css`
     border-color: var(--mb-color-border);
   }
 
+  select.control {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-inline-end: var(
+      --mb-control-padding-inline-end-select,
+      var(--mb-space-5, 1.5rem)
+    );
+    background-color: var(--mb-color-surface, #fbfcf9);
+    background-image: linear-gradient(
+        45deg,
+        transparent 50%,
+        var(--mb-color-muted, #4a5f55) 50%
+      ),
+      linear-gradient(135deg, var(--mb-color-muted, #4a5f55) 50%, transparent 50%);
+    background-position:
+      calc(100% - 1rem) 50%,
+      calc(100% - 0.65rem) 50%;
+    background-size:
+      0.35rem 0.35rem,
+      0.35rem 0.35rem;
+    background-repeat: no-repeat;
+  }
+
+  select.control:disabled {
+    background-color: var(--mb-color-bg);
+  }
+
   :host([invalid]) .control,
   :host([invalid]) .control:hover:not(:disabled),
   :host([invalid]) .control:focus-visible {
@@ -146,14 +188,26 @@ export const fieldStyles = css`
   }
 
   :host([density='compact']) .control {
-    min-block-size: 2.1rem;
-    padding-block: 0.2rem;
-    padding-inline: var(--mb-space-2);
+    block-size: var(--mb-control-height-sm, 2rem);
+    min-block-size: var(--mb-control-height-sm, 2rem);
+    padding-block: 0;
+    padding-inline: var(--mb-space-2, 0.5rem);
     font-size: var(--mb-font-size-sm);
+    line-height: calc(var(--mb-control-height-sm, 2rem) - 2px);
+  }
+
+  :host([density='compact']) select.control {
+    padding-inline-end: var(--mb-space-5, 1.5rem);
+    background-position:
+      calc(100% - 0.85rem) 50%,
+      calc(100% - 0.5rem) 50%;
   }
 
   :host([density='compact']) textarea.control {
-    min-block-size: 2.1rem;
+    block-size: auto;
+    min-block-size: var(--mb-control-height-sm, 2rem);
+    padding-block: var(--mb-space-2, 0.5rem);
+    line-height: var(--mb-line-height, 1.5);
   }
 `;
 

@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+Layout density rules applied globally across controls and chrome.
+
+- Unify chips: `mb-badge` is the single primitive (`variant` + optional `href` + `size`); `mb-tag` is a deprecated alias (defaults to `size="md"`)
+
+- Tokens: `--mb-control-height` / `-sm`, select end padding, field label gap, `--mb-narrow`
+- Fields (`mb-input` / `mb-select` / `mb-textarea`): full width; clearer label→control gap; selects get breathing room before the chevron
+- `mb-textarea`: `resize: none` by default
+- `mb-toolbar`: shared control height track; full-width stack below `36rem`
+- `mb-segmented-control` / `mb-button`: heights driven by control tokens
+- `mb-table`: full-width frame/rows; `align="end"` / `actions` pin content to the cell end
+
 ## 0.4.2 — 2026-09-27
 
 Visual and WCAG 2.2 AA polish across existing components (no API changes).

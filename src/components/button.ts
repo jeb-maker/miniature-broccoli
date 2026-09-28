@@ -28,6 +28,7 @@ export class MbButton extends LitElement {
         align-items: center;
         justify-content: center;
         gap: var(--mb-space-2);
+        inline-size: 100%;
         max-inline-size: 100%;
         border: 1px solid transparent;
         border-radius: var(--mb-radius-md);
@@ -58,13 +59,13 @@ export class MbButton extends LitElement {
       }
 
       :host([size='sm']) .base {
-        min-block-size: 2rem;
+        min-block-size: var(--mb-control-height-sm, 2rem);
         padding-inline: var(--mb-space-3);
         font-size: var(--mb-font-size-sm);
       }
 
       :host([size='md']) .base {
-        min-block-size: 2.5rem;
+        min-block-size: var(--mb-control-height, 2.5rem);
         padding-inline: var(--mb-space-4);
         font-size: var(--mb-font-size-md);
       }
@@ -76,13 +77,13 @@ export class MbButton extends LitElement {
       }
 
       :host([icon-only][size='sm']) .base {
-        min-inline-size: 2rem;
+        min-inline-size: var(--mb-control-height-sm, 2rem);
         padding-inline: 0;
       }
 
       :host([icon-only][size='md']) .base,
       :host([icon-only]:not([size])) .base {
-        min-inline-size: 2.5rem;
+        min-inline-size: var(--mb-control-height, 2.5rem);
         padding-inline: 0;
       }
 
