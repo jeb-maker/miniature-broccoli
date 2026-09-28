@@ -105,4 +105,4 @@ Peer dependency: `lit@^3.2.0`.
 
 ## Changelog
 
-See [CHANGELOG.md](./CHANGELOG.md) for what shipped in 0.2.0 / 0.3.0 / 0.3.1 / 0.4.0 / 0.4.1 / 0.4.2.
+See [CHANGELOG.md](./CHANGELOG.md) for what shipped in 0.2.0 / 0.3.0 / 0.3.1 / 0.4.0 / 0.4.1 / 0.4.2 / 0.4.3.

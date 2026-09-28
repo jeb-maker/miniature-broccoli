@@ -2,16 +2,22 @@
 
 ## Unreleased
 
-Layout density rules applied globally across controls and chrome.
+## 0.4.3 — 2026-09-28
 
-- Unify chips: `mb-badge` is the single primitive (`variant` + optional `href` + `size`); `mb-tag` is a deprecated alias (defaults to `size="md"`)
+Global control-density unification plus component correctness and accessibility fixes.
 
-- Tokens: `--mb-control-height` / `-sm`, select end padding, field label gap, `--mb-narrow`
-- Fields (`mb-input` / `mb-select` / `mb-textarea`): full width; clearer label→control gap; selects get breathing room before the chevron
-- `mb-textarea`: `resize: none` by default
-- `mb-toolbar`: shared control height track; full-width stack below `36rem`
-- `mb-segmented-control` / `mb-button`: heights driven by control tokens
-- `mb-table`: full-width frame/rows; `align="end"` / `actions` pin content to the cell end
+- Unify chips: `mb-badge` is the single primitive (`variant` + optional `href` + `size`); `mb-tag` is a deprecated alias (defaults to `size="md"`) (#52)
+- Tokens: `--mb-control-height` / `-sm`, select end padding, field label gap, `--mb-narrow` (#52)
+- Fields (`mb-input` / `mb-select` / `mb-textarea`): full width; clearer label→control gap; selects get breathing room before the chevron (#52)
+- `mb-textarea`: `resize: none` by default (#52)
+- `mb-toolbar`: shared control height track; full-width stack below `36rem` (#52)
+- `mb-segmented-control` / `mb-button`: heights driven by control tokens (#52)
+- `mb-table`: full-width frame/rows; `align="end"` / `actions` pin content to the cell end (#52)
+- Form controls propagate native constraints and synchronize form-associated values before emitting component events (#48)
+- Prevent invalid `mb-select` / `mb-radio-group` values and preserve cancellable `mb-button` actions (#48)
+- `mb-table`: reactive presentation, constrained drag targets, keyboard reordering, and valid ARIA state (#48)
+- Restart `mb-toast` timers, clamp `mb-progress` ARIA values, and synchronize `mb-nav-toggle` across shadow roots (#48)
+- Regression coverage for each corrected behavior (#48)
 
 ## 0.4.2 — 2026-09-27
 
