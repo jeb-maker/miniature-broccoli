@@ -1,0 +1,15 @@
+{
+  "name": "@jeb-maker/mb",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "storybook",
+      "command": "npm run storybook -- --ci"
+    },
+    {
+      "name": "consumer",
+      "command": "npm run consumer"
+    }
+  ],
+  "ports": [6006, 5173]
+}
