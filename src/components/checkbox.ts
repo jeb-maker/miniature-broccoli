@@ -22,14 +22,20 @@ export class MbCheckbox extends LitElement {
       }
 
       input {
-        margin-block-start: 0.2rem;
+        flex: none;
+        margin-block-start: 0;
         accent-color: var(--mb-color-accent);
-        inline-size: 1.1rem;
-        block-size: 1.1rem;
+        inline-size: 1.5rem;
+        block-size: 1.5rem;
       }
 
       input:disabled {
         cursor: not-allowed;
+      }
+
+      :host([invalid]) input {
+        outline: 2px solid var(--mb-color-danger);
+        outline-offset: 2px;
       }
 
       :host([disabled]) label {

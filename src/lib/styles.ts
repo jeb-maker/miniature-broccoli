@@ -37,6 +37,23 @@ export const sharedStyles = css`
       animation: none !important;
     }
   }
+
+  @media (forced-colors: active) {
+    .control,
+    button,
+    a {
+      border: 1px solid ButtonText;
+    }
+
+    .control:focus-visible,
+    button:focus-visible,
+    a:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    input:focus-visible {
+      outline: 2px solid Highlight;
+    }
+  }
 `;
 
 export const fieldStyles = css`
@@ -86,22 +103,41 @@ export const fieldStyles = css`
     min-inline-size: 0;
     padding-block: var(--mb-space-2);
     padding-inline: var(--mb-space-3);
-    border: 1px solid var(--mb-color-border);
+    border: 1px solid var(--mb-color-border-strong);
     border-radius: var(--mb-radius-md);
     background: var(--mb-color-surface);
     color: var(--mb-color-fg);
     font: inherit;
     transition:
       border-color var(--mb-transition),
+      background-color var(--mb-transition),
       box-shadow var(--mb-transition);
   }
 
-  .control:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
+  .control::placeholder {
+    color: var(--mb-color-muted);
+    opacity: 1;
   }
 
-  :host([invalid]) .control {
+  .control:hover:not(:disabled) {
+    border-color: var(--mb-color-border-hover);
+  }
+
+  .control:focus-visible {
+    border-color: var(--mb-color-accent);
+  }
+
+  .control:disabled {
+    opacity: 1;
+    cursor: not-allowed;
+    background: var(--mb-color-bg);
+    color: var(--mb-color-muted);
+    border-color: var(--mb-color-border);
+  }
+
+  :host([invalid]) .control,
+  :host([invalid]) .control:hover:not(:disabled),
+  :host([invalid]) .control:focus-visible {
     border-color: var(--mb-color-danger);
   }
 

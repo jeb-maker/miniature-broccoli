@@ -56,7 +56,7 @@ export class MbRadioGroup extends LitElement {
       .options {
         display: flex;
         flex-direction: column;
-        gap: var(--mb-space-2);
+        gap: var(--mb-space-3);
       }
 
       .error {

@@ -33,7 +33,7 @@ export class MbSegmentedControl extends LitElement {
         min-inline-size: 100%;
         gap: 0;
         padding: var(--mb-space-1);
-        border: 1px solid var(--mb-color-border);
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-md);
         background: var(--mb-color-surface);
       }
@@ -41,6 +41,10 @@ export class MbSegmentedControl extends LitElement {
       ::slotted(a),
       ::slotted(button) {
         appearance: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-block-size: 2rem;
         border: 0;
         background: transparent;
         color: var(--mb-color-muted);
@@ -55,6 +59,12 @@ export class MbSegmentedControl extends LitElement {
         cursor: pointer;
       }
 
+      ::slotted(a:hover),
+      ::slotted(button:hover) {
+        background: var(--mb-color-hover);
+        color: var(--mb-color-fg);
+      }
+
       ::slotted(a:focus-visible),
       ::slotted(button:focus-visible) {
         outline: var(--mb-focus-ring);
@@ -63,7 +73,10 @@ export class MbSegmentedControl extends LitElement {
 
       ::slotted([aria-current='page']),
       ::slotted([aria-selected='true']),
-      ::slotted(.is-active) {
+      ::slotted(.is-active),
+      ::slotted([aria-current='page']:hover),
+      ::slotted([aria-selected='true']:hover),
+      ::slotted(.is-active:hover) {
         background: var(--mb-color-accent-soft);
         color: var(--mb-color-accent);
       }

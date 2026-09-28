@@ -95,7 +95,7 @@ export class MbTable extends LitElement {
         margin: 0;
         font-family: var(--mb-font-display);
         font-size: var(--mb-font-size-lg);
-        font-weight: 650;
+        font-weight: 600;
         line-height: var(--mb-line-height-tight);
       }
 
@@ -133,15 +133,27 @@ export class MbTable extends LitElement {
         margin: 0;
         padding-block: var(--mb-space-2);
         padding-inline: var(--mb-space-3);
-        border: 1px solid var(--mb-color-border);
+        min-block-size: 2.5rem;
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-md);
         background: var(--mb-color-bg);
+        transition:
+          background-color var(--mb-transition),
+          border-color var(--mb-transition);
         color: var(--mb-color-fg);
         font: inherit;
         font-family: var(--mb-font-display);
-        font-weight: 650;
+        font-weight: 600;
         text-align: start;
         cursor: pointer;
+      }
+
+      .section-head:hover {
+        background-image: linear-gradient(var(--mb-color-hover), var(--mb-color-hover));
+      }
+
+      .section-head:active {
+        background-image: linear-gradient(var(--mb-color-border), var(--mb-color-border));
       }
 
       .section-head:focus-visible {
@@ -193,7 +205,7 @@ export class MbTable extends LitElement {
 
       :host([data-mode='table']) .frame {
         gap: 0;
-        border: 1px solid var(--mb-color-border);
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-lg);
         background: var(--mb-color-surface);
         overflow: clip;
@@ -985,7 +997,8 @@ export class MbTableRow extends LitElement {
       .handle,
       .spacer {
         flex: none;
-        inline-size: 1.25rem;
+        inline-size: 1.5rem;
+        block-size: 1.5rem;
         align-self: center;
       }
 
@@ -1008,6 +1021,11 @@ export class MbTableRow extends LitElement {
         cursor: grab;
         touch-action: none;
         user-select: none;
+      }
+
+      .handle:hover {
+        background: var(--mb-color-hover);
+        color: var(--mb-color-fg);
       }
 
       .handle:focus-visible {
@@ -1069,7 +1087,7 @@ export class MbTableRow extends LitElement {
       :host([slot='head']) .wrap,
       :host([head]) .wrap {
         font-size: var(--mb-font-size-sm);
-        font-weight: 650;
+        font-weight: 600;
         color: var(--mb-color-muted);
         background: transparent;
         padding-block: var(--mb-space-2);
@@ -1079,8 +1097,9 @@ export class MbTableRow extends LitElement {
         padding-block: var(--mb-space-4);
         padding-inline: var(--mb-space-4);
         background: var(--mb-color-surface);
-        border: 1px solid var(--mb-color-border);
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-lg);
+        box-shadow: var(--mb-shadow-sm);
       }
 
       :host([data-mode='cards']) .row {
@@ -1249,15 +1268,23 @@ export class MbTableCell extends LitElement {
         align-items: center;
         gap: var(--mb-space-1);
         max-inline-size: 100%;
+        min-block-size: 1.5rem;
         margin: 0;
-        padding: 0;
+        padding-block: 0.125rem;
+        padding-inline: 0.125rem;
         border: none;
+        border-radius: var(--mb-radius-sm);
         background: transparent;
         color: inherit;
         font: inherit;
         font-weight: inherit;
         text-align: inherit;
         cursor: pointer;
+      }
+
+      .sort:hover {
+        color: var(--mb-color-fg);
+        background: var(--mb-color-hover);
       }
 
       .sort:focus-visible {
@@ -1290,7 +1317,7 @@ export class MbTableCell extends LitElement {
 
       :host([data-mode='cards'][primary]) .value {
         font-family: var(--mb-font-display);
-        font-weight: 650;
+        font-weight: 600;
         font-size: var(--mb-font-size-md);
       }
 

@@ -12,7 +12,7 @@ export class MbModal extends LitElement {
       }
 
       dialog {
-        border: 1px solid var(--mb-color-border);
+        border: 1px solid var(--mb-color-border-strong);
         border-radius: var(--mb-radius-lg);
         padding: 0;
         background: var(--mb-color-surface);
@@ -48,7 +48,9 @@ export class MbModal extends LitElement {
       .title {
         font-family: var(--mb-font-display);
         font-size: var(--mb-font-size-xl);
-        font-weight: 650;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: var(--mb-line-height-tight);
         margin: 0;
         min-inline-size: 0;
         flex: 1;
@@ -56,15 +58,30 @@ export class MbModal extends LitElement {
       }
 
       .close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        min-inline-size: 2rem;
+        min-block-size: 2rem;
+        margin: 0;
+        padding: 0;
         border: 0;
+        border-radius: var(--mb-radius-sm);
         background: transparent;
-        color: var(--mb-color-muted);
+        color: var(--mb-color-fg);
         font-size: 1.25rem;
         line-height: 1;
         cursor: pointer;
-        padding: var(--mb-space-1);
-        border-radius: var(--mb-radius-sm);
-        flex-shrink: 0;
+        transition: background-color var(--mb-transition);
+      }
+
+      .close:hover {
+        background: var(--mb-color-hover);
+      }
+
+      .close:active {
+        background: var(--mb-color-border);
       }
     `,
   ];
