@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.4.4 — 2026-10-03
+
+Forms/DX hardening, table modularization, and a11y tooling (#54).
+
 - Shared `json-attr` helper and `FormFieldController` for form-associated fields
 - i18n label props (`missing-message` / `invalid-message`, `close-label`, `dismiss-label`, `fallback-label`, …)
 - Form API attribute parity (`pattern`, `maxlength` / `minlength`, `autocomplete`, `readonly`, …)
