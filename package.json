@@ -111,9 +111,9 @@
     "./jsx": "./jsx.d.ts"
   },
   "sideEffects": [
-    "./dist/components/*.js",
+    "./dist/components/**/*.js",
     "./dist/tokens/**/*.css",
-    "./src/components/*.ts",
+    "./src/components/**/*.ts",
     "./src/tokens/**/*.css"
   ],
   "scripts": {
