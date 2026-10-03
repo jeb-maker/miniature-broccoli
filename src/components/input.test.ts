@@ -193,4 +193,48 @@ describe('mb-input', () => {
     expect(el.invalid).toBe(false);
     form.remove();
   });
+
+  it('exposes pattern, length, autocomplete, readonly and validity helpers', async () => {
+    const el = document.createElement('mb-input') as MbInput;
+    el.name = 'code';
+    el.pattern = '[A-Z]{3}';
+    el.maxLength = 3;
+    el.minLength = 3;
+    el.autocomplete = 'off';
+    el.readonly = true;
+    el.value = 'ABC';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    const input = el.shadowRoot!.querySelector('input')!;
+    expect(input.pattern).toBe('[A-Z]{3}');
+    expect(input.maxLength).toBe(3);
+    expect(input.minLength).toBe(3);
+    expect(input.autocomplete).toBe('off');
+    expect(input.readOnly).toBe(true);
+
+    // Readonly controls are skipped by native constraint validation — clear it.
+    el.readonly = false;
+    el.value = 'AB';
+    await el.updateComplete;
+    expect(el.checkValidity()).toBe(false);
+
+    el.value = 'ABC';
+    await el.updateComplete;
+    expect(el.checkValidity()).toBe(true);
+    el.remove();
+  });
+
+  it('restores value via formStateRestoreCallback', async () => {
+    const el = document.createElement('mb-input') as MbInput;
+    el.name = 'note';
+    document.body.appendChild(el);
+    await el.updateComplete;
+
+    el.formStateRestoreCallback('restored', 'restore');
+    await el.updateComplete;
+    expect(el.value).toBe('restored');
+    el.remove();
+  });
 });
+

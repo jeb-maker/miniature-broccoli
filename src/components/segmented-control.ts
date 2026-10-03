@@ -95,7 +95,7 @@ export class MbSegmentedControl extends LitElement {
   override render() {
     return html`
       <nav part="nav" class="scroller" aria-label=${this.label}>
-        <div part="list" class="list" role="list">
+        <div part="list" class="list">
           <slot></slot>
         </div>
       </nav>

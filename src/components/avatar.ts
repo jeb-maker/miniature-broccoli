@@ -62,6 +62,10 @@ export class MbAvatar extends LitElement {
   @property({ reflect: true })
   size: AvatarSize = 'md';
 
+  /** Fallback accessible name when image is absent and `alt`/`name` are empty. */
+  @property({ attribute: 'fallback-label' })
+  fallbackLabel = 'Avatar';
+
   @state()
   private _failed = false;
 
@@ -85,7 +89,7 @@ export class MbAvatar extends LitElement {
   override render() {
     const showImage = Boolean(this.src) && !this._failed;
     return html`
-      <span part="base" class="avatar" role=${showImage ? nothing : 'img'} aria-label=${showImage ? nothing : this.alt || this.name || 'Avatar'}>
+      <span part="base" class="avatar" role=${showImage ? nothing : 'img'} aria-label=${showImage ? nothing : this.alt || this.name || this.fallbackLabel}>
         ${showImage
           ? html`<img part="image" src=${this.src} alt=${this.alt} @error=${this.#onError} />`
           : html`<span part="initials">${this.#initials}</span>`}

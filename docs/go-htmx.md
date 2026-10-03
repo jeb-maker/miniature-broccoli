@@ -2,6 +2,8 @@
 
 Primary target: MPA hosts (no SPA), tight JS budget, CSRF-protected classic forms, HTMX partial swaps.
 
+For a full custom-event table and `::part` catalog (theming), see [parts-and-events.md](./parts-and-events.md).
+
 ## Load order
 
 1. Tokens CSS (prefer `tokens-core.css` if the host already styles `html`/`body`)
@@ -283,7 +285,7 @@ Import `./nav` and `./nav-toggle`. Below `36rem`, the toggle is shown and contro
 
 ## Events for `hx-trigger`
 
-Shadow-DOM native `change` / `input` do **not** retarget. Listen for composed custom events:
+Shadow-DOM native `change` / `input` do **not** retarget. Listen for composed custom events (same table as [parts-and-events.md](./parts-and-events.md)):
 
 | Event | Components | Detail |
 |-------|------------|--------|

@@ -17,6 +17,14 @@ describe('mb-toolbar', () => {
     const slots = [...el.shadowRoot!.querySelectorAll('slot')];
     expect(slots.some((s) => s.name === 'start')).toBe(true);
     expect(slots.some((s) => s.name === 'end')).toBe(true);
+    expect(
+      (el.shadowRoot!.querySelector('slot[name="start"]') as HTMLSlotElement)
+        .assignedElements()[0],
+    ).toBe(start);
+    expect(
+      (el.shadowRoot!.querySelector('slot[name="end"]') as HTMLSlotElement).assignedElements()[0],
+    ).toBe(end);
     el.remove();
   });
 });
+

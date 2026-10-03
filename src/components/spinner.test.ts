@@ -12,4 +12,14 @@ describe('mb-spinner', () => {
     expect(status.getAttribute('aria-label')).toBe('Saving');
     el.remove();
   });
+
+  it('reflects size attribute', async () => {
+    const el = document.createElement('mb-spinner') as MbSpinner;
+    el.size = 'sm';
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.getAttribute('size')).toBe('sm');
+    el.remove();
+  });
 });
+

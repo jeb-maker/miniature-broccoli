@@ -90,6 +90,10 @@ Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'`
 
 See [docs/go-htmx.md](./docs/go-htmx.md) for `html/template` snippets, FOUC, CSRF forms, `hx-trigger` event names, and JS budget guidance.
 
+## Events and `::part`
+
+Custom events (for `hx-trigger` / hosts) and major shadow `::part` names are catalogued in [docs/parts-and-events.md](./docs/parts-and-events.md).
+
 ## Scripts
 
 | Script | Purpose |
@@ -100,8 +104,13 @@ See [docs/go-htmx.md](./docs/go-htmx.md) for `html/template` snippets, FOUC, CSR
 | `npm run consumer` | Smoke app via package exports |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint (typescript-eslint + lit + wc) |
+| `npm run check:exports` | Sync `src/components` entries ↔ package exports |
 
-Peer dependency: `lit@^3.2.0`.
+Peer dependency: `lit@^3.2.0`. Node ≥ 20.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, scripts, and how to add a component.
 
 ## Changelog
 

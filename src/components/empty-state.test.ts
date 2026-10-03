@@ -14,4 +14,20 @@ describe('mb-empty-state', () => {
     expect(slot.assignedNodes().some((n) => n.textContent?.includes('Add an item'))).toBe(true);
     el.remove();
   });
+
+  it('projects actions slot content', async () => {
+    const el = document.createElement('mb-empty-state') as MbEmptyState;
+    el.heading = 'Empty';
+    const action = document.createElement('button');
+    action.slot = 'actions';
+    action.textContent = 'Create';
+    el.append(action);
+    document.body.appendChild(el);
+    await el.updateComplete;
+    const actionSlot = el.shadowRoot!.querySelector('slot[name="actions"]') as HTMLSlotElement;
+    expect(actionSlot.assignedElements()[0]).toBe(action);
+    el.remove();
+  });
 });
+
+

@@ -53,6 +53,13 @@ declare namespace JSX {
       step?: string | number;
       accept?: string;
       multiple?: boolean;
+      pattern?: string;
+      maxlength?: number;
+      minlength?: number;
+      autocomplete?: string;
+      readonly?: boolean;
+      'missing-message'?: string;
+      'invalid-message'?: string;
     };
     'mb-textarea': MbBaseAttrs & {
       label?: string;
@@ -67,6 +74,12 @@ declare namespace JSX {
       rows?: number;
       density?: 'default' | 'compact';
       'hide-label'?: boolean;
+      maxlength?: number;
+      minlength?: number;
+      autocomplete?: string;
+      readonly?: boolean;
+      'missing-message'?: string;
+      'invalid-message'?: string;
     };
     'mb-select': MbBaseAttrs & {
       label?: string;
@@ -81,6 +94,8 @@ declare namespace JSX {
       'hide-label'?: boolean;
       placeholder?: string;
       options?: Array<{ value: string; label: string; disabled?: boolean }> | string;
+      'missing-message'?: string;
+      'invalid-message'?: string;
     };
     'mb-checkbox': MbBaseAttrs & {
       label?: string;
@@ -92,6 +107,7 @@ declare namespace JSX {
       disabled?: boolean;
       required?: boolean;
       invalid?: boolean;
+      'missing-message'?: string;
     };
     'mb-radio': MbBaseAttrs & {
       label?: string;
@@ -109,6 +125,8 @@ declare namespace JSX {
       required?: boolean;
       invalid?: boolean;
       options?: Array<{ value: string; label: string; disabled?: boolean }> | string;
+      'missing-message'?: string;
+      'invalid-message'?: string;
     };
     'mb-badge': MbBaseAttrs & {
       variant?: 'neutral' | 'success' | 'warning' | 'danger' | 'info';
@@ -122,12 +140,14 @@ declare namespace JSX {
     'mb-modal': MbBaseAttrs & {
       open?: boolean;
       heading?: string;
+      'close-label'?: string;
     };
     'mb-progress': MbBaseAttrs & {
       value?: number;
       max?: number;
       percent?: number;
       label?: string;
+      'fallback-label'?: string;
     };
     'mb-segmented-control': MbBaseAttrs & {
       label?: string;
@@ -150,6 +170,7 @@ declare namespace JSX {
       variant?: 'success' | 'danger' | 'info';
       'auto-dismiss'?: number;
       message?: string;
+      'dismiss-label'?: string;
     };
     /** @deprecated Prefer `mb-badge` (same chip; tag defaults to size md). */
     'mb-tag': MbBaseAttrs & {
@@ -176,6 +197,7 @@ declare namespace JSX {
       alt?: string;
       name?: string;
       size?: 'sm' | 'md';
+      'fallback-label'?: string;
     };
     'mb-spinner': MbBaseAttrs & {
       size?: 'sm' | 'md';

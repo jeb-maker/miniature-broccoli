@@ -92,6 +92,10 @@ export class MbModal extends LitElement {
   @property()
   heading = '';
 
+  /** Accessible name for the close button (i18n). */
+  @property({ attribute: 'close-label' })
+  closeLabel = 'Close';
+
   #dialog?: HTMLDialogElement;
   /** True while we are closing from the `open` property path (avoid double emit). */
   #closingFromProp = false;
@@ -157,7 +161,12 @@ export class MbModal extends LitElement {
         <div class="panel">
           <div class="header">
             <h2 class="title" id="title">${this.heading}<slot name="heading"></slot></h2>
-            <button class="close" type="button" aria-label="Close" @click=${this.#onCloseClick}>
+            <button
+              class="close"
+              type="button"
+              aria-label=${this.closeLabel}
+              @click=${this.#onCloseClick}
+            >
               ×
             </button>
           </div>

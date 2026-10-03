@@ -23,6 +23,17 @@ describe('mb-toast', () => {
     el.remove();
   });
 
+  it('uses dismiss-label on the close button', async () => {
+    const el = document.createElement('mb-toast') as MbToast;
+    el.autoDismiss = 0;
+    el.dismissLabel = 'Fermer';
+    el.open = true;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('button')!.getAttribute('aria-label')).toBe('Fermer');
+    el.remove();
+  });
+
   it('uses alert role for danger variant', async () => {
     const el = document.createElement('mb-toast') as MbToast;
     el.autoDismiss = 0;

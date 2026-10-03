@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import { clearValidity, constraintFlags, setFormValue, setValidity } from '../lib/form.js';
+import { setFormValue } from '../lib/form.js';
+import { FormFieldController } from '../lib/form-field.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { fieldLabelState, fieldStyles, sharedStyles } from '../lib/styles.js';
 
@@ -58,27 +59,46 @@ export class MbTextarea extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: 'hide-label' })
   hideLabel = false;
 
-  #internals = this.attachInternals();
-  #formDisabled = false;
+  @property({ type: Number, attribute: 'maxlength' })
+  maxLength: number | null = null;
+
+  @property({ type: Number, attribute: 'minlength' })
+  minLength: number | null = null;
+
+  @property()
+  autocomplete = '';
+
+  @property({ type: Boolean, reflect: true })
+  readonly = false;
+
+  @property({ attribute: 'missing-message' })
+  missingMessage = 'Please fill out this field.';
+
+  @property({ attribute: 'invalid-message' })
+  invalidMessage = 'Please enter a valid value.';
+
+  #field = new FormFieldController<string>(this);
   #control?: HTMLTextAreaElement;
-  #defaultValue = '';
-  #defaultCaptured = false;
-  #touched = false;
 
   get #isDisabled(): boolean {
-    return this.disabled || this.#formDisabled;
+    return this.#field.isDisabled;
   }
 
   get #ariaLabel(): string {
     return this.getAttribute('aria-label') ?? '';
   }
 
+  checkValidity(): boolean {
+    return this.#field.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    return this.#field.reportValidity();
+  }
+
   override connectedCallback(): void {
     super.connectedCallback();
-    if (!this.#defaultCaptured) {
-      this.#defaultValue = this.value;
-      this.#defaultCaptured = true;
-    }
+    this.#field.captureDefault(this.value);
   }
 
   override firstUpdated(): void {
@@ -92,41 +112,53 @@ export class MbTextarea extends LitElement {
       changed.has('required') ||
       changed.has('error') ||
       changed.has('disabled') ||
-      changed.has('name')
+      changed.has('name') ||
+      changed.has('maxLength') ||
+      changed.has('minLength') ||
+      changed.has('readonly') ||
+      changed.has('missingMessage') ||
+      changed.has('invalidMessage')
     ) {
       this.#sync();
     }
   }
 
   formDisabledCallback(disabled: boolean): void {
-    this.#formDisabled = disabled;
-    this.requestUpdate();
+    this.#field.formDisabledCallback(disabled);
   }
 
   formResetCallback(): void {
-    this.#touched = false;
-    this.value = this.#defaultValue;
+    this.#field.resetInteraction();
+    this.value = this.#field.defaultValue;
     this.error = '';
     this.invalid = false;
     this.#sync();
   }
 
-  #sync(): void {
-    setFormValue(this.#internals, this.name ? this.value : null);
-    const missing = this.required && !this.value;
-    const { flags, message } = constraintFlags(this.error, missing);
-    if (message) {
-      setValidity(this.#internals, flags, message, this.#control);
-      this.invalid = Boolean(this.error) || this.#touched;
-    } else {
-      clearValidity(this.#internals);
-      this.invalid = false;
+  formStateRestoreCallback(
+    state: string | File | FormData | null,
+    _mode: 'restore' | 'autocomplete',
+  ): void {
+    if (typeof state === 'string') {
+      this.value = state;
     }
+  }
+
+  #sync(): void {
+    setFormValue(this.#field.internals, this.name ? this.value : null);
+    const missing = this.required && !this.value;
+    this.invalid = this.#field.applyNativeOrConstraintValidity(
+      this.error,
+      missing,
+      this.#control,
+      this.missingMessage,
+      this.invalidMessage,
+    );
   }
 
   #onInput(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
-    this.#touched = true;
+    this.#field.markTouched();
     this.value = target.value;
     this.#sync();
     this.dispatchEvent(
@@ -140,7 +172,7 @@ export class MbTextarea extends LitElement {
 
   #onChange(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
-    this.#touched = true;
+    this.#field.markTouched();
     this.value = target.value;
     this.#sync();
     this.dispatchEvent(
@@ -180,6 +212,10 @@ export class MbTextarea extends LitElement {
           name=${this.name || nothing}
           placeholder=${this.placeholder || nothing}
           rows=${this.rows}
+          maxlength=${this.maxLength != null ? this.maxLength : nothing}
+          minlength=${this.minLength != null ? this.minLength : nothing}
+          autocomplete=${this.autocomplete || nothing}
+          ?readonly=${this.readonly}
           ?disabled=${this.#isDisabled}
           ?required=${this.required}
           aria-invalid=${this.invalid ? 'true' : 'false'}

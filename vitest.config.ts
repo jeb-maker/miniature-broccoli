@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   optimizeDeps: {
-    include: ['lit', 'lit/decorators.js', 'lit/directives/repeat.js'],
+    include: ['lit', 'lit/decorators.js', 'lit/directives/repeat.js', 'axe-core'],
   },
   test: {
     browser: {
