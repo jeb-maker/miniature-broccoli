@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix `sideEffects` globs so nested CE modules under `dist/components/table/*` are not tree-shaken; keep explicit registration imports in the `./table` barrel (#56)
+
 ## 0.4.4 — 2026-10-03
 
 Forms/DX hardening, table modularization, and a11y tooling (#54).
