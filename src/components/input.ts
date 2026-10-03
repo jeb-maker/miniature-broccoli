@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import { clearValidity, constraintFlags, setFormValue, setValidity } from '../lib/form.js';
+import { setFormValue } from '../lib/form.js';
+import { FormFieldController } from '../lib/form-field.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { fieldLabelState, fieldStyles, sharedStyles } from '../lib/styles.js';
 
@@ -79,15 +80,34 @@ export class MbInput extends LitElement {
   @property({ type: Boolean })
   multiple = false;
 
-  #internals = this.attachInternals();
-  #formDisabled = false;
+  @property()
+  pattern = '';
+
+  @property({ type: Number, attribute: 'maxlength' })
+  maxLength: number | null = null;
+
+  @property({ type: Number, attribute: 'minlength' })
+  minLength: number | null = null;
+
+  @property()
+  autocomplete = '';
+
+  @property({ type: Boolean, reflect: true })
+  readonly = false;
+
+  /** Override for the required / valueMissing message (i18n). */
+  @property({ attribute: 'missing-message' })
+  missingMessage = 'Please fill out this field.';
+
+  /** Fallback when native validity fails without a UA message. */
+  @property({ attribute: 'invalid-message' })
+  invalidMessage = 'Please enter a valid value.';
+
+  #field = new FormFieldController<string>(this);
   #input?: HTMLInputElement;
-  #defaultValue = '';
-  #defaultCaptured = false;
-  #touched = false;
 
   get #isDisabled(): boolean {
-    return this.disabled || this.#formDisabled;
+    return this.#field.isDisabled;
   }
 
   get #isFile(): boolean {
@@ -98,12 +118,17 @@ export class MbInput extends LitElement {
     return this.getAttribute('aria-label') ?? '';
   }
 
+  checkValidity(): boolean {
+    return this.#field.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    return this.#field.reportValidity();
+  }
+
   override connectedCallback(): void {
     super.connectedCallback();
-    if (!this.#defaultCaptured) {
-      this.#defaultValue = this.value;
-      this.#defaultCaptured = true;
-    }
+    this.#field.captureDefault(this.value);
   }
 
   override firstUpdated(): void {
@@ -122,20 +147,25 @@ export class MbInput extends LitElement {
       changed.has('min') ||
       changed.has('max') ||
       changed.has('step') ||
-      changed.has('multiple')
+      changed.has('multiple') ||
+      changed.has('pattern') ||
+      changed.has('maxLength') ||
+      changed.has('minLength') ||
+      changed.has('readonly') ||
+      changed.has('missingMessage') ||
+      changed.has('invalidMessage')
     ) {
       this.#sync();
     }
   }
 
   formDisabledCallback(disabled: boolean): void {
-    this.#formDisabled = disabled;
-    this.requestUpdate();
+    this.#field.formDisabledCallback(disabled);
   }
 
   formResetCallback(): void {
-    this.#touched = false;
-    this.value = this.#defaultValue;
+    this.#field.resetInteraction();
+    this.value = this.#field.defaultValue;
     this.error = '';
     this.invalid = false;
     if (this.#isFile && this.#input) {
@@ -143,67 +173,54 @@ export class MbInput extends LitElement {
     }
   }
 
+  formStateRestoreCallback(
+    state: string | File | FormData | null,
+    _mode: 'restore' | 'autocomplete',
+  ): void {
+    if (this.#isFile) return;
+    if (typeof state === 'string') {
+      this.value = state;
+    }
+  }
+
   #syncFileValue(): void {
     const files = this.#input?.files;
     if (!this.name || !files?.length) {
-      setFormValue(this.#internals, null);
+      setFormValue(this.#field.internals, null);
       return;
     }
     if (files.length === 1) {
-      setFormValue(this.#internals, files[0]);
+      setFormValue(this.#field.internals, files[0]);
       return;
     }
     const data = new FormData();
     for (const file of files) {
       data.append(this.name, file);
     }
-    setFormValue(this.#internals, data);
+    setFormValue(this.#field.internals, data);
   }
 
   #sync(): void {
     if (this.#isFile) {
       this.#syncFileValue();
     } else {
-      setFormValue(this.#internals, this.name ? this.value : null);
+      setFormValue(this.#field.internals, this.name ? this.value : null);
     }
-    const validity = this.#input?.validity;
-    const nativeFlags: ValidityStateFlags =
-      validity && !validity.valid
-        ? {
-            badInput: validity.badInput,
-            patternMismatch: validity.patternMismatch,
-            rangeOverflow: validity.rangeOverflow,
-            rangeUnderflow: validity.rangeUnderflow,
-            stepMismatch: validity.stepMismatch,
-            tooLong: validity.tooLong,
-            tooShort: validity.tooShort,
-            typeMismatch: validity.typeMismatch,
-            valueMissing: validity.valueMissing,
-          }
-        : {};
     const missing =
       this.required &&
       (this.#isFile ? !this.#input?.files?.length : !this.value);
-    const constrained = constraintFlags(this.error, missing);
-    const flags = this.error || missing ? constrained.flags : nativeFlags;
-    const message =
-      this.error || missing
-        ? constrained.message
-        : validity && !validity.valid
-          ? this.#input?.validationMessage || 'Please enter a valid value.'
-          : '';
-    if (message) {
-      setValidity(this.#internals, flags, message, this.#input);
-      this.invalid = Boolean(this.error) || this.#touched;
-    } else {
-      clearValidity(this.#internals);
-      this.invalid = false;
-    }
+    this.invalid = this.#field.applyNativeOrConstraintValidity(
+      this.error,
+      missing,
+      this.#input,
+      this.missingMessage,
+      this.invalidMessage,
+    );
   }
 
   #onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
-    this.#touched = true;
+    this.#field.markTouched();
     if (!this.#isFile) {
       this.value = target.value;
     }
@@ -219,7 +236,7 @@ export class MbInput extends LitElement {
 
   #onChange(event: Event): void {
     const target = event.target as HTMLInputElement;
-    this.#touched = true;
+    this.#field.markTouched();
     if (!this.#isFile) {
       this.value = target.value;
     }
@@ -235,7 +252,7 @@ export class MbInput extends LitElement {
 
   #onKeyDown(event: KeyboardEvent): void {
     if (event.key !== 'Enter' || event.defaultPrevented || this.#isFile) return;
-    const form = this.#internals.form;
+    const form = this.#field.internals.form;
     if (form) {
       event.preventDefault();
       form.requestSubmit();
@@ -274,7 +291,12 @@ export class MbInput extends LitElement {
           max=${this.type === 'number' && this.max !== '' ? this.max : nothing}
           step=${this.type === 'number' && this.step !== '' ? this.step : nothing}
           accept=${this.#isFile && this.accept ? this.accept : nothing}
+          pattern=${!this.#isFile && this.pattern ? this.pattern : nothing}
+          maxlength=${!this.#isFile && this.maxLength != null ? this.maxLength : nothing}
+          minlength=${!this.#isFile && this.minLength != null ? this.minLength : nothing}
+          autocomplete=${!this.#isFile && this.autocomplete ? this.autocomplete : nothing}
           ?multiple=${this.#isFile && this.multiple}
+          ?readonly=${!this.#isFile && this.readonly}
           ?disabled=${this.#isDisabled}
           ?required=${this.required}
           aria-invalid=${this.invalid ? 'true' : 'false'}

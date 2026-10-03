@@ -1,33 +1,28 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { clearValidity, constraintFlags, setFormValue, setValidity } from '../lib/form.js';
+import { setFormValue } from '../lib/form.js';
+import { FormFieldController } from '../lib/form-field.js';
+import { jsonArrayConverter, parseJsonArrayAttribute } from '../lib/json-attr.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { fieldLabelState, fieldStyles, sharedStyles } from '../lib/styles.js';
 
 export type SelectOption = { value: string; label: string; disabled?: boolean };
 
 function parseOptionsAttribute(value: string | null): SelectOption[] {
-  if (!value) return [];
-  try {
-    const parsed: unknown = JSON.parse(value);
-    if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter(
-        (item): item is SelectOption =>
-          Boolean(item) &&
-          typeof item === 'object' &&
-          typeof (item as SelectOption).value === 'string' &&
-          typeof (item as SelectOption).label === 'string',
-      )
-      .map((item) => ({
-        value: item.value,
-        label: item.label,
-        disabled: Boolean(item.disabled),
-      }));
-  } catch {
-    return [];
-  }
+  return parseJsonArrayAttribute(
+    value,
+    (item): item is SelectOption =>
+      Boolean(item) &&
+      typeof item === 'object' &&
+      typeof (item as SelectOption).value === 'string' &&
+      typeof (item as SelectOption).label === 'string',
+    (item) => ({
+      value: item.value,
+      label: item.label,
+      disabled: Boolean(item.disabled),
+    }),
+  );
 }
 
 export class MbSelect extends LitElement {
@@ -77,6 +72,12 @@ export class MbSelect extends LitElement {
   @property()
   placeholder = '';
 
+  @property({ attribute: 'missing-message' })
+  missingMessage = 'Please select an option.';
+
+  @property({ attribute: 'invalid-message' })
+  invalidMessage = 'Please select a valid option.';
+
   /**
    * Options as a JS property or JSON attribute:
    * `options='[{"value":"ok","label":"OK"}]'`
@@ -84,27 +85,18 @@ export class MbSelect extends LitElement {
    */
   @property({
     attribute: 'options',
-    converter: {
-      fromAttribute: parseOptionsAttribute,
-      toAttribute(value: SelectOption[]): string | null {
-        return value?.length ? JSON.stringify(value) : null;
-      },
-    },
+    converter: jsonArrayConverter(parseOptionsAttribute),
   })
   options: SelectOption[] = [];
 
   @state()
   private _slottedOptions: SelectOption[] = [];
 
-  #internals = this.attachInternals();
-  #formDisabled = false;
+  #field = new FormFieldController<string>(this);
   #control?: HTMLSelectElement;
-  #defaultValue = '';
-  #defaultCaptured = false;
-  #touched = false;
 
   get #isDisabled(): boolean {
-    return this.disabled || this.#formDisabled;
+    return this.#field.isDisabled;
   }
 
   get #effectiveOptions(): SelectOption[] {
@@ -126,12 +118,17 @@ export class MbSelect extends LitElement {
     return this.getAttribute('aria-label') ?? '';
   }
 
+  checkValidity(): boolean {
+    return this.#field.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    return this.#field.reportValidity();
+  }
+
   override connectedCallback(): void {
     super.connectedCallback();
-    if (!this.#defaultCaptured) {
-      this.#defaultValue = this.value;
-      this.#defaultCaptured = true;
-    }
+    this.#field.captureDefault(this.value);
     // Prefer light-DOM options before first render (SSR / Go templates).
     this.#ingestLightDomOptions();
   }
@@ -149,23 +146,33 @@ export class MbSelect extends LitElement {
       changed.has('options') ||
       changed.has('_slottedOptions') ||
       changed.has('disabled') ||
-      changed.has('name')
+      changed.has('name') ||
+      changed.has('missingMessage') ||
+      changed.has('invalidMessage')
     ) {
       this.#sync();
     }
   }
 
   formDisabledCallback(disabled: boolean): void {
-    this.#formDisabled = disabled;
-    this.requestUpdate();
+    this.#field.formDisabledCallback(disabled);
   }
 
   formResetCallback(): void {
-    this.#touched = false;
-    this.value = this.#defaultValue;
+    this.#field.resetInteraction();
+    this.value = this.#field.defaultValue;
     this.error = '';
     this.invalid = false;
     this.#sync();
+  }
+
+  formStateRestoreCallback(
+    state: string | File | FormData | null,
+    _mode: 'restore' | 'autocomplete',
+  ): void {
+    if (typeof state === 'string') {
+      this.value = state;
+    }
   }
 
   #optionFromElement(node: Element): SelectOption | null {
@@ -219,38 +226,25 @@ export class MbSelect extends LitElement {
         (option) => option.value === this.value && !option.disabled,
       );
     setFormValue(
-      this.#internals,
+      this.#field.internals,
       this.name && validChoice ? this.value : null,
     );
     const missing = this.required && !this.value;
     const invalidChoice = Boolean(this.value) && !validChoice;
-    const constrained = constraintFlags(
+    this.invalid = this.#field.applyConstraintValidity(
       this.error,
       missing,
-      'Please select an option.',
+      this.#control,
+      this.missingMessage,
+      invalidChoice
+        ? { flags: { badInput: true }, message: this.invalidMessage }
+        : null,
     );
-    const flags = this.error
-      ? constrained.flags
-      : invalidChoice
-        ? { badInput: true }
-        : constrained.flags;
-    const message = this.error
-      ? constrained.message
-      : invalidChoice
-        ? 'Please select a valid option.'
-        : constrained.message;
-    if (message) {
-      setValidity(this.#internals, flags, message, this.#control);
-      this.invalid = Boolean(this.error) || this.#touched;
-    } else {
-      clearValidity(this.#internals);
-      this.invalid = false;
-    }
   }
 
   #onChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
-    this.#touched = true;
+    this.#field.markTouched();
     this.value = target.value;
     this.#sync();
     this.dispatchEvent(

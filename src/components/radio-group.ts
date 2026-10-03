@@ -1,6 +1,8 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import { clearValidity, constraintFlags, setFormValue, setValidity } from '../lib/form.js';
+import { setFormValue } from '../lib/form.js';
+import { FormFieldController } from '../lib/form-field.js';
+import { jsonArrayConverter, parseJsonArrayAttribute } from '../lib/json-attr.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { sharedStyles } from '../lib/styles.js';
 import type { MbRadio } from './radio.js';
@@ -9,26 +11,19 @@ import './radio.js';
 export type RadioOption = { value: string; label: string; disabled?: boolean };
 
 function parseOptionsAttribute(value: string | null): RadioOption[] {
-  if (!value) return [];
-  try {
-    const parsed: unknown = JSON.parse(value);
-    if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter(
-        (item): item is RadioOption =>
-          Boolean(item) &&
-          typeof item === 'object' &&
-          typeof (item as RadioOption).value === 'string' &&
-          typeof (item as RadioOption).label === 'string',
-      )
-      .map((item) => ({
-        value: item.value,
-        label: item.label,
-        disabled: Boolean(item.disabled),
-      }));
-  } catch {
-    return [];
-  }
+  return parseJsonArrayAttribute(
+    value,
+    (item): item is RadioOption =>
+      Boolean(item) &&
+      typeof item === 'object' &&
+      typeof (item as RadioOption).value === 'string' &&
+      typeof (item as RadioOption).label === 'string',
+    (item) => ({
+      value: item.value,
+      label: item.label,
+      disabled: Boolean(item.disabled),
+    }),
+  );
 }
 
 export class MbRadioGroup extends LitElement {
@@ -89,35 +84,37 @@ export class MbRadioGroup extends LitElement {
   @property({ type: Boolean, reflect: true })
   invalid = false;
 
+  @property({ attribute: 'missing-message' })
+  missingMessage = 'Please select an option.';
+
+  @property({ attribute: 'invalid-message' })
+  invalidMessage = 'Please select a valid option.';
+
   @property({
     attribute: 'options',
-    converter: {
-      fromAttribute: parseOptionsAttribute,
-      toAttribute(value: RadioOption[]): string | null {
-        return value?.length ? JSON.stringify(value) : null;
-      },
-    },
+    converter: jsonArrayConverter(parseOptionsAttribute),
   })
   options: RadioOption[] = [];
 
-  #internals = this.attachInternals();
-  #formDisabled = false;
-  #defaultValue = '';
-  #defaultCaptured = false;
-  #touched = false;
+  #field = new FormFieldController<string>(this);
   /** Author `disabled` on slotted radios, captured before the group forces disable. */
   #slottedDisabled = new WeakMap<MbRadio, boolean>();
 
   get #isDisabled(): boolean {
-    return this.disabled || this.#formDisabled;
+    return this.#field.isDisabled;
+  }
+
+  checkValidity(): boolean {
+    return this.#field.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    return this.#field.reportValidity();
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
-    if (!this.#defaultCaptured) {
-      this.#defaultValue = this.value;
-      this.#defaultCaptured = true;
-    }
+    this.#field.captureDefault(this.value);
     this.addEventListener('mb-radio-select', this.#onRadioSelect as EventListener);
     this.addEventListener('keydown', this.#onKeyDown);
   }
@@ -147,25 +144,35 @@ export class MbRadioGroup extends LitElement {
       changed.has('required') ||
       changed.has('error') ||
       changed.has('name') ||
-      changed.has('disabled')
+      changed.has('disabled') ||
+      changed.has('missingMessage') ||
+      changed.has('invalidMessage')
     ) {
       this.#sync();
     }
   }
 
   formDisabledCallback(disabled: boolean): void {
-    this.#formDisabled = disabled;
-    this.requestUpdate();
+    this.#field.formDisabledCallback(disabled);
     this.#syncRadios();
   }
 
   formResetCallback(): void {
-    this.#touched = false;
-    this.value = this.#defaultValue;
+    this.#field.resetInteraction();
+    this.value = this.#field.defaultValue;
     this.error = '';
     this.invalid = false;
     this.#syncRadios();
     this.#sync();
+  }
+
+  formStateRestoreCallback(
+    state: string | File | FormData | null,
+    _mode: 'restore' | 'autocomplete',
+  ): void {
+    if (typeof state === 'string') {
+      this.value = state;
+    }
   }
 
   #slottedRadios(): MbRadio[] {
@@ -210,39 +217,26 @@ export class MbRadioGroup extends LitElement {
           (!radio.disabled || this.#isDisabled),
       );
     setFormValue(
-      this.#internals,
+      this.#field.internals,
       this.name && validChoice ? this.value : null,
     );
     const missing = this.required && !this.value;
     const invalidChoice = Boolean(this.value) && !validChoice;
-    const constrained = constraintFlags(
+    this.invalid = this.#field.applyConstraintValidity(
       this.error,
       missing,
-      'Please select an option.',
+      undefined,
+      this.missingMessage,
+      invalidChoice
+        ? { flags: { badInput: true }, message: this.invalidMessage }
+        : null,
     );
-    const flags = this.error
-      ? constrained.flags
-      : invalidChoice
-        ? { badInput: true }
-        : constrained.flags;
-    const message = this.error
-      ? constrained.message
-      : invalidChoice
-        ? 'Please select a valid option.'
-        : constrained.message;
-    if (message) {
-      setValidity(this.#internals, flags, message);
-      this.invalid = Boolean(this.error) || this.#touched;
-    } else {
-      clearValidity(this.#internals);
-      this.invalid = false;
-    }
   }
 
   #onRadioSelect = (event: Event): void => {
     const value = (event as CustomEvent<{ value: string }>).detail?.value;
     if (value == null) return;
-    this.#touched = true;
+    this.#field.markTouched();
     this.value = value;
     this.#syncRadios();
     this.#sync();
@@ -263,7 +257,7 @@ export class MbRadioGroup extends LitElement {
     const current = radios.findIndex((r) => r.value === this.value);
     const delta = event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1;
     const next = radios[(current + delta + radios.length) % radios.length];
-    this.#touched = true;
+    this.#field.markTouched();
     this.value = next.value;
     this.#syncRadios();
     this.#sync();

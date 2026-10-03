@@ -1,31 +1,25 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
+import { jsonArrayConverter, parseJsonArrayAttribute } from '../lib/json-attr.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { sharedStyles } from '../lib/styles.js';
 
 export type BreadcrumbItem = { href?: string; label: string; current?: boolean };
 
 function parseItemsAttribute(value: string | null): BreadcrumbItem[] {
-  if (!value) return [];
-  try {
-    const parsed: unknown = JSON.parse(value);
-    if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter(
-        (item): item is BreadcrumbItem =>
-          Boolean(item) &&
-          typeof item === 'object' &&
-          typeof (item as BreadcrumbItem).label === 'string',
-      )
-      .map((item) => ({
-        label: item.label,
-        href: item.href,
-        current: Boolean(item.current),
-      }));
-  } catch {
-    return [];
-  }
+  return parseJsonArrayAttribute(
+    value,
+    (item): item is BreadcrumbItem =>
+      Boolean(item) &&
+      typeof item === 'object' &&
+      typeof (item as BreadcrumbItem).label === 'string',
+    (item) => ({
+      label: item.label,
+      href: item.href,
+      current: Boolean(item.current),
+    }),
+  );
 }
 
 /**
@@ -91,12 +85,7 @@ export class MbBreadcrumbs extends LitElement {
 
   @property({
     attribute: 'items',
-    converter: {
-      fromAttribute: parseItemsAttribute,
-      toAttribute(value: BreadcrumbItem[]): string | null {
-        return value?.length ? JSON.stringify(value) : null;
-      },
-    },
+    converter: jsonArrayConverter(parseItemsAttribute),
   })
   items: BreadcrumbItem[] = [];
 

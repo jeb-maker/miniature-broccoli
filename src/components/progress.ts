@@ -55,6 +55,10 @@ export class MbProgress extends LitElement {
   @property()
   label = '';
 
+  /** Used when neither `label` nor host `aria-label` is set (i18n). */
+  @property({ attribute: 'fallback-label' })
+  fallbackLabel = 'Progress';
+
   get #percent(): number {
     if (this.percent != null && Number.isFinite(this.percent)) {
       return Math.min(100, Math.max(0, this.percent));
@@ -93,7 +97,9 @@ export class MbProgress extends LitElement {
           aria-valuenow=${this.#now}
           aria-valuemax=${this.#max}
           aria-labelledby=${this.label ? 'label' : nothing}
-          aria-label=${!this.label ? this.getAttribute('aria-label') || 'Progress' : nothing}
+          aria-label=${!this.label
+            ? this.getAttribute('aria-label') || this.fallbackLabel
+            : nothing}
         >
           <div part="bar" class="bar" style="inline-size: ${pct}%"></div>
         </div>

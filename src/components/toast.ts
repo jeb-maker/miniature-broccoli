@@ -109,6 +109,10 @@ export class MbToast extends LitElement {
   @property()
   message = '';
 
+  /** Accessible name for the dismiss button (i18n). */
+  @property({ attribute: 'dismiss-label' })
+  dismissLabel = 'Dismiss';
+
   #timer = 0;
   #onBus = (event: Event): void => {
     const detail = (event as CustomEvent<{ message?: string; variant?: ToastVariant; autoDismiss?: number }>).detail;
@@ -181,7 +185,12 @@ export class MbToast extends LitElement {
         ?hidden=${!this.open}
       >
         <div part="message" class="message">${this.message}<slot></slot></div>
-        <button type="button" part="close" aria-label="Dismiss" @click=${this.#onClose}>
+        <button
+          type="button"
+          part="close"
+          aria-label=${this.dismissLabel}
+          @click=${this.#onClose}
+        >
           ×
         </button>
       </div>

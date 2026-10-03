@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import { clearValidity, setFormValue, setValidity } from '../lib/form.js';
+import { setFormValue } from '../lib/form.js';
+import { FormFieldController } from '../lib/form-field.js';
 import { safeDefine } from '../lib/safe-define.js';
 import { sharedStyles } from '../lib/styles.js';
 
@@ -78,23 +79,27 @@ export class MbCheckbox extends LitElement {
   @property({ type: Boolean, reflect: true })
   invalid = false;
 
-  #internals = this.attachInternals();
-  #formDisabled = false;
+  @property({ attribute: 'missing-message' })
+  missingMessage = 'Please check this box.';
+
+  #field = new FormFieldController<boolean>(this);
   #control?: HTMLInputElement;
-  #defaultChecked = false;
-  #defaultCaptured = false;
-  #touched = false;
 
   get #isDisabled(): boolean {
-    return this.disabled || this.#formDisabled;
+    return this.#field.isDisabled;
+  }
+
+  checkValidity(): boolean {
+    return this.#field.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    return this.#field.reportValidity();
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
-    if (!this.#defaultCaptured) {
-      this.#defaultChecked = this.checked;
-      this.#defaultCaptured = true;
-    }
+    this.#field.captureDefault(this.checked);
   }
 
   override firstUpdated(): void {
@@ -113,24 +118,38 @@ export class MbCheckbox extends LitElement {
       changed.has('required') ||
       changed.has('error') ||
       changed.has('disabled') ||
-      changed.has('name')
+      changed.has('name') ||
+      changed.has('missingMessage')
     ) {
       this.#sync();
     }
   }
 
   formDisabledCallback(disabled: boolean): void {
-    this.#formDisabled = disabled;
-    this.requestUpdate();
+    this.#field.formDisabledCallback(disabled);
   }
 
   formResetCallback(): void {
-    this.#touched = false;
-    this.checked = this.#defaultChecked;
+    this.#field.resetInteraction();
+    this.checked = this.#field.defaultValue;
     this.indeterminate = false;
     this.error = '';
     this.invalid = false;
     this.#sync();
+  }
+
+  formStateRestoreCallback(
+    state: string | File | FormData | null,
+    _mode: 'restore' | 'autocomplete',
+  ): void {
+    if (state == null) {
+      this.checked = false;
+      return;
+    }
+    if (typeof state === 'string') {
+      this.checked = true;
+      if (state) this.value = state;
+    }
   }
 
   #applyIndeterminate(): void {
@@ -140,24 +159,19 @@ export class MbCheckbox extends LitElement {
   }
 
   #sync(): void {
-    setFormValue(this.#internals, this.name && this.checked ? this.value : null);
+    setFormValue(this.#field.internals, this.name && this.checked ? this.value : null);
     const missing = this.required && !this.checked;
-    const message = this.error || (missing ? 'Please check this box.' : '');
-    if (message) {
-      const flags: ValidityStateFlags = this.error
-        ? { customError: true }
-        : { valueMissing: true };
-      setValidity(this.#internals, flags, message, this.#control);
-      this.invalid = Boolean(this.error) || this.#touched;
-    } else {
-      clearValidity(this.#internals);
-      this.invalid = false;
-    }
+    this.invalid = this.#field.applyConstraintValidity(
+      this.error,
+      missing,
+      this.#control,
+      this.missingMessage,
+    );
   }
 
   #onChange(event: Event): void {
     const target = event.target as HTMLInputElement;
-    this.#touched = true;
+    this.#field.markTouched();
     this.checked = target.checked;
     this.indeterminate = false;
     this.#sync();

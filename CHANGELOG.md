@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Shared `json-attr` helper and `FormFieldController` for form-associated fields
+- i18n label props (`missing-message` / `invalid-message`, `close-label`, `dismiss-label`, `fallback-label`, …)
+- Form API attribute parity (`pattern`, `maxlength` / `minlength`, `autocomplete`, `readonly`, …)
+- `mb-table` modularization under `src/components/table/*` (public entry remains `./table`)
+- `mb-segmented-control` semantics / a11y polish
+- Smoke a11y tests (axe) + Storybook `@storybook/addon-a11y`
+- Docs: `CONTRIBUTING.md`, `docs/parts-and-events.md` (events + `::part` catalog); cross-links from README / go-htmx / Introduction
+- `npm run check:exports` + CI wiring; publish workflow runs lint + export check
+- Closes #39–#44
+
 ## 0.4.3 — 2026-09-28
 
 Global control-density unification plus component correctness and accessibility fixes.

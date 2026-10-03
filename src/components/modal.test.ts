@@ -41,6 +41,15 @@ describe('mb-modal', () => {
     el.remove();
   });
 
+  it('uses close-label for the dismiss control', async () => {
+    const el = document.createElement('mb-modal') as MbModal;
+    el.closeLabel = 'Fermer';
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('.close')!.getAttribute('aria-label')).toBe('Fermer');
+    el.remove();
+  });
+
   it('emits mb-close when open is set to false', async () => {
     const el = document.createElement('mb-modal') as MbModal;
     document.body.appendChild(el);

@@ -19,8 +19,11 @@ describe('mb-segmented-control', () => {
 
     const nav = el.shadowRoot!.querySelector('nav')!;
     expect(nav.getAttribute('aria-label')).toBe('Filters');
+    const list = el.shadowRoot!.querySelector('[part="list"]')!;
+    expect(list.getAttribute('role')).toBeNull();
     const slot = el.shadowRoot!.querySelector('slot')!;
     expect(slot.assignedElements()).toHaveLength(2);
     el.remove();
   });
 });
+
