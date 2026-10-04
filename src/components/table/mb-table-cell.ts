@@ -98,11 +98,6 @@ export class MbTableCell extends LitElement {
     this.setAttribute('role', this.#isHead() ? 'columnheader' : 'cell');
   }
 
-  #indicator(): string {
-    if (!this.sortActive || !this.sortDirection) return '↕';
-    return this.sortDirection === 'asc' ? '↑' : '↓';
-  }
-
   #sortAriaLabel(): string {
     const name =
       this.sortKey.trim() ||
@@ -140,7 +135,17 @@ export class MbTableCell extends LitElement {
                   aria-label=${this.#sortAriaLabel()}
                 >
                   <slot></slot>
-                  <span class="sort-indicator" aria-hidden="true">${this.#indicator()}</span>
+                  <span
+                    part="sort-indicator"
+                    class="sort-indicator"
+                    data-direction=${this.sortActive && this.sortDirection
+                      ? this.sortDirection
+                      : 'none'}
+                    aria-hidden="true"
+                  >
+                    <span class="sort-caret sort-caret-up">▲</span>
+                    <span class="sort-caret sort-caret-down">▼</span>
+                  </span>
                 </button>
               `
             : html`<slot></slot>`}

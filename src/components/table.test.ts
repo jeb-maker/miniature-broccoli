@@ -226,6 +226,46 @@ describe('mb-table', () => {
     el.remove();
   });
 
+  it('exposes a dual-caret sort-indicator part and keeps aria-sort in sync', async () => {
+    const el = document.createElement('mb-table') as MbTable;
+    el.innerHTML = `
+      <mb-table-row slot="head">
+        <mb-table-cell sort-key="name">Name</mb-table-cell>
+      </mb-table-row>
+      <mb-table-row><mb-table-cell sort-value="Ada">Ada</mb-table-cell></mb-table-row>
+      <mb-table-row><mb-table-cell sort-value="Lin">Lin</mb-table-cell></mb-table-row>
+    `;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await el.updateComplete;
+
+    const headCell = el.querySelector<MbTableCell>('mb-table-row[slot="head"] mb-table-cell')!;
+    await headCell.updateComplete;
+
+    const indicator = headCell.shadowRoot!.querySelector('.sort-indicator') as HTMLElement;
+    expect(indicator.getAttribute('part')).toBe('sort-indicator');
+    expect(indicator.getAttribute('aria-hidden')).toBe('true');
+    expect(indicator.dataset.direction).toBe('none');
+    expect(headCell.getAttribute('aria-sort')).toBe('none');
+    expect(indicator.querySelectorAll('.sort-caret')).toHaveLength(2);
+
+    const sortBtn = headCell.shadowRoot!.querySelector('button.sort') as HTMLButtonElement;
+    sortBtn.click();
+    await el.updateComplete;
+    await headCell.updateComplete;
+
+    expect(indicator.dataset.direction).toBe('asc');
+    expect(headCell.getAttribute('aria-sort')).toBe('asc');
+
+    sortBtn.click();
+    await el.updateComplete;
+    await headCell.updateComplete;
+
+    expect(indicator.dataset.direction).toBe('desc');
+    expect(headCell.getAttribute('aria-sort')).toBe('desc');
+    el.remove();
+  });
+
   it('toggles section collapsed and emits mb-section-toggle', async () => {
     const el = document.createElement('mb-table') as MbTable;
     el.sections = [{ id: 'ops', label: 'Ops' }];
