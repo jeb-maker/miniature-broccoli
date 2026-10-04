@@ -27,6 +27,10 @@
       "types": "./dist/components/select.d.ts",
       "import": "./dist/components/select.js"
     },
+    "./combobox": {
+      "types": "./dist/components/combobox.d.ts",
+      "import": "./dist/components/combobox.js"
+    },
     "./checkbox": {
       "types": "./dist/components/checkbox.d.ts",
       "import": "./dist/components/checkbox.js"

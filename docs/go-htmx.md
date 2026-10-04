@@ -64,6 +64,51 @@ Or a JSON attribute (escape carefully in templates):
 ></mb-select>
 ```
 
+### Combobox / live search suggestions
+
+Import `./combobox`. Hosts drive async filtering: listen for `mb-input`, debounce, set `.options` / `loading`. Selection emits `mb-select` (`value`, `label`, `href?`) and `mb-change`.
+
+```html
+<script type="module">
+  import '/static/vendor/mb/combobox.js';
+  const box = document.querySelector('#global-search');
+  let t = 0;
+  box?.addEventListener('mb-input', (e) => {
+    const q = e.detail.value.trim();
+    clearTimeout(t);
+    box.loading = true;
+    box.open = true;
+    t = setTimeout(async () => {
+      const res = await fetch('/api/search?q=' + encodeURIComponent(q));
+      box.options = await res.json(); // [{value,label,group?,href?}]
+      box.loading = false;
+    }, 250);
+  });
+  box?.addEventListener('mb-select', (e) => {
+    if (e.detail.href) location.href = e.detail.href;
+  });
+</script>
+
+<mb-combobox
+  id="global-search"
+  label="Search"
+  hide-label
+  density="compact"
+  placeholder="Search…"
+  empty-message="Aucun résultat"
+  loading-message="Chargement…"
+></mb-combobox>
+```
+
+Slotted SSR seed options (optional):
+
+```html
+<mb-combobox label="Jump to" placeholder="Filter…">
+  <option value="ops" data-group="Sections">Ops</option>
+  <option value="r1" data-group="Runs" data-href="/runs/1">Run 1</option>
+</mb-combobox>
+```
+
 ### Compact table / HTMX cells
 
 Import `./table`. Below `36rem`, each body row becomes a labeled card (same breakpoint as `mb-nav`). Head labels are copied onto cells when `label` is omitted.
@@ -289,8 +334,9 @@ Shadow-DOM native `change` / `input` do **not** retarget. Listen for composed cu
 
 | Event | Components | Detail |
 |-------|------------|--------|
-| `mb-change` | input, textarea, select, checkbox, radio-group | `{ value }` or `{ checked, value }` |
-| `mb-input` | input, textarea | `{ value }` (+ `files` for file inputs) |
+| `mb-change` | input, textarea, select, combobox, checkbox, radio-group | `{ value }` or `{ checked, value }` |
+| `mb-input` | input, textarea, combobox | `{ value }` (+ `files` for file inputs) |
+| `mb-select` | combobox | `{ value, label, href? }` |
 | `mb-close` | modal, toast | — |
 | `mb-toggle` | nav-toggle | `{ expanded }` |
 | `mb-sort` | table | `{ key, direction }` (`asc` \| `desc`) |

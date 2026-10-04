@@ -3,6 +3,7 @@ export type { MbButton, ButtonVariant, ButtonSize, ButtonType } from './componen
 export type { MbInput, InputType } from './components/input.js';
 export type { MbTextarea } from './components/textarea.js';
 export type { MbSelect, SelectOption } from './components/select.js';
+export type { MbCombobox, ComboboxOption, ComboboxType } from './components/combobox.js';
 export type { MbCheckbox } from './components/checkbox.js';
 export type { MbRadio } from './components/radio.js';
 export type { MbRadioGroup, RadioOption } from './components/radio-group.js';
@@ -50,6 +51,7 @@ import type { MbProgress } from './components/progress.js';
 import type { MbRadio } from './components/radio.js';
 import type { MbRadioGroup } from './components/radio-group.js';
 import type { MbSegmentedControl } from './components/segmented-control.js';
+import type { MbCombobox } from './components/combobox.js';
 import type { MbSelect } from './components/select.js';
 import type { MbSpinner } from './components/spinner.js';
 import type { MbTag } from './components/tag.js';
@@ -64,6 +66,7 @@ declare global {
     'mb-input': MbInput;
     'mb-textarea': MbTextarea;
     'mb-select': MbSelect;
+    'mb-combobox': MbCombobox;
     'mb-checkbox': MbCheckbox;
     'mb-radio': MbRadio;
     'mb-radio-group': MbRadioGroup;

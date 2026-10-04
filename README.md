@@ -46,6 +46,7 @@ npm run storybook
 | `./input` | `mb-input` |
 | `./textarea` | `mb-textarea` |
 | `./select` | `mb-select` |
+| `./combobox` | `mb-combobox` |
 | `./checkbox` | `mb-checkbox` |
 | `./radio` | `mb-radio` |
 | `./radio-group` | `mb-radio-group` |
@@ -77,6 +78,7 @@ Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'`
 - **Internal labels** only — `label[for]` from outside does not pierce Shadow DOM. Use `aria-label` / `hide-label` for compact cells.
 - **Form-associated** controls honor `fieldset[disabled]`, the HTML `form="…"` attribute, and `FormData`.
 - **`mb-select`**: JS `.options`, JSON `options='[…]'` attribute, or slotted `<option>` (slotted wins). Use `placeholder` (or a slotted empty option) to label `value=""`.
+- **`mb-combobox`**: typeahead over a text/search field. Hosts filter via `mb-input` and set `.options` / `loading`. Options support optional `group` + `href`; slotted `<option data-group data-href>` works for SSR. Keyboard ↑↓ Enter Esc Home/End; selection emits `mb-select` + `mb-change`.
 - **`mb-button`**: `variant="danger"`; with `href`, renders a styled `<a>` (no accidental form submit).
 - **`mb-modal`**: native `<dialog>`.
 - **`mb-nav-toggle`**: pairs with `mb-nav` via `for` / `id`; emits `mb-toggle` (`{ expanded }`).
