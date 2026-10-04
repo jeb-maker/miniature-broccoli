@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.5.0 — 2026-10-04
+
+New typeahead component for app-shell search, plus a packaging fix for nested table CEs.
+
 - Add `mb-combobox` typeahead / search suggestions (grouped options, keyboard nav, loading/empty, `mb-select` + `mb-change`) (#58)
 - Fix `sideEffects` globs so nested CE modules under `dist/components/table/*` are not tree-shaken; keep explicit registration imports in the `./table` barrel (#56)
 
