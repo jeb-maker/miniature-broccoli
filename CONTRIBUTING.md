@@ -29,10 +29,11 @@ npm install
 1. **Implementation** — add `src/components/<name>.ts` (register with `safeDefine('mb-<name>', …)`). Keep non-entry helpers in a subfolder (e.g. `src/components/table/*`); only the top-level entry is exported.
 2. **`package.json` exports** — add `"./<name>"` pointing at `dist/components/<name>.{d.ts,js}`.
 3. **`jsx.d.ts`** — declare `'mb-<name>'` under `JSX.IntrinsicElements` with relevant attributes.
-4. **`src/types.ts`** — re-export the component type(s) and add `'mb-<name>'` to `HTMLElementTagNameMap`.
-5. **Story** — `stories/<Name>.stories.ts` under an appropriate Storybook title.
-6. **Test** — `src/components/<name>.test.ts` (Vitest browser).
-7. Run `npm run check:exports` (and typecheck / lint / test) before opening a PR.
+4. **`svelte.d.ts`** — mirror the same tag under `SvelteHTMLElements`, plus any `onmb-*` event handlers the CE dispatches.
+5. **`src/types.ts`** — re-export the component type(s) and add `'mb-<name>'` to `HTMLElementTagNameMap`.
+6. **Story** — `stories/<Name>.stories.ts` under an appropriate Storybook title.
+7. **Test** — `src/components/<name>.test.ts` (Vitest browser).
+8. Run `npm run check:exports` (and typecheck / lint / test) before opening a PR.
 
 ## Release notes
 

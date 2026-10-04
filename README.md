@@ -70,7 +70,19 @@ npm run storybook
 
 Typography: CSS classes `.mb-title`, `.mb-body`, `.mb-body-sm` (from `tokens.css` or `typography.css`).
 
-Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'`
+Types: `import '@jeb-maker/mb/types'` · `import '@jeb-maker/mb/jsx'` · `import '@jeb-maker/mb/svelte'`
+
+### Svelte / SvelteKit
+
+Per-tag props and `onmb-*` custom events augment `svelte/elements` (`SvelteHTMLElements`). No Svelte peer dependency — reference the ambient file:
+
+```ts
+// e.g. src/app.d.ts or a global ambient
+import '@jeb-maker/mb/svelte';
+// or: /// <reference types="@jeb-maker/mb/svelte" />
+```
+
+Shipped starting with the release that includes #61 (after 0.5.0).
 
 ## Contracts
 

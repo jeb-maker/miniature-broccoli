@@ -3,6 +3,7 @@
  * Verify every top-level src/components/*.ts entry has:
  * - package.json exports["./name"]
  * - a reasonable mention in jsx.d.ts (mb-name tag)
+ * - a reasonable mention in svelte.d.ts (mb-name tag)
  * - a reasonable mention in src/types.ts (MbName / mb-name)
  *
  * Subfolders (e.g. src/components/table/*) are ignored — only the public entry
@@ -16,6 +17,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const componentsDir = join(root, 'src/components');
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const jsx = readFileSync(join(root, 'jsx.d.ts'), 'utf8');
+const svelte = readFileSync(join(root, 'svelte.d.ts'), 'utf8');
 const types = readFileSync(join(root, 'src/types.ts'), 'utf8');
 
 const entries = readdirSync(componentsDir)
@@ -43,12 +45,19 @@ for (const name of entries) {
   if (!jsx.includes(`'${tag}'`) && !jsx.includes(`"${tag}"`)) {
     errors.push(`jsx.d.ts missing IntrinsicElements entry for '${tag}'`);
   }
+  if (!svelte.includes(`'${tag}'`) && !svelte.includes(`"${tag}"`)) {
+    errors.push(`svelte.d.ts missing SvelteHTMLElements entry for '${tag}'`);
+  }
 
   const typeName = `Mb${toPascal(name)}`;
   const hasTypeExport = types.includes(typeName) || types.includes(`'${tag}'`);
   if (!hasTypeExport) {
     errors.push(`src/types.ts missing type/tag mention for ${typeName} / '${tag}'`);
   }
+}
+
+if (!('./svelte' in exportsMap)) {
+  errors.push('missing package.json exports["./svelte"] for svelte.d.ts');
 }
 
 if (errors.length) {

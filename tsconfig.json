@@ -13,6 +13,6 @@
     "isolatedModules": true,
     "types": ["node"]
   },
-  "include": ["src", "stories", "jsx.d.ts"],
+  "include": ["src", "stories", "jsx.d.ts", "svelte.d.ts"],
   "exclude": ["src/**/*.test.ts"]
 }

@@ -5,7 +5,8 @@
   "type": "module",
   "files": [
     "dist",
-    "jsx.d.ts"
+    "jsx.d.ts",
+    "svelte.d.ts"
   ],
   "exports": {
     "./tokens.css": "./dist/tokens/tokens.css",
@@ -112,7 +113,8 @@
       "import": "./dist/components/table.js"
     },
     "./types": "./dist/types.d.ts",
-    "./jsx": "./jsx.d.ts"
+    "./jsx": "./jsx.d.ts",
+    "./svelte": "./svelte.d.ts"
   },
   "sideEffects": [
     "./dist/components/**/*.js",
