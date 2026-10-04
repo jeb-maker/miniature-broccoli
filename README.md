@@ -82,7 +82,7 @@ import '@jeb-maker/mb/svelte';
 // or: /// <reference types="@jeb-maker/mb/svelte" />
 ```
 
-Shipped starting with the release that includes #61 (after 0.5.0).
+Shipped starting with **0.5.1**.
 
 ## Contracts
 
@@ -128,4 +128,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, scripts, and how to add a co
 
 ## Changelog
 
-See [CHANGELOG.md](./CHANGELOG.md) for what shipped in 0.2.0 / 0.3.0 / 0.3.1 / 0.4.0 / 0.4.1 / 0.4.2 / 0.4.3 / 0.4.4 / 0.5.0.
+See [CHANGELOG.md](./CHANGELOG.md) for what shipped in 0.2.0 / 0.3.0 / 0.3.1 / 0.4.0 / 0.4.1 / 0.4.2 / 0.4.3 / 0.4.4 / 0.5.0 / 0.5.1.
