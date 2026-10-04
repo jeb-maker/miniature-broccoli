@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add `mb-combobox` typeahead / search suggestions (grouped options, keyboard nav, loading/empty, `mb-select` + `mb-change`) (#58)
 - Fix `sideEffects` globs so nested CE modules under `dist/components/table/*` are not tree-shaken; keep explicit registration imports in the `./table` barrel (#56)
 
 ## 0.4.4 — 2026-10-03

@@ -44,6 +44,7 @@ export class MbToolbar extends LitElement {
       */
       ::slotted(mb-input),
       ::slotted(mb-select),
+      ::slotted(mb-combobox),
       ::slotted(mb-textarea) {
         flex: 1 1 12rem;
         inline-size: auto;
@@ -73,6 +74,7 @@ export class MbToolbar extends LitElement {
         ::slotted(*),
         ::slotted(mb-input),
         ::slotted(mb-select),
+        ::slotted(mb-combobox),
         ::slotted(mb-textarea),
         ::slotted(mb-button),
         ::slotted(mb-segmented-control) {

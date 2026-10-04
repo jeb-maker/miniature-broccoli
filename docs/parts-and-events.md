@@ -8,8 +8,9 @@ Shadow-DOM native `change` / `input` do **not** retarget. Prefer these composed 
 
 | Event | Components | Detail |
 |-------|------------|--------|
-| `mb-change` | `mb-input`, `mb-textarea`, `mb-select`, `mb-checkbox`, `mb-radio-group` | `{ value }` or `{ checked, value }` (checkbox) |
-| `mb-input` | `mb-input`, `mb-textarea` | `{ value }` (+ `files` for file inputs) |
+| `mb-change` | `mb-input`, `mb-textarea`, `mb-select`, `mb-combobox`, `mb-checkbox`, `mb-radio-group` | `{ value }` or `{ checked, value }` (checkbox) |
+| `mb-input` | `mb-input`, `mb-textarea`, `mb-combobox` | `{ value }` (+ `files` for file inputs) |
+| `mb-select` | `mb-combobox` | `{ value, label, href? }` when an option is chosen |
 | `mb-close` | `mb-modal`, `mb-toast` | — |
 | `mb-toggle` | `mb-nav-toggle` | `{ expanded }` |
 | `mb-sort` | `mb-table` | `{ key, direction }` (`asc` \| `desc`) |
@@ -46,6 +47,7 @@ Major `part` names exposed for theming (`::part(name)`). Only parts present in c
 | `mb-radio-group` | `fieldset`, `legend`, `options` |
 | `mb-segmented-control` | `nav`, `list` |
 | `mb-select` | `label`, `control` |
+| `mb-combobox` | `label`, `control`, `panel`, `option`, `status`, `empty` |
 | `mb-spinner` | `spinner` |
 | `mb-table` | `root`, `caption`, `frame`, `head`, `body`, `section`, `section-head`, `section-custom-meta`, `section-count`, `section-rows`, `ungrouped`, `empty` |
 | `mb-table-row` | `wrap`, `handle`, `row` |

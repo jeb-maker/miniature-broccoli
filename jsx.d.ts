@@ -97,6 +97,37 @@ declare namespace JSX {
       'missing-message'?: string;
       'invalid-message'?: string;
     };
+    'mb-combobox': MbBaseAttrs & {
+      label?: string;
+      hint?: string;
+      error?: string;
+      value?: string;
+      name?: string;
+      placeholder?: string;
+      type?: 'text' | 'search';
+      disabled?: boolean;
+      required?: boolean;
+      invalid?: boolean;
+      density?: 'default' | 'compact';
+      'hide-label'?: boolean;
+      open?: boolean;
+      loading?: boolean;
+      options?:
+        | Array<{
+            value: string;
+            label: string;
+            disabled?: boolean;
+            group?: string;
+            href?: string;
+          }>
+        | string;
+      'empty-message'?: string;
+      'loading-message'?: string;
+      'close-on-select'?: boolean;
+      'close-on-blur'?: boolean;
+      'missing-message'?: string;
+      'invalid-message'?: string;
+    };
     'mb-checkbox': MbBaseAttrs & {
       label?: string;
       error?: string;

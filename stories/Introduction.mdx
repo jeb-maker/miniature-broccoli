@@ -29,6 +29,7 @@ Install from GitHub Packages (`@jeb-maker` scope → `https://npm.pkg.github.com
 - **Labels** are internal (`label` prop). External `label[for]` does not pierce Shadow DOM. Use `aria-label` / `hide-label` for compact cells.
 - **Forms** use Form-Associated Custom Elements, including `fieldset[disabled]` and `form="…"`.
 - **Select** options via JS property, JSON `options` attribute, or slotted `<option>` (slotted wins). Label the empty option with `placeholder` or a slotted `value=""`.
+- **Combobox** (`mb-combobox`): typeahead suggestions; hosts filter on `mb-input` and set `.options` / `loading`. Optional `group` / `href` on options; `mb-select` on choose.
 - **Button** supports `variant="danger"` and `href` (anchor rendering).
 - **Badge** is the single chip: status via `variant`, filter links via `href`, `size="sm"|"md"`. Prefer it over **`mb-tag`** (deprecated alias, defaults to `size="md"`).
 - **Table** (`mb-table`): grid on wide viewports, stacked cards below `36rem`; `sections` (+ optional `meta`) + row `section` for groups; head `sort-key` for in-section sort; `reorderable` for drag handles; `sticky-header` for long lists. Pair with compact unlabeled inputs/selects for editable rows. Action columns use `actions` (end-aligned).
@@ -54,7 +55,7 @@ Shared geometry lives on semantic tokens — prefer these over one-off sizes:
 Rules of thumb:
 
 1. **One control height per row** — toolbar siblings share `--mb-control-height` (do not mix `density="compact"` fields with `md` buttons in the same toolbar).
-2. **Block fields fill their track** — `mb-input` / `mb-select` / `mb-textarea` / `mb-table` default to `inline-size: 100%`.
+2. **Block fields fill their track** — `mb-input` / `mb-select` / `mb-combobox` / `mb-textarea` / `mb-table` default to `inline-size: 100%`.
 3. **Textareas are not user-resizable** by default (`resize: none`) and still span the full field width.
 4. **Narrow viewports** — `mb-toolbar` stacks and stretches slotted controls to full width below `--mb-narrow`.
 5. **End-aligned cells** — use `align="end"` or `actions` on `mb-table-cell`; the value track spans the cell so content pins to the inline-end.
