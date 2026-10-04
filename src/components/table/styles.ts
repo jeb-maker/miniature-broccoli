@@ -399,12 +399,40 @@ export const tableCellStyles = css`
   }
 
   .sort-indicator {
-    color: var(--mb-color-muted);
-    font-size: 0.75em;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.05em;
+    flex: none;
+    color: var(--mb-color-fg);
+    opacity: 0.55;
+    font-size: 0.55em;
+    line-height: 1;
   }
 
-  :host([sort-active]) .sort-indicator {
+  .sort-caret {
+    display: block;
+  }
+
+  .sort-indicator[data-direction='asc'],
+  .sort-indicator[data-direction='desc'] {
+    opacity: 1;
+  }
+
+  .sort-indicator[data-direction='asc'] .sort-caret-up,
+  .sort-indicator[data-direction='desc'] .sort-caret-down {
     color: var(--mb-color-accent);
+  }
+
+  .sort-indicator[data-direction='asc'] .sort-caret-down,
+  .sort-indicator[data-direction='desc'] .sort-caret-up {
+    opacity: 0.28;
+    color: var(--mb-color-muted);
+  }
+
+  .sort:hover .sort-indicator[data-direction='none'] {
+    opacity: 0.8;
   }
 
   :host([align='center']) .cell {

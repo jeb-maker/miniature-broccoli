@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `mb-table-cell`: clearer dual-caret sort indicator (idle + active), with `part="sort-indicator"` for host overrides (#62)
+
 ## 0.5.0 — 2026-10-04
 
 New typeahead component for app-shell search, plus a packaging fix for nested table CEs.

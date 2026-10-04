@@ -51,7 +51,7 @@ Major `part` names exposed for theming (`::part(name)`). Only parts present in c
 | `mb-spinner` | `spinner` |
 | `mb-table` | `root`, `caption`, `frame`, `head`, `body`, `section`, `section-head`, `section-custom-meta`, `section-count`, `section-rows`, `ungrouped`, `empty` |
 | `mb-table-row` | `wrap`, `handle`, `row` |
-| `mb-table-cell` | `cell`, `label`, `value`, `sort` |
+| `mb-table-cell` | `cell`, `label`, `value`, `sort`, `sort-indicator` |
 | `mb-textarea` | `label`, `control` |
 | `mb-toast` | `toast`, `message`, `close` |
 | `mb-toolbar` | `toolbar`, `start`, `end` |
