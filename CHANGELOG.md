@@ -2,7 +2,11 @@
 
 ## Unreleased
 
+<<<<<<< HEAD
 - `mb-table-cell`: clearer dual-caret sort indicator (idle + active), with `part="sort-indicator"` for host overrides (#62)
+=======
+- Ship first-party Svelte typings (`svelte.d.ts` / `@jeb-maker/mb/svelte`) mirroring `jsx.d.ts` with per-tag props and `onmb-*` events (#61)
+>>>>>>> 64fdc15 (feat: ship first-party Svelte typings (svelte.d.ts))
 
 ## 0.5.0 — 2026-10-04
 
